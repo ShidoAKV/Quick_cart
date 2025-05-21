@@ -2,7 +2,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
-const protectedRoutes = ["/product", "/all-products", "/cart"];
+const protectedRoutes = [ "/cart"];
 
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
