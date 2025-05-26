@@ -48,20 +48,12 @@ export const AppContextProvider = (props) => {
         }
     }
 
-
-    // const fetchuser=async()=>{
-    //     try {
-    //          await axios.post('/api/adduser');
-
-    //     } catch (error) {
-    //          toast.error(error.message);
-    //     }
-    // }
     const createUserIfNotExists=async () => {
     try {
         
         const token =await  getToken();
          if(!token) return ;
+            
             const payload = {
             id: user.id,
             name: user.firstName+' '+user.lastName,
@@ -69,7 +61,7 @@ export const AppContextProvider = (props) => {
             imageUrl: user.imageUrl,
             };
 
-            const res = await axios.post('api/user/add', payload, {
+            const res = await axios.post('/api/user/add', payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -131,9 +123,6 @@ export const AppContextProvider = (props) => {
     useEffect(() => {
         if (user) fetchUserData();
     }, [user])
-
-
-
 
 
 

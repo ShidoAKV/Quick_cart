@@ -9,9 +9,9 @@ import { NextResponse } from 'next/server';
 // configure cloudinary
 
 cloudinary.config({
-    cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
-    api_key:process.env.CLOUDINARY_API_KEY,
-    api_secret:process.env.CLOUDINARY_API_SECRET
+    cloud_name:process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    api_key:process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+    api_secret:process.env.CLOUDINARY_API_SECRET,
 })
 
 
@@ -25,7 +25,7 @@ export async function POST(request) {
             return NextResponse.json({success:false,message:'not authorised'});
           }
 
-          const formdata=await request.formdata();
+          const formdata=await request.formData();
           const name=formdata.get('name');
           const description=formdata.get('description');
           const price=formdata.get('price');
@@ -37,7 +37,8 @@ export async function POST(request) {
              return NextResponse.json({success:false,message:'not files uploaded'});
           }
 
-          const result=await Promise.all(files.map(async(file)=>{
+          const result=await Promise.all(
+            files.map(async(file)=>{
             const arrayBuffer=await file.arrayBuffer();
             const buffer=Buffer.from(arrayBuffer);
              return new Promise((resolve,reject)=>{
@@ -55,7 +56,9 @@ export async function POST(request) {
              })
           }))
 
-          const image=result.map(result=>request.secure_url);
+           console.log(result);
+           
+          const image=result.map(request=>request.secure_url);
               
           await connectDB();
           const newProduct=await Product.create({
