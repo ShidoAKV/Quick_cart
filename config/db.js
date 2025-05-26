@@ -1,30 +1,21 @@
 import mongoose from "mongoose";
 
-let cached=global.mongoose;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-if(!cached){
-    cached=global.mongoose={conn:null,promise:null};
+if (!MONGODB_URI) throw new Error("MONGODB_URI is not defined in .env");
+
+let cached = global.mongoose || { conn: null, promise: null };
+
+export default async function connectDB() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
+      bufferCommands: false,
+    });
+  }
+
+  cached.conn = await cached.promise;
+  global.mongoose = cached;
+  return cached.conn;
 }
-
-async function connectDB(){
-      if(cached.conn){
-        return cached.conn;
-      }
-      if(!cached.promise){
-        const opts={
-            bufferCommands:false
-        }
-        cached.promise=await mongoose.connect(`${process.env.MONGODB_URI}/quickcart`,opts).then(mongoose=>{
-            return mongoose
-        }
-        )
-      }
-
-      cached.conn=await cached.promise
-
-      return cached.connection;
-}  
-
-
-
-export default connectDB;
