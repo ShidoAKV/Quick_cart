@@ -6,31 +6,33 @@ import toast from "react-hot-toast";
 
 const OrderSummary = () => {
 
-  const { currency, router, getCartCount, getCartAmount,getToken,user,cartItems,setCartItems } = useAppContext()
+  const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [userAddresses, setUserAddresses] = useState([]);
 
-  const fetchUserAddresses = async () => {
-       try {
-         const token=await getToken();
-         const {data}=await axios.get('/api/address/get-address',{headers:{Authorization:`Bearer ${token}`}});
-         if(data.success){
-           setUserAddresses(data.addresses);
-           console.log(data);
-           
-           if(data.addresses.length>0){
-             setSelectedAddress(data.addresses[0])
-           }
-         }else{
-          toast.error(data.message);
-         }
+  console.log(cartItems);
 
-       
-       } catch (error) {
-        toast.error(error.message);
-       }
+  const fetchUserAddresses = async () => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.get('/api/address/get-address', { headers: { Authorization: `Bearer ${token}` } });
+      if (data.success) {
+        setUserAddresses(data.addresses);
+        console.log(data);
+
+        if (data.addresses.length > 0) {
+          setSelectedAddress(data.addresses[0])
+        }
+      } else {
+        toast.error(data.message);
+      }
+
+
+    } catch (error) {
+      toast.error(error.message);
+    }
   }
 
   const handleAddressSelect = (address) => {
@@ -39,13 +41,57 @@ const OrderSummary = () => {
   };
 
   const createOrder = async () => {
+    try {
+      if (!selectedAddress) {
+        return toast.error('Please select an address');
+      }
+      
 
-  }
+      let cartItemArray = Object.entries(cartItems).map(([key, quantity]) => {
+        const [product, size, color] = key.split('|');
+        return { product, size, color, quantity };
+      });
+
+
+      cartItemArray = cartItemArray.filter(item => item.quantity > 0);
+
+      if (cartItemArray.length === 0) {
+        return toast.error('Cart is empty');
+      }
+
+      const token = await getToken();
+
+      const totalAmount = getCartAmount() + Math.floor(getCartAmount() * 0.02);
+
+      const payload = {
+        address: selectedAddress._id,
+        items: cartItemArray,
+        amount: totalAmount,
+        status: "order placed",
+        date: Date.now()
+      };
+
+      const { data } = await axios.post('/api/order/create', payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (data.success) {
+        toast.success(data.message);
+        setCartItems({});
+        router.push('/order-placed');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
 
   useEffect(() => {
-   if(user){
-     fetchUserAddresses();
-   }
+    if (user) {
+      fetchUserAddresses();
+    }
   }, [user])
 
   return (

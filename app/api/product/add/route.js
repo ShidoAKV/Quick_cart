@@ -28,7 +28,15 @@ export async function POST(request) {
     const price = formData.get('price');
     const offerPrice = formData.get('offerPrice');
     const category = formData.get('category');
+    const material = formData.get('material');
+
+
+    const size = JSON.parse(formData.get('size') || '[]');
+    const color = JSON.parse(formData.get('color') || '[]');
     const files = formData.getAll('images');
+    
+     console.log(size,color,material);
+     
 
     if (!files || files.length === 0) {
       return NextResponse.json({ success: false, message: 'No files uploaded' });
@@ -69,8 +77,11 @@ export async function POST(request) {
       category,
       price: Number(price),
       offerPrice: Number(offerPrice),
-      image: uploadedImageUrls,  
+      image: uploadedImageUrls,
       date: Date.now(),
+      size,
+      color,
+      material
     });
 
     return NextResponse.json({

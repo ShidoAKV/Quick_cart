@@ -19,24 +19,24 @@ export const AppContextProvider = (props) => {
     const { getToken } = useAuth();
 
     const [products, setProducts] = useState([]);
-    const [userData, setUserData] = useState(null); // changed from false to null
+    const [userData, setUserData] = useState(null); 
     const [isSeller, setIsSeller] = useState(true);
     const [cartItems, setCartItems] = useState({});
 
 
     const fetchProductData = async () => {
         try {
-            const {data}=await axios.get('/api/product/list');
-            if(data.success){
-               setProducts(data.products)
-            }else{
+            const { data } = await axios.get('/api/product/list');
+            if (data.success) {
+                setProducts(data.products)
+            } else {
                 toast.error(data.message);
             }
-            
+
         } catch (error) {
             toast.error(error.message);
         }
-        
+
     };
 
     const fetchUserData = async () => {
@@ -59,17 +59,17 @@ export const AppContextProvider = (props) => {
         }
     }
 
-    const createUserIfNotExists=async () => {
-    try {
-        
-        const token =await  getToken();
-         if(!token) return ;
-            
+    const createUserIfNotExists = async () => {
+        try {
+
+            const token = await getToken();
+            if (!token) return;
+
             const payload = {
-            id: user.id,
-            name: user.firstName+' '+user.lastName,
-            email: user.emailAddresses[0].emailAddress,
-            imageUrl: user.imageUrl,
+                id: user.id,
+                name: user.firstName + ' ' + user.lastName,
+                email: user.emailAddresses[0].emailAddress,
+                imageUrl: user.imageUrl,
             };
 
             const res = await axios.post('/api/user/add', payload, {
@@ -78,52 +78,60 @@ export const AppContextProvider = (props) => {
                 },
             });
 
-        if (res?.data.success) {
-        console.log("✅ User creation success:", res.data.user);
-        } else {
-        console.warn("⚠️ User creation API responded but not success:", res.data.message);
+            if (res?.data.success) {
+                console.log("✅ User creation success:", res.data.user);
+            } else {
+                console.warn("⚠️ User creation API responded but not success:", res.data.message);
+            }
+        } catch (err) {
+            toast.error("Failed to create user");
         }
-    } catch (err) {
-        toast.error("Failed to create user");
-    }
     };
+   
+    
 
+    const generateCartKey = (productId, size, color) => `${productId}|${size}|${color}`;
 
-    const addToCart = async (itemId) => {
+    const addToCart = async (productId, size, color) => {
+        const cartKey = generateCartKey(productId, size, color);
+
         let cartData = structuredClone(cartItems);
-        cartData[itemId] = (cartData[itemId] || 0) + 1;
+        cartData[cartKey] = (cartData[cartKey] || 0) + 1;
         setCartItems(cartData);
-       
-        if(user){
+
+        if (user) {
             try {
-                 const token=getToken();
-                 await axios.post('/api/cart/update',{cartData},{headers:{Authorization:`Bearer ${token}`}});
-                 toast.success('Item Added to cart')
+                const token = await getToken();
+                await axios.post('/api/cart/update', { cartData }, { headers: { Authorization: `Bearer ${token}` } });
+                toast.success('Item added to cart');
             } catch (error) {
-                 toast.error(error.message)
+                toast.error(error.message);
             }
         }
-
     };
 
-    const updateCartQuantity = async (itemId, quantity) => {
+    const updateCartQuantity = async (productId, size, color, quantity) => {
+        const cartKey = generateCartKey(productId, size, color);
+
         let cartData = structuredClone(cartItems);
         if (quantity === 0) {
-            delete cartData[itemId];
+            delete cartData[cartKey];
         } else {
-            cartData[itemId] = quantity;
+            cartData[cartKey] = quantity;
         }
         setCartItems(cartData);
-         if(user){
+
+        if (user) {
             try {
-                 const token=getToken();
-                 await axios.post('/api/cart/update',{cartData},{headers:{Authorization:`Bearer ${token}`}});
-                 toast.success('cart Updated')
+                const token = await getToken();
+                await axios.post('/api/cart/update', { cartData }, { headers: { Authorization: `Bearer ${token}` } });
+                toast.success('Cart updated');
             } catch (error) {
-                 toast.error(error.message)
+                toast.error(error.message);
             }
         }
     };
+
 
     const getCartCount = () => {
         return Object.values(cartItems).reduce((sum, count) => sum + count, 0);
@@ -131,10 +139,12 @@ export const AppContextProvider = (props) => {
 
     const getCartAmount = () => {
         let totalAmount = 0;
-        for (const itemId in cartItems) {
-            const product = products.find((p) => p._id === itemId);
-            if (product && cartItems[itemId] > 0) {
-                totalAmount += product.offerPrice * cartItems[itemId];
+        for (const cartKey in cartItems) {
+            const [productId] = cartKey.split('|');  // parse productId from key
+            const quantity = cartItems[cartKey];
+            const product = products.find((p) => p._id === productId);
+            if (product && quantity > 0) {
+                totalAmount += product.offerPrice * quantity;
             }
         }
         return Math.floor(totalAmount * 100) / 100;
@@ -142,7 +152,7 @@ export const AppContextProvider = (props) => {
 
     useEffect(() => {
         if (user) {
-           createUserIfNotExists();
+            createUserIfNotExists();
         }
     }, [user]);
 

@@ -9,6 +9,8 @@ export async function POST(request){
       try {
         const {userId}=getAuth(request);
         const {cartData}=await request.json();
+        
+        
 
         await connectDB();
 
