@@ -1,17 +1,36 @@
 import { addressDummyData } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const OrderSummary = () => {
 
-  const { currency, router, getCartCount, getCartAmount } = useAppContext()
+  const { currency, router, getCartCount, getCartAmount,getToken,user,cartItems,setCartItems } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [userAddresses, setUserAddresses] = useState([]);
 
   const fetchUserAddresses = async () => {
-    setUserAddresses(addressDummyData);
+       try {
+         const token=await getToken();
+         const {data}=await axios.get('/api/address/get-address',{headers:{Authorization:`Bearer ${token}`}});
+         if(data.success){
+           setUserAddresses(data.addresses);
+           console.log(data);
+           
+           if(data.addresses.length>0){
+             setSelectedAddress(data.addresses[0])
+           }
+         }else{
+          toast.error(data.message);
+         }
+
+       
+       } catch (error) {
+        toast.error(error.message);
+       }
   }
 
   const handleAddressSelect = (address) => {
@@ -24,8 +43,10 @@ const OrderSummary = () => {
   }
 
   useEffect(() => {
-    fetchUserAddresses();
-  }, [])
+   if(user){
+     fetchUserAddresses();
+   }
+  }, [user])
 
   return (
     <div className="w-full md:w-96 bg-gray-500/5 p-5">
@@ -57,7 +78,7 @@ const OrderSummary = () => {
 
             {isDropdownOpen && (
               <ul className="absolute w-full bg-white border shadow-md mt-1 z-10 py-1.5">
-                {userAddresses.map((address, index) => (
+                {userAddresses?.map((address, index) => (
                   <li
                     key={index}
                     className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer"
