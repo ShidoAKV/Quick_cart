@@ -9,6 +9,7 @@ import Loading from "@/components/Loading";
 import toast from "react-hot-toast";
 import axios from "axios";
 
+
 const MyOrders = () => {
     const { currency, getToken, user,router } = useAppContext();
     const [orders, setOrders] = useState([]);
@@ -101,13 +102,14 @@ const MyOrders = () => {
             setProcessingOrderId(orderId);
             toast.loading("Cancelling order...");
             const token = await getToken();
-            const { data } = await axios.put(`/api/order/cancel/${orderId}`, {}, {
+            const { data } = await axios.post(`/api/user/ordercancel/${orderId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.dismiss();
             if (data.success) {
-                toast.success("Order cancelled successfully");
-                fetchOrders();
+                toast.success(data.message);
+                fetchOrders()
+                router.push('/my-orders');
             } else {
                 toast.error(data.message);
             }
