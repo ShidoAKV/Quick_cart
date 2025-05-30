@@ -40,8 +40,7 @@ const MyOrders = () => {
      toast.error('Razorpay is not available');
      return;
     }
-      console.log(order);
-      
+
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: order.amount,
@@ -50,18 +49,11 @@ const MyOrders = () => {
       order_id: order.id,
       receipt: order.receipt,
       handler: async (response) => {
-        console.log(response, 'response hai bhai')
-         const orderId = response.razorpay_order_id;
-          const paymentId = response.razorpay_payment_id;
-          const signature = response.razorpay_signature;
-          console.log(orderId,paymentId,signature);
-          
         try {
           const token=await getToken();
 
            const { data } = await axios.post('/api/order/verify',response, { headers:`Bearer ${token}` })
-           console.log(data);
-           
+         
           if (data.success) {
             fetchOrders();
             router.push('/my-orders')

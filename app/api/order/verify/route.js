@@ -7,19 +7,17 @@ import razorpayInstance from "@/lib/razorpayinstance.js";
 export async function POST(request) {
   try {
     const res= await request.json();
-     console.log(res);
-     const razorpay_order_id=res.razorpay_order_id;
+    const razorpay_order_id=res.razorpay_order_id;
+    const razorpayPaymentId=res.razorpay_payment_id;
      
     if (!razorpay_order_id) {
       return NextResponse.json({ success: false, message: 'Missing required fields' });
     }
-    console.log({ razorpay_order_id } );
-    
+   
     await connectDB();
 
     const razorpayOrder = await razorpayInstance.orders.fetch(razorpay_order_id);
-     console.log(razorpayOrder);
-     
+    
     if (!razorpayOrder) {
       return NextResponse.json({ success: false, message: 'Razorpay order not found' });
     }
@@ -32,6 +30,7 @@ export async function POST(request) {
 
     if (razorpayOrder.status === 'paid') {
       order.payment = true;
+      order.PaymentId=razorpayPaymentId;
       await order.save();
       return NextResponse.json({ success: true, message: 'Payment verified successfully' });
     } else {

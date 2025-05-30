@@ -35,8 +35,6 @@ export async function POST(request) {
     const color = JSON.parse(formData.get('color') || '[]');
     const files = formData.getAll('images');
     
-     console.log(size,color,material);
-     
 
     if (!files || files.length === 0) {
       return NextResponse.json({ success: false, message: 'No files uploaded' });

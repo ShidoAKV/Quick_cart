@@ -53,6 +53,10 @@ const orderSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  refunded: { type: Boolean, default: false },
+  PaymentId:{type:String,default:null},
+  refundId:{type:String,default:null},    
+  refundStatus: {type:String,default:'Pending'} ,
   date: {
     type: Number,
     required: true

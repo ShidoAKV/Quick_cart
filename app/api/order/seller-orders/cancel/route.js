@@ -9,16 +9,18 @@ export async function POST(request){
          const {userId}=getAuth(request);
          const {orderId}=await request.json();
          const isseller=await authSeller(userId);
-        
-          
+           
          
          if(!isseller){
              return NextResponse.json({success:false,message:'not authorized'})
          }
          await connectDB();
 
-        const order=await Order.findById({orderId});
-         order.cancelled=false;
+        const order=await Order.findOne({orderId});
+        if(!order){
+            return NextResponse.json({success:false,message:'orderId wrong'});
+        }
+         order.cancelled=true;
          await order.save();
        
          return NextResponse.json({success:true,message:'order deleted successfully'});
