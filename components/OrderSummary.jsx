@@ -1,39 +1,48 @@
 import { addressDummyData } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import toast from "react-hot-toast";
 
 const OrderSummary = () => {
 
-  const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext()
+   const {
+    currency,
+    router,
+    getCartCount,
+    getCartAmount,
+    getToken,
+    user,
+    cartItems,
+    setCartItems,
+  } = useAppContext();
+
+  
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [userAddresses, setUserAddresses] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const [userAddresses, setUserAddresses] = useState([]);
-
-  console.log(cartItems);
+  // Payload ref - doesn't affect UI, just holds data for submission
+  const payloadRef = useRef(null);
 
   const fetchUserAddresses = async () => {
     try {
       const token = await getToken();
-      const { data } = await axios.get('/api/address/get-address', { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.get("/api/address/get-address", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (data.success) {
         setUserAddresses(data.addresses);
-        console.log(data);
-
         if (data.addresses.length > 0) {
-          setSelectedAddress(data.addresses[0])
+          setSelectedAddress(data.addresses[0]);
         }
       } else {
         toast.error(data.message);
       }
-
-
     } catch (error) {
       toast.error(error.message);
     }
-  }
+  };
 
   const handleAddressSelect = (address) => {
     setSelectedAddress(address);
@@ -43,42 +52,40 @@ const OrderSummary = () => {
   const createOrder = async () => {
     try {
       if (!selectedAddress) {
-        return toast.error('Please select an address');
+        return toast.error("Please select an address");
       }
-      
 
       let cartItemArray = Object.entries(cartItems).map(([key, quantity]) => {
-        const [product, size, color] = key.split('|');
+        const [product, size, color] = key.split("|");
         return { product, size, color, quantity };
       });
 
-
-      cartItemArray = cartItemArray.filter(item => item.quantity > 0);
-
       if (cartItemArray.length === 0) {
-        return toast.error('Cart is empty');
+        return toast.error("Cart is empty");
       }
-
+      
+      toast.loading('creating order')
       const token = await getToken();
 
       const totalAmount = getCartAmount() + Math.floor(getCartAmount() * 0.02);
 
-      const payload = {
-        address: selectedAddress._id,
+     
+      payloadRef.current = {
+        address: selectedAddress.id,
         items: cartItemArray,
         amount: totalAmount,
         status: "order placed",
-        date: Date.now()
+        date: new Date(),
       };
 
-      const { data } = await axios.post('/api/order/create', payload, {
-        headers: { Authorization: `Bearer ${token}` }
+      const { data } = await axios.post("/api/order/create", payloadRef.current, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (data.success) {
+        toast.dismiss();
         toast.success(data.message);
-        setCartItems({});
-        router.push('/order-placed');
+        router.push("/order-placed");
       } else {
         toast.error(data.message);
       }
@@ -87,12 +94,14 @@ const OrderSummary = () => {
     }
   };
 
-
   useEffect(() => {
     if (user) {
       fetchUserAddresses();
     }
-  }, [user])
+  }, [user]);
+  console.log(cartItems);
+  
+
 
   return (
     <div className="w-full md:w-96 bg-gray-500/5 p-5">
@@ -145,19 +154,8 @@ const OrderSummary = () => {
         </div>
 
         <div>
-          <label className="text-base font-medium uppercase text-gray-600 block mb-2">
-            Promo Code
-          </label>
-          <div className="flex flex-col items-start gap-3">
-            <input
-              type="text"
-              placeholder="Enter promo code"
-              className="flex-grow w-full outline-none p-2.5 text-gray-600 border"
-            />
-            <button className="bg-orange-600 text-white px-9 py-2 hover:bg-orange-700">
-              Apply
-            </button>
-          </div>
+         
+         
         </div>
 
         <hr className="border-gray-500/30 my-5" />

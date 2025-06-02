@@ -1,28 +1,45 @@
-import connectDB from "@/config/db";
-import User from "@/models/User";
+// import connectDB from "@/config/db";
+// import User from "@/models/User";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import prisma from "@/config/db";
 
 
-export async function POST(request){
+// export async function POST(request){
 
-      try {
-        const {userId}=getAuth(request);
-        const {cartData}=await request.json();
-        
-        
+//       try {
+//         const {userId}=getAuth(request);
+//         const {cartData}=await request.json();
 
-        await connectDB();
+//         await connectDB();
 
-        const user=await User.findById(userId);
+//         const user=await User.findById(userId);
 
-        user.cartItems=cartData;
+//         user.cartItems=cartData;
 
-        await user.save();
+//         await user.save();
 
-        return NextResponse.json({success:true});
+//         return NextResponse.json({success:true});
 
-      } catch (error) {
-        return NextResponse.json({success:false,message:error.message})
-      }
+//       } catch (error) {
+//         return NextResponse.json({success:false,message:error.message})
+//       }
+// }
+
+export async function POST(request) {
+  try {
+    const { userId } = getAuth(request);
+    const { cartData } = await request.json();
+     
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        cartItems: cartData,
+      },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: error.message });
+  }
 }

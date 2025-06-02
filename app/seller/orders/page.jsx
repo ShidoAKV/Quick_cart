@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 
 const Orders = () => {
-  const { currency, getToken, user } = useAppContext();
+  const { currency,getToken, user } = useAppContext();
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,14 +28,15 @@ const Orders = () => {
   const fetchSellerOrders = async () => {
     try {
       setLoading(true);
-      const token = await getToken();
+       const token = await getToken();
       const { data } = await axios.get('/api/order/seller-orders', {
         headers: { Authorization: `Bearer ${token}` }
       });
+
+      console.log(data.message);
+
       if (data.success) {
         setOrders(data.orders.reverse());
-        console.log(data);
-
         setStats({
           totalOrders: data.totalOrders,
           totalAmount: data.totalAmount,
@@ -55,7 +56,7 @@ const Orders = () => {
   const cancelOrder = async (orderId) => {
     try {
       setCancellingId(orderId);
-      const token = await getToken();
+       const token = await getToken();
       const { data } = await axios.post('/api/order/seller-orders/cancel', { orderId }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -74,10 +75,10 @@ const Orders = () => {
 
   const refundOrder = async (PaymentId) => {
     try {
-      console.log(PaymentId);
+      // console.log(PaymentId);
       
       setRefundingId(PaymentId);
-      const token = await getToken();
+       const token = await getToken();
       const { data } = await axios.post('/api/order/seller-orders/refund', {PaymentId }, {
         headers: { Authorization: `Bearer ${token}` }
       });

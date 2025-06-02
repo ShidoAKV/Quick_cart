@@ -24,6 +24,7 @@ const AddAddress = () => {
         try {
              const token=await getToken();
              const {data}=await axios.post('/api/address/add-address',{address},{headers:{Authorization:`Bearer ${token}`}});
+            
              if(data.success){
               toast.success(data.message);
               router.push('/cart')

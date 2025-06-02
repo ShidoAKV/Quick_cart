@@ -1,75 +1,109 @@
-"use client"
-import { useEffect, useState } from "react";
-import { assets } from "@/assets/assets";
-import ProductCard from "@/components/ProductCard";
+"use client";
+
+import { useEffect, useState, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import Loading from "@/components/Loading";
 import { useAppContext } from "@/context/AppContext";
-import React from "react";
-
 
 const Product = () => {
   const { id } = useParams();
   const { products, router, addToCart } = useAppContext();
 
-  const [mainImage, setMainImage] = useState(null);
   const [productData, setProductData] = useState(null);
-
-  
+  const [mainImage, setMainImage] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
 
+  const imgContainerRef = useRef(null);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [isZoomVisible, setIsZoomVisible] = useState(false);
+
   const fetchProductData = async () => {
-    const product = products.find(product => product._id === id);
+    const product = products.find((product) => product.id === id);
     setProductData(product);
 
     if (product) {
       setSelectedSize(product.size[0] || null);
       setSelectedColor(product.color[0] || null);
+      setMainImage(product.image[0] || null);
     }
   };
 
   useEffect(() => {
     fetchProductData();
-  }, [id, products.length]);
+  }, [id, products]);
 
   if (!productData) return <Loading />;
+
+  const handleMouseMove = (e) => {
+    if (!imgContainerRef.current) return;
+
+    const rect = imgContainerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Clamp x and y within the image container bounds
+    const clampedX = Math.min(Math.max(x, 0), rect.width);
+    const clampedY = Math.min(Math.max(y, 0), rect.height);
+
+    setZoomPosition({
+      x: (clampedX / rect.width) * 100,
+      y: (clampedY / rect.height) * 100,
+    });
+  };
 
   return (
     <>
       <Navbar />
       <div className="px-6 md:px-16 lg:px-32 pt-14 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          {/* Image section */}
-          <div className="px-5 lg:px-16 xl:px-20">
-            <div className="rounded-lg overflow-hidden bg-gray-500/10 mb-4">
-              <Image
-                src={mainImage || productData.image[0]}
-                alt={productData.name}
-                className="w-full h-auto object-cover mix-blend-multiply"
-                width={1280}
-                height={720}
-              />
-            </div>
-            <div className="grid grid-cols-4 gap-4">
-              {productData.image.map((image, index) => (
+          <div className="flex gap-6 px-5 lg:px-16 xl:px-20">
+            {/* Thumbnails vertical on left */}
+            <div
+              className="flex flex-col gap-4 overflow-y-auto"
+              style={{ maxHeight: "450px", width: "80px" }}
+            >
+              {productData?.image?.map((image, index) => (
                 <div
                   key={index}
                   onClick={() => setMainImage(image)}
-                  className="cursor-pointer rounded-lg overflow-hidden bg-gray-500/10"
+                  className={`cursor-pointer rounded-lg overflow-hidden border ${
+                    mainImage === image
+                      ? "border-orange-500"
+                      : "border-gray-300"
+                  }`}
+                  style={{ width: "60px", height: "70px" }}
                 >
                   <Image
                     src={image}
                     alt={`Thumbnail ${index + 1}`}
-                    className="w-full h-auto object-cover mix-blend-multiply"
-                    width={1280}
-                    height={720}
+                    width={60}
+                    height={70}
+                    className="object-cover"
                   />
                 </div>
               ))}
+            </div>
+
+            {/* Main Image */}
+            <div
+              ref={imgContainerRef}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={() => setIsZoomVisible(true)}
+              onMouseLeave={() => setIsZoomVisible(false)}
+              className="relative rounded-lg overflow-hidden bg-gray-500/10 cursor-crosshair"
+              style={{ width: "400px", height: "450px" }}
+            >
+              <Image
+                src={mainImage}
+                alt={productData.name}
+                fill
+                style={{ objectFit: "contain" }}
+                priority
+              />
             </div>
           </div>
 
@@ -78,8 +112,22 @@ const Product = () => {
             <h1 className="text-3xl font-medium text-gray-800/90 mb-4">
               {productData.name}
             </h1>
-            {/* Ratings and description */}
-            {/* ... your existing rating code ... */}
+
+            {isZoomVisible && (
+              <div
+                className="rounded-lg overflow-hidden border border-gray-300 scale-z-105"
+                style={{ width: "300px", height: "250px" }}
+              >
+                <div
+                  className="w-full h-full bg-no-repeat bg-contain"
+                  style={{
+                    backgroundImage: `url(${mainImage})`,
+                    backgroundSize: "350%", // zoom factor
+                    backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                  }}
+                />
+              </div>
+            )}
 
             <p className="text-gray-600 mt-3">{productData.description}</p>
             <p className="text-3xl font-medium mt-6">
@@ -90,11 +138,10 @@ const Product = () => {
             </p>
             <hr className="bg-gray-600 my-6" />
 
-            {/* Size options */}
             <div>
               <h3 className="font-semibold mb-2">Select Size:</h3>
               <div className="flex gap-3">
-                {productData.size.map(size => (
+                {productData.size.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
@@ -114,7 +161,7 @@ const Product = () => {
             <div className="mt-6">
               <h3 className="font-semibold mb-2">Select Color:</h3>
               <div className="flex gap-3">
-                {productData.color.map(color => (
+                {productData.color.map((color) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
@@ -133,19 +180,19 @@ const Product = () => {
 
             <hr className="my-6" />
 
-            {/* Product attributes table */}
-            {/* ... your existing attributes table ... */}
-
+            {/* Buttons */}
             <div className="flex items-center mt-10 gap-4">
               <button
-                onClick={() => addToCart(productData._id, selectedSize, selectedColor)}
+                onClick={() =>
+                  addToCart(productData.id, selectedSize, selectedColor)
+                }
                 className="w-full py-3.5 bg-gray-100 text-gray-800/80 hover:bg-gray-200 transition"
               >
                 Add to Cart
               </button>
               <button
                 onClick={() => {
-                  addToCart(productData._id, selectedSize, selectedColor);
+                  addToCart(productData.id, selectedSize, selectedColor);
                   router.push("/cart");
                 }}
                 className="w-full py-3.5 bg-orange-500 text-white hover:bg-orange-600 transition"
@@ -155,8 +202,6 @@ const Product = () => {
             </div>
           </div>
         </div>
-
-        
       </div>
       <Footer />
     </>

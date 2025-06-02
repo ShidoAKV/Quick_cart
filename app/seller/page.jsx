@@ -8,7 +8,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const AddProduct = () => {
-  const { getToken } = useAppContext();
+  const {getToken } = useAppContext();
   const [files, setFiles] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -34,15 +34,18 @@ const AddProduct = () => {
     for (let i = 0; i < files.length; i++) {
       formData.append('images', files[i]);
     }
-
+      
     try {
-      const token = await getToken();
+       toast.loading('uploading...')
+       const token = await getToken();
       const { data } = await axios.post('/api/product/add', formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      
       if (data.success) {
+        toast.dismiss();
         toast.success(data.message);
+
         setFiles([]);
         setName('');
         setDescription('');

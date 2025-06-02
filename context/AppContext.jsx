@@ -1,9 +1,8 @@
 'use client'
-import { productsDummyData, userDummyData } from "@/assets/assets";
 import { useAuth, useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 export const AppContext = createContext();
@@ -17,9 +16,9 @@ export const AppContextProvider = (props) => {
     const router = useRouter();
     const { user } = useUser();
     const { getToken } = useAuth();
-
+    const authToken = useRef(null);
     const [products, setProducts] = useState([]);
-    const [userData, setUserData] = useState(null); 
+    const [userData, setUserData] = useState(null);
     const [isSeller, setIsSeller] = useState(true);
     const [cartItems, setCartItems] = useState({});
 
@@ -27,6 +26,7 @@ export const AppContextProvider = (props) => {
     const fetchProductData = async () => {
         try {
             const { data } = await axios.get('/api/product/list');
+
             if (data.success) {
                 setProducts(data.products)
             } else {
@@ -44,7 +44,8 @@ export const AppContextProvider = (props) => {
             if (user.publicMetadata.role === 'seller') {
                 setIsSeller(true);
             }
-            const token = await getToken();
+              const token = await getToken();
+              authToken.current = token;
             const { data } = await axios.get('/api/user/data', { headers: { Authorization: `Bearer ${token}` } });
 
             if (data.success) {
@@ -86,69 +87,94 @@ export const AppContextProvider = (props) => {
         } catch (err) {
             toast.error("Failed to create user");
         }
-    };
+    }; 
    
-    
 
     const generateCartKey = (productId, size, color) => `${productId}|${size}|${color}`;
 
     const addToCart = async (productId, size, color) => {
-        const cartKey = generateCartKey(productId, size, color);
+        if (!size || !color) {
+            toast.error("Please select both size and color");
+            return;
+        }
 
-        let cartData = structuredClone(cartItems);
-        cartData[cartKey] = (cartData[cartKey] || 0) + 1;
-        setCartItems(cartData);
+        const cartKey = generateCartKey(productId, size, color);
+        const newCart = structuredClone(cartItems);
+
+        if (newCart[cartKey]) {
+            newCart[cartKey].quantity += 1;
+        } else {
+            newCart[cartKey] = { productId, size, color, quantity: 1 };
+        }
+
+        setCartItems(newCart);
+        setTimeout(() => {
+              toast.success('item added to cart');
+        }, 500);
 
         if (user) {
             try {
-                const token = await getToken();
-                await axios.post('/api/cart/update', { cartData }, { headers: { Authorization: `Bearer ${token}` } });
-                toast.success('Item added to cart');
+                await axios.post('/api/cart/update', { cartData: newCart }, {
+                    headers: { Authorization: `Bearer ${authToken.current}` }
+                });
             } catch (error) {
-                toast.error(error.message);
+                toast.error("Failed to sync with server");
             }
         }
+
     };
 
     const updateCartQuantity = async (productId, size, color, quantity) => {
         const cartKey = generateCartKey(productId, size, color);
+        const newCart = structuredClone(cartItems);
 
-        let cartData = structuredClone(cartItems);
+
         if (quantity === 0) {
-            delete cartData[cartKey];
+            delete newCart[cartKey];
         } else {
-            cartData[cartKey] = quantity;
-        }
-        setCartItems(cartData);
-
-        if (user) {
-            try {
-                const token = await getToken();
-                await axios.post('/api/cart/update', { cartData }, { headers: { Authorization: `Bearer ${token}` } });
-                toast.success('Cart updated');
-            } catch (error) {
-                toast.error(error.message);
+            if (newCart[cartKey]) {
+                newCart[cartKey].quantity = quantity;
+            } else {
+                newCart[cartKey] = { productId, size, color, quantity };
             }
         }
-    };
 
-
-    const getCartCount = () => {
-        return Object.values(cartItems).reduce((sum, count) => sum + count, 0);
+        setCartItems(newCart);
+        setTimeout(() => {
+             toast.success('Cart updated');
+        }, 500);
+        if (user) {
+            try {
+                await axios.post('/api/cart/update', { cartData: newCart }, {
+                    headers: { Authorization: `Bearer ${authToken.current}` }
+                });
+            } catch (error) {
+                toast.error("Cart update failed");
+            }
+        }
     };
 
     const getCartAmount = () => {
-        let totalAmount = 0;
+        let total = 0;
         for (const cartKey in cartItems) {
-            const [productId] = cartKey.split('|');  // parse productId from key
-            const quantity = cartItems[cartKey];
-            const product = products.find((p) => p._id === productId);
-            if (product && quantity > 0) {
-                totalAmount += product.offerPrice * quantity;
+            const item = cartItems[cartKey];
+            if (!item || !item.productId || item.quantity <= 0) continue;
+            const product = products.find(p => p.id === item.productId);
+            if (product) {
+                total += product.offerPrice * item.quantity;
             }
         }
-        return Math.floor(totalAmount * 100) / 100;
+        return Math.floor(total * 100) / 100;
     };
+    const getCartCount = () => {
+        return Object.values(cartItems).reduce((sum, item) => {
+            const qty = item && typeof item.quantity === 'number' ? item.quantity : 0;
+            return sum + qty;
+        }, 0);
+    };
+
+
+
 
     useEffect(() => {
         if (user) {
@@ -159,13 +185,13 @@ export const AppContextProvider = (props) => {
 
     useEffect(() => {
         fetchProductData();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (user) fetchUserData();
     }, [user])
 
-
+ 
 
     const value = {
         currency,
@@ -180,7 +206,7 @@ export const AppContextProvider = (props) => {
         updateCartQuantity,
         getCartCount,
         getCartAmount,
-        user, getToken
+        user, getToken,authToken
     };
 
     return (

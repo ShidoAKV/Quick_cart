@@ -18,11 +18,10 @@ export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${outfit.className} antialiased text-gray-700`} >
+        <body className={`${outfit.className} antialiased text-gray-700`}  >
           <Toaster />
           <AppContextProvider>
-
-            {children}
+                {children}
             <Script
               src="https://checkout.razorpay.com/v1/checkout.js"
               strategy="afterInteractive"

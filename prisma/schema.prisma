@@ -14,15 +14,87 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id        String   @id @default(uuid())
-  clerkId   String
-  name      String
-  email     String   @unique
-  imageUrl  String   @default("https://th.bing.com/th/id/OIP.CuH_kp6AL_Z3CIZAfzPbmQHaGe?w=3683&h=3223&rs=1&pid=ImgDetMain")
-  cartItems Json     @default("{}")
+  id        String    @id @default(cuid())
+  name      String?
+  email     String    @unique
+  imageUrl  String    @default("https://th.bing.com/th/id/OIP.CuH_kp6AL_Z3CIZAfzPbmQHaGe?w=3683&h=3223&rs=1&pid=ImgDetMain")
+  cartItems Json      @default("{}")
+  
+  products  Product[]
+  orders    Order[]
+  addresses Address[]
 }
+
+model Product {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  name        String
+  description String
+  price       Float
+  brand       String   @default("Pilley")
+  offerPrice  Float
+  image       String[] // Array of image URLs
+  category    String
+  size        String[]
+  color       String[]
+  material    String
+  date        DateTime  @default(now())
+
+  orders      OrderItem[]
+}
+
+model Order {
+  id            String     @id @default(cuid())
+  orderId       String     @unique @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+
+  items         OrderItem[] 
+  amount        Float
+  addressId     String
+  address       Address     @relation(fields: [addressId], references: [id])
+
+  status        String      @default("order placed")
+  isCompleted   Boolean     @default(false)
+  cancelled     Boolean     @default(false)
+  payment       Boolean     @default(false)
+  refunded      Boolean     @default(false)
+  PaymentId     String?     @unique
+  refundId      String?     @unique
+  refundStatus  String      @default("Pending")
+  date          DateTime    @default(now())
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  size      String
+  color     String
+}
+
+model Address {
+  id          String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id])
+  
+  fullName    String
+  phoneNumber String
+  pincode     Int
+  area        String
+  city        String
+  state       String
+
+  orders      Order[]
+}
+
+
 
 
 
