@@ -1,4 +1,4 @@
-import logo from "./logo.svg";
+// import logo from "./logo.svg";
 import search_icon from "./search_icon.svg";
 import user_icon from "./user_icon.svg";
 import cart_icon from "./cart_icon.svg";
@@ -46,6 +46,16 @@ import product_details_page_apple_earphone_image2 from "./product_details_page_a
 import product_details_page_apple_earphone_image3 from "./product_details_page_apple_earphone_image3.png";
 import product_details_page_apple_earphone_image4 from "./product_details_page_apple_earphone_image4.png";
 import product_details_page_apple_earphone_image5 from "./product_details_page_apple_earphone_image5.png";
+import bannerone from './bannerone.png';
+import bannertwo from './bannertwo.png';
+import bannerthree from './bannerthree.png';
+import Productstagline from './Productstagline.jpg';
+import lefttshit from './lefttshit.png';
+import plain from './plain.webp';
+import printed from './printed.webp';
+import oversized from './oversized.webp';
+import logo from './logo.png';
+import heart_icon_red from './heart_icon_red.jpg';
 
 export const assets = {
   logo,
@@ -95,7 +105,11 @@ export const assets = {
   product_details_page_apple_earphone_image3,
   product_details_page_apple_earphone_image4,
   product_details_page_apple_earphone_image5,
-  checkmark
+  checkmark,
+  bannerone,
+  bannerthree,
+  bannertwo,
+  Productstagline,lefttshit,plain,printed,oversized,heart_icon_red
 };
 
 export const BagIcon = () => {

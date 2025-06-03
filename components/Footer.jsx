@@ -1,55 +1,68 @@
 import React from "react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
+import { FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { HiOutlineMail } from "react-icons/hi";
 
 const Footer = () => {
   return (
-    <footer>
-      
-      <div className="flex flex-col md:flex-row items-start justify-center px-6 md:px-16 lg:px-32 gap-10 py-14 border-b border-gray-500/30 text-gray-500">
-        <div className="w-4/5">
-          <Image className="w-28 md:w-32" src={assets.logo} alt="logo" />
-          <p className="mt-6 text-sm">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book.
+    <footer className="bg-gray-50 text-gray-600 border-t border-gray-300 mt-20">
+      <div className="max-w-7xl mx-auto  px-6 py-12 flex flex-col lg:flex-row justify-between gap-10 flex-wrap ">
+        {/* Logo + Description */}
+        <div className="w-full lg:w-[22%]">
+          <span className="text-4xl text-orange-600">P<span className="text-black">illey</span></span>
+          <p className="text-sm leading-relaxed">
+            Elevate your wardrobe with our curated selection of premium apparel,
+            blending style and comfort for the modern lifestyle.
           </p>
         </div>
 
-        <div className="w-1/2 flex items-center justify-start md:justify-center">
-          <div>
-            <h2 className="font-medium text-gray-900 mb-5">Company</h2>
-            <ul className="text-sm space-y-2">
-              <li>
-                <a className="hover:underline transition" href="#">Home</a>
-              </li>
-              <li>
-                <a className="hover:underline transition" href="#">About us</a>
-              </li>
-              <li>
-                <a className="hover:underline transition" href="#">Contact us</a>
-              </li>
-              <li>
-                <a className="hover:underline transition" href="#">Privacy policy</a>
-              </li>
-            </ul>
-          </div>
+        {/* Company Links */}
+        <div className="w-full sm:w-[45%] lg:w-[18%]">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Company</h3>
+          <ul className="space-y-2 text-sm">
+            <li><a href="#" className="hover:text-black transition">Home</a></li>
+            <li><a href="#" className="hover:text-black transition">About Us</a></li>
+            <li><a href="#" className="hover:text-black transition">Contact</a></li>
+            <li><a href="#" className="hover:text-black transition">Privacy Policy</a></li>
+          </ul>
         </div>
 
-        <div className="w-1/2 flex items-start justify-start md:justify-center">
-          <div>
-            <h2 className="font-medium text-gray-900 mb-5">Get in touch</h2>
-            <div className="text-sm space-y-2">
-              <p>+1-234-567-890</p>
-              <p>contact@greatstack.dev</p>
-            </div>
-          </div>
+        {/* Support Links */}
+        <div className="w-full sm:w-[45%] lg:w-[18%]">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Support</h3>
+          <ul className="space-y-2 text-sm">
+            <li><a href="#" className="hover:text-black transition">FAQs</a></li>
+            <li><a href="#" className="hover:text-black transition">Shipping</a></li>
+            <li><a href="#" className="hover:text-black transition">Returns</a></li>
+            <li><a href="#" className="hover:text-black transition">Order Status</a></li>
+          </ul>
+        </div>
+
+        {/* Contact Info */}
+        <div className="w-full lg:w-[28%]">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Get in Touch</h3>
+          <ul className="text-sm space-y-3">
+            <li className="flex items-center gap-2">
+              <FaPhoneAlt className="w-4 h-4 text-black" />
+              +1-234-567-890
+            </li>
+            <li className="flex items-center gap-2">
+              <HiOutlineMail className="w-5 h-5 text-black" />
+              support@example.com
+            </li>
+            <li className="flex items-center gap-2">
+              <FaMapMarkerAlt className="w-4 h-4 text-black" />
+              New Delhi, India
+            </li>
+          </ul>
         </div>
       </div>
-      <p className="py-4 text-center text-xs md:text-sm">
-        Copyright 2025 © GreatStack.dev All Right Reserved.
-      </p>
+
+      {/* Footer Bottom */}
+      <div className="border-t border-gray-200 py-4 text-center text-xs sm:text-sm">
+        © 2025 Pilley.in. All rights reserved.
+      </div>
     </footer>
   );
 };

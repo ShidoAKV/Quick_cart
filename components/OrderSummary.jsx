@@ -22,7 +22,7 @@ const OrderSummary = () => {
   const [userAddresses, setUserAddresses] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Payload ref - doesn't affect UI, just holds data for submission
+  
   const payloadRef = useRef(null);
 
   const fetchUserAddresses = async () => {
@@ -99,9 +99,11 @@ const OrderSummary = () => {
       fetchUserAddresses();
     }
   }, [user]);
-  console.log(cartItems);
-  
 
+  console.log(getCartAmount());
+  
+  
+ 
 
   return (
     <div className="w-full md:w-96 bg-gray-500/5 p-5">

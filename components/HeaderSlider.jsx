@@ -1,41 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { useAppContext } from "@/context/AppContext";
 
 const HeaderSlider = () => {
   const sliderData = [
     {
       id: 1,
-      title: "Experience Pure Sound - Your Perfect Headphones Awaits!",
-      offer: "Limited Time Offer 30% Off",
-      buttonText1: "Buy now",
-      buttonText2: "Find more",
-      imgSrc: assets.header_headphone_image,
+      title: "Step into Style – Premium T-Shirts Now Available!",
+      offer: "Summer Sale – Flat 25% Off",
+      buttonText1: "Shop Now",
+      buttonText2: "See Collection",
+      imgSrc: assets.bannerone,
     },
     {
       id: 2,
-      title: "Next-Level Gaming Starts Here - Discover PlayStation 5 Today!",
-      offer: "Hurry up only few lefts!",
-      buttonText1: "Shop Now",
-      buttonText2: "Explore Deals",
-      imgSrc: assets.header_playstation_image,
+      title: "Minimal. Bold. Timeless – Explore Our Streetwear Tees",
+      offer: "Limited Time Drop!",
+      buttonText1: "Buy Now",
+      buttonText2: "Browse More",
+      imgSrc: assets.bannertwo,
     },
     {
       id: 3,
-      title: "Power Meets Elegance - Apple MacBook Pro is Here for you!",
-      offer: "Exclusive Deal 40% Off",
-      buttonText1: "Order Now",
-      buttonText2: "Learn More",
-      imgSrc: assets.header_macbook_image,
+      title: "Unleash Comfort – Soft Cotton Tees in Trendy Fits",
+      offer: "New Arrivals Out Now",
+      buttonText1: "Order Today",
+      buttonText2: "Know More",
+      imgSrc: assets.bannerthree,
     },
   ];
 
   const [currentSlide, setCurrentSlide] = useState(0);
+  const {router}=useAppContext();
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % sliderData.length);
-    }, 3000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [sliderData.length]);
 
@@ -44,7 +47,7 @@ const HeaderSlider = () => {
   };
 
   return (
-    <div className="overflow-hidden relative w-full">
+    <div className="relative w-full h-[550px] md:h-[50px] lg:h-[630px] overflow-hidden mt-5 rounded-xl">
       <div
         className="flex transition-transform duration-700 ease-in-out"
         style={{
@@ -54,41 +57,70 @@ const HeaderSlider = () => {
         {sliderData.map((slide, index) => (
           <div
             key={slide.id}
-            className="flex flex-col-reverse md:flex-row items-center justify-between bg-[#E6E9F2] py-8 md:px-14 px-5 mt-6 rounded-xl min-w-full"
+            className="min-w-full relative h-[600px] md:h-[720px] lg:h-[800px]"
           >
-            <div className="md:pl-8 mt-10 md:mt-0">
-              <p className="md:text-base text-orange-600 pb-1">{slide.offer}</p>
-              <h1 className="max-w-lg md:text-[40px] md:leading-[48px] text-2xl font-semibold">
-                {slide.title}
-              </h1>
-              <div className="flex items-center mt-4 md:mt-6 ">
-                <button className="md:px-10 px-7 md:py-2.5 py-2 bg-orange-600 rounded-full text-white font-medium">
-                  {slide.buttonText1}
-                </button>
-                <button className="group flex items-center gap-2 px-6 py-2.5 font-medium">
-                  {slide.buttonText2}
-                  <Image className="group-hover:translate-x-1 transition" src={assets.arrow_icon} alt="arrow_icon" />
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center flex-1 justify-center">
+            {/* Blurred Background Image */}
+            <div className="absolute inset-0 -z-10">
               <Image
-                className="md:w-72 w-48"
                 src={slide.imgSrc}
-                alt={`Slide ${index + 1}`}
+                alt="Background"
+                fill
+                className="object-cover sm:blur-lg md:blur-none brightness-95"
+                priority
               />
+              <div className="absolute inset-0 bg-black/10"></div>
+            </div>
+
+            <div className="relative z-10 flex flex-col-reverse md:flex-row items-center justify-between h-full w-full px-6 md:px-20 py-12">
+              <div className="md:w-1/2 text-center md:text-left text-black/70">
+                <p className="text-lg mb-2 opacity-90 text-black">{slide.offer}</p>
+                <h1 className="text-3xl md:text-5xl font-bold leading-tight">
+                  {slide.title}
+                </h1>
+                <motion.div
+                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 40 }}
+                  transition={{ duration: 0.8 }}
+                  className="flex flex-col md:flex-row gap-4 mt-6 md:mt-8 justify-center md:justify-start"
+                >
+                  <button className="px-8 py-3 cursor-pointer bg-white text-black rounded-full text-sm md:text-base font-medium shadow-lg hover:bg-gray-200 transition"
+                   onClick={()=>router.push('/all-products')}
+                  >
+                    {slide.buttonText1}
+                  </button>
+                  <button className="group flex cursor-pointer  items-center gap-2 px-6 py-3 font-medium text-black text-sm md:text-base"
+                    onClick={()=>router.push('/all-products')}
+                  >
+                    {slide.buttonText2}
+                    <Image
+                      className="cursor-pointer group-hover:translate-x-1 transition-transform"
+                      src={assets.arrow_icon}
+                      alt="arrow_icon"
+                    />
+                  </button>
+                </motion.div>
+              </div>
+
+              <div className="w-full h-85 m-auto flex justify-center md:hidden   ">
+                <Image
+                  className="w-full  h-75 drop-shadow-gray-700 shadow-2xl  rounded-md  bg-black/80 brightness-75"
+                  src={slide.imgSrc}
+                  alt={`Slide ${index + 1}`}
+                />
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-center gap-2 mt-8">
+      
+      <div className="hidden md:absolute md:bottom-6 md:left-1/2 md:transform md:-translate-x-1/2 md:z-20 md:flex md:items-center md:justify-center md:gap-3">
         {sliderData.map((_, index) => (
           <div
             key={index}
             onClick={() => handleSlideChange(index)}
-            className={`h-2 w-2 rounded-full cursor-pointer ${
-              currentSlide === index ? "bg-orange-600" : "bg-gray-500/30"
+            className={`h-3 w-3 rounded-full cursor-pointer transition-colors duration-300 ${
+              currentSlide === index ? "bg-white" : "bg-gray-800/50"
             }`}
           ></div>
         ))}

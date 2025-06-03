@@ -10,7 +10,7 @@ import { useAppContext } from "@/context/AppContext";
 
 const Product = () => {
   const { id } = useParams();
-  const { products, router, addToCart } = useAppContext();
+  const { products, router, addToCart ,currency} = useAppContext();
 
   const [productData, setProductData] = useState(null);
   const [mainImage, setMainImage] = useState(null);
@@ -87,6 +87,7 @@ const Product = () => {
                 </div>
               ))}
             </div>
+            
 
             {/* Main Image */}
             <div
@@ -108,15 +109,15 @@ const Product = () => {
           </div>
 
           {/* Details section */}
+          
           <div className="flex flex-col">
             <h1 className="text-3xl font-medium text-gray-800/90 mb-4">
               {productData.name}
             </h1>
-
-            {isZoomVisible && (
+             {isZoomVisible && (
               <div
-                className="rounded-lg overflow-hidden border border-gray-300 scale-z-105"
-                style={{ width: "300px", height: "250px" }}
+                className=" absolute  rounded-lg overflow-hidden border border-gray-300 scale-z-105 z-50"
+                style={{ width: "300px", height: "250px"}}
               >
                 <div
                   className="w-full h-full bg-no-repeat bg-contain"
@@ -128,12 +129,12 @@ const Product = () => {
                 />
               </div>
             )}
-
+        
             <p className="text-gray-600 mt-3">{productData.description}</p>
             <p className="text-3xl font-medium mt-6">
-              ${productData.offerPrice}
+              {currency}:{productData.offerPrice}
               <span className="text-base font-normal text-gray-800/60 line-through ml-2">
-                ${productData.price}
+                {currency}:{productData.price}
               </span>
             </p>
             <hr className="bg-gray-600 my-6" />
@@ -141,7 +142,7 @@ const Product = () => {
             <div>
               <h3 className="font-semibold mb-2">Select Size:</h3>
               <div className="flex gap-3">
-                {productData.size.map((size) => (
+                {productData?.size?.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
@@ -157,11 +158,14 @@ const Product = () => {
               </div>
             </div>
 
-            {/* Color options */}
+
+            
+
+            
             <div className="mt-6">
               <h3 className="font-semibold mb-2">Select Color:</h3>
               <div className="flex gap-3">
-                {productData.color.map((color) => (
+                {productData?.color?.map((color) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
@@ -186,7 +190,7 @@ const Product = () => {
                 onClick={() =>
                   addToCart(productData.id, selectedSize, selectedColor)
                 }
-                className="w-full py-3.5 bg-gray-100 text-gray-800/80 hover:bg-gray-200 transition"
+                className="w-full py-3.5 rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition"
               >
                 Add to Cart
               </button>
@@ -195,7 +199,7 @@ const Product = () => {
                   addToCart(productData.id, selectedSize, selectedColor);
                   router.push("/cart");
                 }}
-                className="w-full py-3.5 bg-orange-500 text-white hover:bg-orange-600 transition"
+                className="w-full py-3.5 rounded-sm bg-orange-500 text-white hover:bg-orange-600 transition"
               >
                 Buy now
               </button>
