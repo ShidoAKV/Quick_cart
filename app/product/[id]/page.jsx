@@ -64,7 +64,7 @@ const Product = () => {
             {/* Thumbnails vertical on left */}
             <div
               className="flex flex-col gap-4 overflow-y-auto"
-              style={{ maxHeight: "450px", width: "80px" }}
+              style={{ maxHeight: "450px", width: "90px" }}
             >
               {productData?.image?.map((image, index) => (
                 <div
@@ -72,7 +72,7 @@ const Product = () => {
                   onClick={() => setMainImage(image)}
                   className={`cursor-pointer rounded-lg overflow-hidden border ${
                     mainImage === image
-                      ? "border-orange-500"
+                      ? "border-orange-600"
                       : "border-gray-300"
                   }`}
                   style={{ width: "60px", height: "70px" }}
@@ -89,14 +89,13 @@ const Product = () => {
             </div>
             
 
-            {/* Main Image */}
             <div
               ref={imgContainerRef}
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsZoomVisible(true)}
               onMouseLeave={() => setIsZoomVisible(false)}
-              className="relative rounded-lg overflow-hidden bg-gray-500/10 cursor-crosshair"
-              style={{ width: "400px", height: "450px" }}
+              className="relative rounded-lg overflow-hidden bg-gray-500/10 cursor-crosshair "
+              style={{ width: "300px", height: "450px" }}
             >
               <Image
                 src={mainImage}
@@ -116,7 +115,7 @@ const Product = () => {
             </h1>
              {isZoomVisible && (
               <div
-                className=" absolute  rounded-lg overflow-hidden border border-gray-300 scale-z-105 z-50"
+                className=" absolute  rounded-lg overflow-hidden border border-gray-300 scale-z-105 z-50  cursor-crosshair hidden md:block "
                 style={{ width: "300px", height: "250px"}}
               >
                 <div

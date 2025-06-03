@@ -59,7 +59,7 @@ const HeaderSlider = () => {
             key={slide.id}
             className="min-w-full relative h-[600px] md:h-[720px] lg:h-[800px]"
           >
-            {/* Blurred Background Image */}
+          
             <div className="absolute inset-0 -z-10">
               <Image
                 src={slide.imgSrc}
@@ -73,7 +73,7 @@ const HeaderSlider = () => {
 
             <div className="relative z-10 flex flex-col-reverse md:flex-row items-center justify-between h-full w-full px-6 md:px-20 py-12">
               <div className="md:w-1/2 text-center md:text-left text-black/70">
-                <p className="text-lg mb-2 opacity-90 text-black">{slide.offer}</p>
+                {/* <p className="text-lg mb-2 opacity-90 text-black">{slide.offer}</p> */}
                 <h1 className="text-3xl md:text-5xl font-bold leading-tight">
                   {slide.title}
                 </h1>
