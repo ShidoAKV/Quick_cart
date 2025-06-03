@@ -46,7 +46,7 @@ export const AppContextProvider = (props) => {
             }
               const token = await getToken();
               authToken.current = token;
-            const { data } = await axios.get('/api/user/data', { headers: { Authorization: `Bearer ${token}` } });
+              const { data } = await axios.get('/api/user/data', { headers: { Authorization: `Bearer ${token}` } });
 
             if (data.success) {
                 setUserData(data.user);
@@ -73,16 +73,16 @@ export const AppContextProvider = (props) => {
                 imageUrl: user.imageUrl,
             };
 
-            const res = await axios.post('/api/user/add', payload, {
+            const {data} = await axios.post('/api/user/add', payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            if (res?.data.success) {
-                console.log("✅ User creation success:", res.data.user);
+            if (data.success) {
+               toast.success('welcome back!')
             } else {
-                console.warn("⚠️ User creation API responded but not success:", res.data.message);
+              toast.error(data.message)
             }
         } catch (err) {
             toast.error("Failed to create user");

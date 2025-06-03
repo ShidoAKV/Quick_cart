@@ -25,14 +25,11 @@ export async function POST(request) {
     if (!userId) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
       );
     }
 
     const  { address }= await request.json();
     const { fullName, phoneNumber, pincode, area, city,state }=address;
-    console.log({ fullName, phoneNumber, pincode, area, city,state })
-    
 
      if (!fullName || !phoneNumber || !pincode || !area || !city || !state) {
       return NextResponse.json({ success: false, message: 'All fields are required' });
@@ -59,7 +56,6 @@ export async function POST(request) {
   } catch (error) {
     return NextResponse.json(
       { success: false, message: error.message },
-      { status: 500 }
     );
   }
 }
