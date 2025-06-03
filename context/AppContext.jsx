@@ -80,7 +80,7 @@ export const AppContextProvider = (props) => {
             });
 
             if (data.success) {
-               toast.success('welcome back!')
+               
             } else {
               toast.error(data.message)
             }

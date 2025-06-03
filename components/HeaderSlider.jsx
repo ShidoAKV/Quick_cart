@@ -54,7 +54,7 @@ const HeaderSlider = () => {
           transform: `translateX(-${currentSlide * 100}%)`,
         }}
       >
-        {sliderData.map((slide, index) => (
+        {sliderData?.map((slide, index) => (
           <div
             key={slide.id}
             className="min-w-full relative h-[600px] md:h-[720px] lg:h-[800px]"
@@ -101,9 +101,9 @@ const HeaderSlider = () => {
                 </motion.div>
               </div>
 
-              <div className="w-full h-85 m-auto flex justify-center md:hidden   ">
+              <div className="w-full h-90  m-auto flex justify-center md:hidden   ">
                 <Image
-                  className="w-full  h-75 drop-shadow-gray-700 shadow-2xl  rounded-md  bg-black/80 brightness-75"
+                  className="w-full  h-60  shadow-gray-700 shadow-2xl  rounded-md  bg-black/80 brightness-75"
                   src={slide.imgSrc}
                   alt={`Slide ${index + 1}`}
                 />

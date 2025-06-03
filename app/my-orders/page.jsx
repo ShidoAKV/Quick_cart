@@ -21,7 +21,7 @@ const MyOrders = () => {
         try {
             const token = await getToken();
             const { data } = await axios.get('/api/order/list', {
-                headers: { Authorization:` Bearer ${token} `}
+                headers: { Authorization: ` Bearer ${token} ` }
             });
             if (data.success) {
                 setOrders(data.orders);
@@ -79,7 +79,7 @@ const MyOrders = () => {
             toast.loading("Processing payment...");
             const token = await getToken();
             const { data } = await axios.post(`/api/order/payment`, { orderId }, {
-                headers: { Authorization:` Bearer ${token}` }
+                headers: { Authorization: ` Bearer ${token}` }
             });
             toast.dismiss();
             if (data.success) {
@@ -103,7 +103,7 @@ const MyOrders = () => {
             toast.loading("Cancelling order...");
             const token = await getToken();
             const { data } = await axios.post(`/api/user/ordercancel/${orderId}`, {
-                headers: { Authorization: `Bearer ${token} `}
+                headers: { Authorization: `Bearer ${token} ` }
             });
             toast.dismiss();
             if (data.success) {
@@ -120,11 +120,12 @@ const MyOrders = () => {
             setProcessingOrderId(null);
         }
     };
-  
+
     useEffect(() => {
         if (user) fetchOrders();
     }, [user]);
- 
+
+
     return (
         <>
             <Navbar />
@@ -139,21 +140,27 @@ const MyOrders = () => {
                                 <p className="p-6 text-center text-gray-600">No orders found.</p>
                             ) : orders?.map((order, index) => (
                                 <div key={index} className="flex flex-col sm:flex-row justify-between p-4 border-b bg-white">
-                                  
+
                                     <div className="flex gap-4 sm:w-1/4">
                                         <Image src={assets.box_icon} alt="item" width={52} height={52} />
                                         <div className="text-sm mt-1">
                                             <p className="font-medium text-gray-800">
                                                 {order?.items.map(item => `${item.product.name} x${item.quantity}`).join(", ")}
                                             </p>
+                                           { (order.items.length > 0 && order.items[0] && (
                                             <div className="flex gap-2 mt-1">
-                                                <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{order.items[0].color}</span>
-                                                <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{order.items[0].size}</span>
+                                                {order.items[0].color && (
+                                                    <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{order.items[0].color}</span>
+                                                )}
+                                                {order.items[0].size && (
+                                                    <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{order.items[0].size}</span>
+                                                )}
                                             </div>
+                                            ))}
                                         </div>
                                     </div>
 
-                                  
+
                                     <div className="sm:w-1/4 text-sm text-gray-700 mt-4 sm:mt-0">
                                         <p><strong>Name:</strong> {order.address.fullName}</p>
                                         <p><strong>Area:</strong> {order.address.area}</p>
@@ -161,7 +168,7 @@ const MyOrders = () => {
                                         <p><strong>Phone:</strong> {order.address.phoneNumber}</p>
                                     </div>
 
-                               
+
                                     <div className="sm:w-1/4 text-sm text-gray-700 mt-4 sm:mt-0">
                                         <p><strong>Amount:</strong>{order.amount.toFixed(2)} {currency}/₹ </p>
                                         <p><strong>Date:</strong> {new Date(order.date).toLocaleDateString()}</p>
@@ -171,7 +178,7 @@ const MyOrders = () => {
                                     </div>
 
                                     <div className="sm:w-1/4 flex items-center justify-start sm:justify-end mt-4 sm:mt-0">
-                                        {!order.cancelled && !order.payment &&(
+                                        {!order.cancelled && !order.payment && (
                                             <div className="flex gap-2">
                                                 <button
                                                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"

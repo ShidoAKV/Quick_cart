@@ -100,9 +100,6 @@ const OrderSummary = () => {
     }
   }, [user]);
 
-  console.log(getCartAmount());
-  
-  
  
 
   return (
