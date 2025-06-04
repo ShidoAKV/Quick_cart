@@ -41,8 +41,10 @@ export const AppContextProvider = (props) => {
 
     const fetchUserData = async () => {
         try {
-            if (user.publicMetadata.role === 'seller') {
+            if (user?.publicMetadata?.role === 'seller') {
                 setIsSeller(true);
+            }else{
+                setIsSeller(false);
             }
               const token = await getToken();
               authToken.current = token;
@@ -53,6 +55,7 @@ export const AppContextProvider = (props) => {
                 setCartItems(data.user.cartItems);
             } else {
                 toast.error(data.message);
+                setIsSeller(false);
             }
 
         } catch (error) {
@@ -190,6 +193,7 @@ export const AppContextProvider = (props) => {
     useEffect(() => {
         if (user) fetchUserData();
     }, [user])
+
 
  
 

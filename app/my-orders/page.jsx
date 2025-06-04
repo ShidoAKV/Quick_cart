@@ -156,7 +156,7 @@ const MyOrders = () => {
                                                     </div>
                                                 </div>
                                                 <div className="flex  items-center">
-                                                    <p className="text-xs sm:text-sm text-gray-700 ml-11">{new Date(order.date).toLocaleDateString()}</p>
+                                                    <p className="text-xs sm:text-sm text-gray-700 ">{new Date(order.date).toLocaleDateString()}</p>
                                                 </div>
                                             </div>
                                         ))}
