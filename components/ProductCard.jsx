@@ -30,10 +30,19 @@ const ProductCard = ({ product }) => {
       <div className="flex flex-col gap-2 p-3">
         <p className="text-base font-semibold text-gray-900 truncate">{product.name}</p>
         <p className="text-sm text-gray-600 truncate sm:block hidden">{product.description}</p>
+        {
+          product.stock > 0 ? (<p className="text-sm text-green-700 truncate ">
+            {product.stock} stock remaining
+          </p>) : (
+            <p className="text-sm text-red-600 truncate ">
+              Out of stock
+            </p>
+          )
 
+        }
         <div className="flex items-center justify-between w-full mt-auto">
           <p className="text-sm sm:text-base font-bold text-gray-800">
-           ₹{product.offerPrice}
+            {currency}{product.offerPrice}
           </p>
           <button
             onClick={(e) => {

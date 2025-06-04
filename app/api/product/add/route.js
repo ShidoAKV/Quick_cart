@@ -31,11 +31,16 @@ export async function POST(request) {
     const offerPrice = formData.get('offerPrice');
     const category = formData.get('category');
     const material = formData.get('material');
+    const stock=formData.get('stock');
     const size = JSON.parse(formData.get('size') || '[]');
     const color = JSON.parse(formData.get('color') || '[]');
     const files = formData.getAll('images');
 
-    if (!files || files.length === 0||!size||!color||!price||!category||!offerPrice) {
+    console.log(stock);
+    
+  
+
+    if (!files || files.length === 0||!size||!color||!price||!category||!offerPrice||!stock) {
       return NextResponse.json({ success: false, message: 'No files uploaded' });
     }
 
@@ -75,6 +80,7 @@ export async function POST(request) {
         image: uploadedImageUrls,
         date: new Date(),
         size,
+        stock:parseInt(stock),
         color,
         material: material || '',
         brand: 'Pilley', // default value as in original

@@ -12,7 +12,7 @@ export async function POST(request, { params }) {
     if (!isSeller) {
       return NextResponse.json({ success: false, message: 'Not authorised' });
     }
-    const { productId } = params;
+    const { productId } =await params;
     await prisma.orderItem.deleteMany({ where: { productId } });
 
     

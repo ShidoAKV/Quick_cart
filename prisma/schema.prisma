@@ -36,12 +36,14 @@ model Product {
   price       Float
   brand       String   @default("Pilley")
   offerPrice  Float
-  image       String[] // Array of image URLs
+  image       String[] 
   category    String
   size        String[]
   color       String[]
   material    String
-  date        DateTime  @default(now())
+  stock       Int        @default(0)
+  rating      Float      @default(0.0)
+  date        DateTime   @default(now())
 
   orders      OrderItem[]
 }

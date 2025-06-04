@@ -19,7 +19,7 @@ export const AppContextProvider = (props) => {
     const authToken = useRef(null);
     const [products, setProducts] = useState([]);
     const [userData, setUserData] = useState(null);
-    const [isSeller, setIsSeller] = useState(true);
+    const [isSeller, setIsSeller] = useState(false);
     const [cartItems, setCartItems] = useState({});
 
 
@@ -67,7 +67,7 @@ export const AppContextProvider = (props) => {
         try {
 
             const token = await getToken();
-            if (!token) return;
+            if (token) return;
 
             const payload = {
                 id: user.id,
@@ -83,7 +83,7 @@ export const AppContextProvider = (props) => {
             });
 
             if (data.success) {
-               
+                toast.success('user created successfully')
             } else {
               toast.error(data.message)
             }
@@ -111,9 +111,6 @@ export const AppContextProvider = (props) => {
         }
 
         setCartItems(newCart);
-        setTimeout(() => {
-              toast.success('item added to cart');
-        }, 500);
 
         if (user) {
             try {
@@ -124,6 +121,7 @@ export const AppContextProvider = (props) => {
                 toast.error("Failed to sync with server");
             }
         }
+         toast.success('item added to cart');
 
     };
 
@@ -143,9 +141,7 @@ export const AppContextProvider = (props) => {
         }
 
         setCartItems(newCart);
-        setTimeout(() => {
-             toast.success('Cart updated');
-        }, 500);
+       
         if (user) {
             try {
                 await axios.post('/api/cart/update', { cartData: newCart }, {
@@ -155,6 +151,7 @@ export const AppContextProvider = (props) => {
                 toast.error("Cart update failed");
             }
         }
+          toast.success('Cart updated');
     };
 
     const getCartAmount = () => {

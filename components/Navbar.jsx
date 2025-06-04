@@ -13,11 +13,10 @@ const Navbar = () => {
   const { openSignIn } = useClerk();
 
   const [cartCount, setCartCount] = useState(0);
-
+  
   useEffect(() => {
     setCartCount(getCartCount());
-  }, [getCartCount]);
-  
+   });
   return (
     <nav className=" flex items-center justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700">
       <Image
@@ -84,7 +83,7 @@ const Navbar = () => {
             alt="cart"
             className="hover:brightness-110 transition"
           />
-          {cartCount > 0 && (
+          {(cartCount > 0)&& (
             <span className="absolute -top-2 right-3 bg-green-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
               {cartCount}
             </span>

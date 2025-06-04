@@ -55,8 +55,9 @@ const Product = () => {
     });
   };
 
-  
-  
+
+
+
 
   return (
     <>
@@ -73,11 +74,10 @@ const Product = () => {
                 <div
                   key={index}
                   onClick={() => setMainImage(image)}
-                  className={`cursor-pointer rounded-lg overflow-hidden  border-2 ${
-                    mainImage === image
-                      ? "border-green-800"
-                      : "border-gray-300"
-                  }`}
+                  className={`cursor-pointer rounded-lg overflow-hidden  border-2 ${mainImage === image
+                    ? "border-green-800"
+                    : "border-gray-300"
+                    }`}
                   style={{ width: "60px", height: "70px" }}
                 >
                   <Image
@@ -90,53 +90,65 @@ const Product = () => {
                 </div>
               ))}
             </div>
-            
+
 
             <div
               ref={imgContainerRef}
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsZoomVisible(true)}
               onMouseLeave={() => setIsZoomVisible(false)}
-              className="relative rounded-lg overflow-hidden bg-gray-500/10 cursor-crosshair "
-              style={{ width: "300px", height: "450px" }}
+              className="relative rounded-lg overflow-hidden bg-gray-500/10 cursor-crosshair w-full h-[75vw] sm:w-[300px] sm:h-[450px] mx-auto"
             >
               <Image
                 src={mainImage}
                 alt={productData.name}
                 fill
-                style={{ objectFit: "contain" }}
+                className="object-cover" 
                 priority
               />
             </div>
+
+
+
           </div>
 
-      
-          
+
+
           <div className="flex flex-col">
             <h1 className="text-3xl font-medium text-gray-800/90 mb-4">
               {productData.name}
             </h1>
-             {isZoomVisible && (
+            {isZoomVisible && (
               <div
                 className=" absolute  rounded-lg overflow-hidden border border-gray-300 scale-z-105 z-50  cursor-crosshair hidden md:block "
-                style={{ width: "300px", height: "250px"}}
+                style={{ width: "300px", height: "250px" }}
               >
                 <div
-                  className="w-full h-full bg-no-repeat bg-contain"
+                  className="w-full h-full bg-no-repeat bg-contain back"
                   style={{
                     backgroundImage: `url(${mainImage})`,
-                    backgroundSize: "350%", // zoom factor
+                    backgroundSize: "330%",
                     backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
                   }}
                 />
               </div>
             )}
-        
+            {productData.stock > 0 ? (
+              <p className="text-green-700 w-[50%] md:w-[50%] text-sm sm:text-base font-medium mt-4">
+                {productData.stock} stock remaining
+              </p>
+            ) : (
+              <p className="bg-red-500 w-[38%] md:w-[20%]  text-white text-xs sm:text-sm font-medium rounded-lg px-3 py-1 inline-block mt-2">
+                Out of stock
+              </p>
+            )}
+
             <p className="text-gray-600 mt-3">{productData.description}</p>
+
             <p className="text-3xl font-medium mt-6">
               ₹{productData.offerPrice}
               <span className="text-base font-normal text-gray-800/60 line-through ml-2">
-                ₹{productData.price}
+                MRP:₹{productData.price}
               </span>
             </p>
             <hr className="bg-gray-600 my-6" />
@@ -148,11 +160,10 @@ const Product = () => {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 rounded border ${
-                      selectedSize === size
-                        ? "bg-gray-900/90 text-white border-gray-700"
-                        : "bg-white text-gray-800 border-gray-300"
-                    }`}
+                    className={`px-4 py-2 rounded border ${selectedSize === size
+                      ? "bg-gray-900/90 text-white border-gray-700"
+                      : "bg-white text-gray-800 border-gray-300"
+                      }`}
                   >
                     {size}
                   </button>
@@ -161,9 +172,9 @@ const Product = () => {
             </div>
 
 
-            
 
-            
+
+
             <div className="mt-6">
               <h3 className="font-semibold mb-2">Select Color:</h3>
               <div className="flex gap-3">
@@ -171,11 +182,10 @@ const Product = () => {
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    className={`w-8 h-8 rounded-full border-2 ${
-                      selectedColor === color
-                        ? "border-gray-600"
-                        : "border-gray-300"
-                    }`}
+                    className={`w-8 h-8 rounded-full border-2 ${selectedColor === color
+                      ? "border-gray-600"
+                      : "border-gray-300"
+                      }`}
                     style={{ backgroundColor: color.toLowerCase() }}
                     aria-label={`Select color ${color}`}
                     title={color}
@@ -184,15 +194,17 @@ const Product = () => {
               </div>
             </div>
 
+
+
             <hr className="my-6" />
 
             {/* Buttons */}
-            <div className="flex items-center mt-10 gap-4">
+           { (productData.stock>0)&&<div className="flex items-center mt-10 gap-4">
               <button
                 onClick={() =>
                   addToCart(productData.id, selectedSize, selectedColor)
                 }
-                className="cursor-pointer w-full py-3.5 rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-00 transition"
+                className="cursor-pointer w-full py-3.5 rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition"
               >
                 Add to Cart
               </button>
@@ -205,8 +217,10 @@ const Product = () => {
               >
                 Buy now
               </button>
-            </div>
+            </div>}
           </div>
+
+
         </div>
       </div>
       <Footer />
