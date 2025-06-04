@@ -8,8 +8,8 @@ import Script from "next/script";
 const outfit = Roboto({ subsets: ['latin'], weight: ["300", "400", "500"] })
 
 export const metadata = {
-  title: "QuickCart - GreatStack",
-  description: "E-Commerce with Next.js ",
+  title: "Pilley",
+  description: "Ecommerce shirt Site ",
 };
 
 
