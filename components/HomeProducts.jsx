@@ -6,9 +6,9 @@ const HomeProducts = () => {
   const displayedProducts = products?.slice(0, 5);
 
   return (
-    <div className="flex flex-col items-center pt-12 px-4 xl:px-0">
+    <div className="flex flex-col items-center pt-12 px-1 xl:px-0">
        <p className="text-3xl font-bold text-black">Popular Products</p>
-        <div className="w-24 h-1 bg-orange-600 mt-2 rounded-full"></div>
+        <div className="w-24 h-1 bg-green-800 mt-2 rounded-full"></div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8 w-full max-w-screen-xl">
         {displayedProducts?.map((product, index) => (

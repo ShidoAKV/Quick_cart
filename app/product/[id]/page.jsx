@@ -10,7 +10,7 @@ import { useAppContext } from "@/context/AppContext";
 
 const Product = () => {
   const { id } = useParams();
-  const { products, router, addToCart ,currency} = useAppContext();
+  const { products, router, addToCart } = useAppContext();
 
   const [productData, setProductData] = useState(null);
   const [mainImage, setMainImage] = useState(null);
@@ -55,6 +55,9 @@ const Product = () => {
     });
   };
 
+  
+  
+
   return (
     <>
       <Navbar />
@@ -64,15 +67,15 @@ const Product = () => {
             {/* Thumbnails vertical on left */}
             <div
               className="flex flex-col gap-4 overflow-y-auto"
-              style={{ maxHeight: "450px", width: "90px" }}
+              style={{ maxHeight: "450px", width: "110px" }}
             >
               {productData?.image?.map((image, index) => (
                 <div
                   key={index}
                   onClick={() => setMainImage(image)}
-                  className={`cursor-pointer rounded-lg overflow-hidden border ${
+                  className={`cursor-pointer rounded-lg overflow-hidden  border-2 ${
                     mainImage === image
-                      ? "border-orange-600"
+                      ? "border-green-800"
                       : "border-gray-300"
                   }`}
                   style={{ width: "60px", height: "70px" }}
@@ -107,7 +110,7 @@ const Product = () => {
             </div>
           </div>
 
-          {/* Details section */}
+      
           
           <div className="flex flex-col">
             <h1 className="text-3xl font-medium text-gray-800/90 mb-4">
@@ -131,9 +134,9 @@ const Product = () => {
         
             <p className="text-gray-600 mt-3">{productData.description}</p>
             <p className="text-3xl font-medium mt-6">
-              {currency}:{productData.offerPrice}
+              ₹{productData.offerPrice}
               <span className="text-base font-normal text-gray-800/60 line-through ml-2">
-                {currency}:{productData.price}
+                ₹{productData.price}
               </span>
             </p>
             <hr className="bg-gray-600 my-6" />
@@ -147,7 +150,7 @@ const Product = () => {
                     onClick={() => setSelectedSize(size)}
                     className={`px-4 py-2 rounded border ${
                       selectedSize === size
-                        ? "bg-orange-500 text-white border-orange-500"
+                        ? "bg-gray-900/90 text-white border-gray-700"
                         : "bg-white text-gray-800 border-gray-300"
                     }`}
                   >
@@ -170,7 +173,7 @@ const Product = () => {
                     onClick={() => setSelectedColor(color)}
                     className={`w-8 h-8 rounded-full border-2 ${
                       selectedColor === color
-                        ? "border-orange-500"
+                        ? "border-gray-600"
                         : "border-gray-300"
                     }`}
                     style={{ backgroundColor: color.toLowerCase() }}
@@ -189,7 +192,7 @@ const Product = () => {
                 onClick={() =>
                   addToCart(productData.id, selectedSize, selectedColor)
                 }
-                className="w-full py-3.5 rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition"
+                className="cursor-pointer w-full py-3.5 rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-00 transition"
               >
                 Add to Cart
               </button>
@@ -198,7 +201,7 @@ const Product = () => {
                   addToCart(productData.id, selectedSize, selectedColor);
                   router.push("/cart");
                 }}
-                className="w-full py-3.5 rounded-sm bg-orange-500 text-white hover:bg-orange-600 transition"
+                className="cursor-pointer w-full py-3.5 rounded-sm bg-gray-900/90 text-white hover:bg-gray-900 transition"
               >
                 Buy now
               </button>

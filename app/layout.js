@@ -1,11 +1,11 @@
-import { Outfit } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
 
-const outfit = Outfit({ subsets: ['latin'], weight: ["300", "400", "500"] })
+const outfit = Roboto({ subsets: ['latin'], weight: ["300", "400", "500"] })
 
 export const metadata = {
   title: "QuickCart - GreatStack",

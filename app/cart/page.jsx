@@ -9,8 +9,7 @@ import { useAppContext } from "@/context/AppContext";
 const Cart = () => {
   const { products, router, cartItems, addToCart, updateCartQuantity, getCartCount } = useAppContext();
 
-  // Helper to parse composite key: "productId|size|color"
-
+  
 
   useEffect(() => {
     if (products) {
@@ -26,14 +25,14 @@ const Cart = () => {
         <div className="flex-1">
           <div className="flex items-center justify-between mb-8 border-b border-gray-500/30 pb-6">
             <p className="text-2xl md:text-3xl text-gray-500">
-              Your <span className="font-medium text-orange-600">Cart</span>
+              Your <span className="font-medium text-green-900">Cart</span>
             </p>
             <p className="text-lg md:text-xl text-gray-500/80">{getCartCount()} Items</p>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full table-auto border-separate border-spacing-y-4">
               <thead className="text-left ">
-                <tr className="text-sm md:text-base text-gray-600">
+                <tr className="text-sm md:text-base text-gray-700">
                   <th className="pb-2 md:px-4 px-2 font-semibold">Product Details</th>
                   <th className="pb-2 md:px-4 px-2 font-semibold">Price</th>
                   <th className="pb-2 md:px-4 px-2 font-semibold">Size</th>
@@ -58,15 +57,15 @@ const Cart = () => {
                             <Image
                               src={product.image[0]}
                               alt={product.name}
-                              width={60}
-                              height={60}
-                              className="object-cover rounded"
+                              width={90}
+                              height={70}
+                              className="object-cover rounded-md p-0.5 "
                             />
                           </div>
                           <div>
                             <p className="text-gray-800 font-medium text-sm md:text-base">{product.name}</p>
                             <button
-                              className="text-xs text-orange-600 mt-1 hover:underline"
+                              className="text-xs text-red-600 mt-1 hover:underline"
                               onClick={() => updateCartQuantity(productId, size, color, 0)}
                             >
                               Remove
@@ -75,7 +74,7 @@ const Cart = () => {
                         </div>
                       </td>
 
-                      <td className="py-3 px-2 md:px-4 text-gray-700">${product.offerPrice.toFixed(2)}</td>
+                      <td className="py-3 px-2 md:px-4 text-gray-700">₹{product.offerPrice.toFixed(2)}</td>
                       <td className="py-3 px-2 md:px-4 font-medium text-gray-800">{size}</td>
                       <td className="py-3 px-2 md:px-4">
                         <span
@@ -103,7 +102,7 @@ const Cart = () => {
                             onChange={(e) => {
                               let val = Number(e.target.value);
                               if (val < 1 || isNaN(val)) val = 1;
-                              updateCartQuantity(productId, size, color, val);
+                               updateCartQuantity(productId, size, color, val);
                             }}
                           />
                           <button
@@ -117,7 +116,7 @@ const Cart = () => {
                       </td>
 
                       <td className="py-3 px-2 md:px-4 text-gray-700">
-                        ${(product.offerPrice * quantity).toFixed(2)}
+                        ₹{(product.offerPrice * quantity).toFixed(2)}
                       </td>
                     </tr>
                   );
@@ -126,10 +125,10 @@ const Cart = () => {
             </table>
           </div>
 
-          <button onClick={() => router.push('/all-products')} className="group flex items-center mt-6 gap-2 text-orange-600">
+          <button onClick={() => router.push('/all-products')} className="group flex items-center mt-6 gap-2 text-gray-900">
             <Image
-              className="group-hover:-translate-x-1 transition"
-              src={assets.arrow_right_icon_colored}
+              className="cursor-pointer group-hover:-translate-x-1 transition scale-x-[-1]  "
+              src={assets.arrow_icon}
               alt="arrow_right_icon_colored"
             />
             Continue Shopping

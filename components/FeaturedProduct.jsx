@@ -38,7 +38,7 @@ const FeaturedProduct = () => {
       {/* Header */}
       <div className="flex flex-col items-center">
         <p className="text-3xl font-bold text-black">Featured Products</p>
-        <div className="w-24 h-1 bg-orange-600 mt-2 rounded-full"></div>
+        <div className="w-24 h-1 bg-green-800 mt-2 rounded-full"></div>
       </div>
 
       {/* Product Cards */}

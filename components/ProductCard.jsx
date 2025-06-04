@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
 import { motion } from 'framer-motion';
 
 const ProductCard = ({ product }) => {
   const { currency, router } = useAppContext();
-
-
 
   return (
     <motion.div
@@ -16,35 +14,37 @@ const ProductCard = ({ product }) => {
         router.push('/product/' + product.id);
         scrollTo(0, 0);
       }}
-      className="flex flex-col gap-2 bg-[#f2f4f8] hover:bg-gray-200 rounded-xl p-3 shadow hover:shadow-md transition cursor-pointer w-full max-w-[220px]"
+      className="group flex flex-col bg-white hover:bg-[#f3f4f6] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer w-full max-w-[300px]"
     >
-      <div className="relative w-full h-52 rounded-lg overflow-hidden flex items-center justify-center bg-white">
+      {/* Image section fills top */}
+      <div className="relative w-full h-60">
         <Image
           src={product?.image[0]}
           alt={product?.name}
-          className="object-cover w-4/5 h-4/5 group-hover:scale-105 transition duration-300"
-          width={800}
-          height={800}
+          fill
+          className="object-cover w-full h-full"
         />
-        
       </div>
 
-      <p className="text-sm font-semibold text-black truncate">{product.name}</p>
-      <p className="text-xs text-gray-600 truncate max-sm:hidden">{product.description}</p>
+      {/* Content section */}
+      <div className="flex flex-col gap-2 p-3">
+        <p className="text-base font-semibold text-gray-900 truncate">{product.name}</p>
+        <p className="text-sm text-gray-600 truncate sm:block hidden">{product.description}</p>
 
-      <div className="flex items-center justify-between w-full mt-auto">
-        <p className="text-base font-semibold text-black">
-          {currency}:{product.offerPrice}
-        </p>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            router.push('/product/' + product.id);
-          }}
-          className="text-xs text-black border border-black px-4 py-1.5 rounded-full hover:bg-black hover:text-white transition max-sm:hidden"
-        >
-          Buy now
-        </button>
+        <div className="flex items-center justify-between w-full mt-auto">
+          <p className="text-sm sm:text-base font-bold text-gray-800">
+           ₹{product.offerPrice}
+          </p>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push('/product/' + product.id);
+            }}
+            className="cursor-pointer text-xs sm:text-sm border border-gray-800 hover:bg-gray-900 text-gray-800 hover:text-white px-3 py-1 rounded-full transition duration-200"
+          >
+            Buy Now
+          </button>
+        </div>
       </div>
     </motion.div>
   );

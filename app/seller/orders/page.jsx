@@ -126,7 +126,7 @@ const Orders = () => {
             <div>Order Details</div>
             <div>Address</div>
             <div className="text-center">Total Items</div>
-            <div className="text-right">Amount</div>
+            <div className="text-right">Amount/</div>
             <div>Payment Method</div>
             <div>Payment Status</div>
             <div>Refund Status</div>
@@ -161,7 +161,7 @@ const Orders = () => {
 
                 <p><strong>Amount:</strong> {currency}{order.amount.toFixed(2)}</p>
 
-                <p><strong>Payment Method:</strong> Online</p>
+                <p><strong>PaymentMethod:</strong> Online</p>
 
                 <p><strong>Payment Status:</strong> {order.payment ? "Paid" : "Pending"}</p>
 

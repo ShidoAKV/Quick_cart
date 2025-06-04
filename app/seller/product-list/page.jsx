@@ -108,15 +108,15 @@ const ProductList = () => {
                     <td className="px-4 py-3 hidden sm:table-cell">
                       <button
                         onClick={() => router.push(`/product/${product.id}`)}
-                        className="text-sm bg-orange-500 text-white px-3 py-1.5 rounded hover:bg-orange-600"
+                        className="text-sm cursor-pointer bg-green-800 text-white px-3 py-1.5 rounded hover:bg-green-900"
                       >
                         Visit
                       </button>
                     </td>
                     <td className="px-4 py-3">
                       <button
-                        onClick={() => deleteProduct(product.id)}
-                        className="text-sm bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700"
+                        onClick={() => deleteproduct(product.id)}
+                        className="text-sm cursor-pointer bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700"
                       >
                         Delete
                       </button>

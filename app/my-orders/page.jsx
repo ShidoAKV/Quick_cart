@@ -124,82 +124,87 @@ const MyOrders = () => {
     useEffect(() => {
         if (user) fetchOrders();
     }, [user]);
-
+     
 
     return (
         <>
             <Navbar />
             <div className="flex flex-col px-2 md:px-8 py-4 min-h-screen bg-gray-50">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4 mx-11 ">My Orders</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold  mx-11 ">My Orders</h2>
+                <div className="w-24 md:w-30 h-1 bg-green-800  rounded-full ml-10"></div>
                 {loading ? (
                     <Loading />
                 ) : (
-                    <div className="overflow-x-auto mx-11">
-                        <div className="w-full border rounded-md bg-white shadow">
+                    <div className="overflow-x-auto mx-11 mt-5">
+                        <div className="w-full   rounded-md bg-gray-200 shadow">
+
                             {orders.length === 0 ? (
                                 <p className="p-6 text-center text-gray-600">No orders found.</p>
-                            ) : orders?.map((order, index) => (
-                                <div key={index} className="flex flex-col sm:flex-row justify-between p-4 border-b bg-white">
+                            ) : orders.map((order, index) => (
+                                <div key={index} className="border-b p-4 sm:p-6 flex flex-col gap-4">
 
-                                    <div className="flex gap-4 sm:w-1/4">
-                                        <Image src={assets.box_icon} alt="item" width={52} height={52} />
-                                        <div className="text-sm mt-1">
-                                            <p className="font-medium text-gray-800">
-                                                {order?.items.map(item => `${item.product.name} x${item.quantity}`).join(", ")}
-                                            </p>
-                                           { (order.items.length > 0 && order.items[0] && (
-                                            <div className="flex gap-2 mt-1">
-                                                {order.items[0].color && (
-                                                    <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{order.items[0].color}</span>
-                                                )}
-                                                {order.items[0].size && (
-                                                    <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{order.items[0].size}</span>
-                                                )}
+
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        {order.items.map((item, idx) => (
+                                            <div key={idx} className="flex gap-4  p-2 rounded">
+                                                <Image src={assets.box_icon} alt="item" width={44} height={44} />
+                                                <div className="text-sm">
+                                                    <p className="font-semibold text-gray-800">{item.product.name} x{item.quantity}</p>
+                                                    <div className="flex gap-2 mt-1">
+                                                        {item.color && <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{item.color}</span>}
+                                                        {item.size && <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{item.size}</span>}
+                                                    </div>
+                                                </div>
+                                                <div className="flex  items-center">
+                                                    <p className="text-xs sm:text-sm text-gray-700 ml-11">{new Date(order.date).toLocaleDateString()}</p>
+                                                </div>
                                             </div>
-                                            ))}
+                                        ))}
+
+                                    </div>
+
+
+
+
+                                    <div className="grid sm:grid-cols-3 gap-4 text-sm text-gray-700 ">
+                                        <div>
+                                            <p><strong>Name:</strong> {order.address.fullName}</p>
+                                            <p><strong>Area:</strong> {order.address.area}</p>
+                                            <p><strong>City/State:</strong> {order.address.city}, {order.address.state}</p>
+                                            <p><strong>Phone:</strong> {order.address.phoneNumber}</p>
+                                        </div>
+                                        <div>
+                                            <p><strong>Amount:</strong> ₹{order.amount.toFixed(2)} {currency}</p>
+                                            <p><strong>Status:</strong> <span className={`font-semibold ${order.cancelled ? 'text-red-600' : order.payment ? order.isCompleted ? 'text-green-600' : 'text-blue-600' : 'text-yellow-600'}`}>
+                                                {order.cancelled ? "Cancelled" : order.payment ? order.isCompleted ? "Completed" : "Paid" : "Pending"}
+                                            </span></p>
+                                        </div>
+
+                                        {/* Action Buttons */}
+                                        <div className="flex gap-2 items-start sm:items-center justify-start sm:justify-end">
+                                            {!order.cancelled && !order.payment && (
+                                                <>
+                                                    <button
+                                                        className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
+                                                        onClick={() => handlePayment(order.orderId)}
+                                                        disabled={processingOrderId === order.orderId}
+                                                    >
+                                                        Pay Now
+                                                    </button>
+                                                    <button
+                                                        className=" cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
+                                                        onClick={() => handleCancelOrder(order.orderId)}
+                                                        disabled={processingOrderId === order.orderId}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
-
-
-                                    <div className="sm:w-1/4 text-sm text-gray-700 mt-4 sm:mt-0">
-                                        <p><strong>Name:</strong> {order.address.fullName}</p>
-                                        <p><strong>Area:</strong> {order.address.area}</p>
-                                        <p><strong>City/State:</strong> {order.address.city}, {order.address.state}</p>
-                                        <p><strong>Phone:</strong> {order.address.phoneNumber}</p>
-                                    </div>
-
-
-                                    <div className="sm:w-1/4 text-sm text-gray-700 mt-4 sm:mt-0">
-                                        <p><strong>Amount:</strong>{order.amount.toFixed(2)} {currency}/₹ </p>
-                                        <p><strong>Date:</strong> {new Date(order.date).toLocaleDateString()}</p>
-                                        <p><strong>Status:</strong> <span className={`font-semibold ${order.cancelled ? 'text-red-600' : order.payment ? order.isCompleted ? 'text-green-600' : 'text-blue-600' : 'text-yellow-600'}`}>
-                                            {order.cancelled ? "Cancelled" : order.payment ? order.isCompleted ? "Completed" : "Paid" : "Pending"}
-                                        </span></p>
-                                    </div>
-
-                                    <div className="sm:w-1/4 flex items-center justify-start sm:justify-end mt-4 sm:mt-0">
-                                        {!order.cancelled && !order.payment && (
-                                            <div className="flex gap-2">
-                                                <button
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
-                                                    onClick={() => handlePayment(order.orderId)}
-                                                    disabled={processingOrderId === order.orderId}
-                                                >
-                                                    Pay Now
-                                                </button>
-                                                <button
-                                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
-                                                    onClick={() => handleCancelOrder(order.orderId)}
-                                                    disabled={processingOrderId === order.orderId}
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
                                 </div>
-
                             ))}
+
                         </div>
                     </div>
                 )}
