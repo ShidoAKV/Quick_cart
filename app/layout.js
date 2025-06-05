@@ -4,15 +4,14 @@ import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
-
+import { Suspense } from "react";
+import Loadingcomponent from "./loading";
 const outfit = Roboto({ subsets: ['latin'], weight: ["300", "400", "500"] })
 
 export const metadata = {
   title: "Pilley",
-  description: "Ecommerce shirt Site ",
+  description: "Ecommerce T-shirt Site ",
 };
-
-
 
 export default function RootLayout({ children }) {
   return (
@@ -21,7 +20,7 @@ export default function RootLayout({ children }) {
         <body className={`${outfit.className} antialiased text-gray-700`}  >
           <Toaster />
           <AppContextProvider>
-                {children}
+             <Suspense fallback={<Loadingcomponent/>} >{children}</Suspense>
             <Script
               src="https://checkout.razorpay.com/v1/checkout.js"
               strategy="afterInteractive"

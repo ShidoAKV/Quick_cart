@@ -1,7 +1,7 @@
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import prisma from "@/config/db";
-
+import { withTimeout } from "@/config/timeout";
 
 export async function POST(request) {
   try {
@@ -13,7 +13,8 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: "Invalid data" });
     }
 
-    const newOrder = await prisma.order.create({
+    const newOrder =  await withTimeout(
+     prisma.order.create({
       data: {
         userId: userId,
         addressId: address,
@@ -34,7 +35,7 @@ export async function POST(request) {
         items: true,
         address: true,
       },
-    });
+    }),10000);
 
     return NextResponse.json({ success: true, message: "Order placed successfully", order: newOrder });
   } catch (error) {

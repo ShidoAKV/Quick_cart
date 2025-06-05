@@ -3,6 +3,7 @@ import { getAuth } from '@clerk/nextjs/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextResponse } from 'next/server';
 import prisma from '@/config/db';
+import { withTimeout } from '@/config/timeout';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -36,9 +37,6 @@ export async function POST(request) {
     const color = JSON.parse(formData.get('color') || '[]');
     const files = formData.getAll('images');
 
-    console.log(stock);
-    
-  
 
     if (!files || files.length === 0||!size||!color||!price||!category||!offerPrice||!stock) {
       return NextResponse.json({ success: false, message: 'No files uploaded' });
@@ -69,7 +67,8 @@ export async function POST(request) {
       uploadedImageUrls.push(uploadResult.secure_url);
     }
 
-    const newProduct = await prisma.product.create({
+    const newProduct = await withTimeout(
+      prisma.product.create({
       data: {
         userId,
         name: name || 'Untitled',
@@ -83,9 +82,9 @@ export async function POST(request) {
         stock:parseInt(stock),
         color,
         material: material || '',
-        brand: 'Pilley', // default value as in original
+        brand: 'Pilley',
       },
-    });
+    }),15000);
 
     return NextResponse.json({
       success: true,

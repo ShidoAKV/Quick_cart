@@ -40,12 +40,12 @@ export const AppContextProvider = (props) => {
     };
 
     const fetchUserData = async () => {
-        try {
-            if (user?.publicMetadata?.role === 'seller') {
+        try { 
+             if(user.publicMetadata.role==='seller'){
                 setIsSeller(true);
-            }else{
+             }else{
                 setIsSeller(false);
-            }
+             }
               const token = await getToken();
               authToken.current = token;
               const { data } = await axios.get('/api/user/data', { headers: { Authorization: `Bearer ${token}` } });
@@ -65,28 +65,31 @@ export const AppContextProvider = (props) => {
 
     const createUserIfNotExists = async () => {
         try {
+            
+            if (user){
+                fetchUserData();
+            }else{
+                const token = await getToken();
+                authToken.current=token;
+                const payload = {
+                    id: user.id,
+                    name: user.firstName + ' ' + user.lastName,
+                    email: user.emailAddresses[0].emailAddress,
+                    imageUrl: user.imageUrl,
+                };
 
-            const token = await getToken();
-            if (token) return;
-
-            const payload = {
-                id: user.id,
-                name: user.firstName + ' ' + user.lastName,
-                email: user.emailAddresses[0].emailAddress,
-                imageUrl: user.imageUrl,
-            };
-
-            const {data} = await axios.post('/api/user/add', payload, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+                const {data} = await axios.post('/api/user/add', payload, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
             if (data.success) {
                 toast.success('user created successfully')
             } else {
               toast.error(data.message)
             }
+        }
         } catch (err) {
             toast.error("Failed to create user");
         }
@@ -187,9 +190,9 @@ export const AppContextProvider = (props) => {
         fetchProductData();
     }, [user]);
 
-    useEffect(() => {
-        if (user) fetchUserData();
-    }, [user])
+    // useEffect(() => {
+    //     if (user) fetchUserData();
+    // }, [user])
 
  
 

@@ -1,7 +1,7 @@
 import { addressDummyData } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
-import React, { useEffect, useState,useRef } from "react";
+import  { useEffect, useState,useRef } from "react";
 import toast from "react-hot-toast";
 
 const OrderSummary = () => {
@@ -86,6 +86,7 @@ const OrderSummary = () => {
         toast.success(data.message);
         router.push("/order-placed");
       } else {
+        toast.dismiss()
         toast.error(data.message);
       }
     } catch (error) {
@@ -95,7 +96,7 @@ const OrderSummary = () => {
 
   useEffect(() => {
     if (user) {
-      fetchUserAddresses();
+       fetchUserAddresses();
     }
   }, [user]);
 

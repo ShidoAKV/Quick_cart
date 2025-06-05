@@ -2,6 +2,7 @@ import authSeller from '@/lib/authSeller';
 import { getAuth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import prisma from '@/config/db';
+import { withTimeout } from '@/config/timeout';
 
 
 export async function POST(request, { params }) {
@@ -25,14 +26,15 @@ export async function POST(request, { params }) {
     }
 
 
-    const updatedProduct = await prisma.product.update({
+    const updatedProduct = await withTimeout(
+    prisma.product.update({
       where: { id: productId },
       data: {
         offerPrice: parseFloat(offerPrice),
         color: Array.isArray(color) ? color : [color],
         stock: parseInt(stock)
       },
-    });
+    }),10000);
 
     return NextResponse.json({
       success: true,

@@ -4,7 +4,7 @@ import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import razorpayInstance from "@/lib/razorpayinstance";
 import prisma from "@/config/db";
-
+import { withTimeout } from "@/config/timeout";
 export async function POST(request) {
   try {
     const { userId } = getAuth(request);
@@ -15,9 +15,10 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: "not authorized" });
     }
 
-    const order = await prisma.order.findFirst({
+    const order = await withTimeout(
+    prisma.order.findFirst({
       where: {PaymentId },
-    });
+    }),10000);
 
     if (!order) {
       return NextResponse.json({ success: false, message: "order id not found" });

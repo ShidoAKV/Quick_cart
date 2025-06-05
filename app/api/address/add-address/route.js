@@ -1,6 +1,7 @@
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import prisma from "@/config/db";
+import { withTimeout } from "@/config/timeout";
 
 
 export async function POST(request) {
@@ -20,7 +21,8 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: 'All fields are required' });
     }
 
-    const newAddress = await prisma.address.create({
+    const newAddress = await withTimeout(
+    prisma.address.create({
       data: {
        userId,        
         fullName,
@@ -30,7 +32,7 @@ export async function POST(request) {
         city,
         state
       },
-    });
+    }),10000);
    
 
     return NextResponse.json({

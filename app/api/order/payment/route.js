@@ -2,7 +2,7 @@ import prisma from "@/config/db";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import razorpayInstance from "@/lib/razorpayinstance.js";
-
+import { withTimeout } from "@/config/timeout";
 
 export async function POST(request) {
   try {
@@ -28,7 +28,8 @@ export async function POST(request) {
       receipt: orderId,
     };
 
-    const razorpayOrder = await razorpayInstance.orders.create(options);
+    const razorpayOrder = await withTimeout(
+     razorpayInstance.orders.create(options),30000);
 
     if (!razorpayOrder || !razorpayOrder.id) {
       return NextResponse.json({ success: false, message: "razorpayId missing" });

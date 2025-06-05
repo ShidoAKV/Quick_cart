@@ -4,7 +4,7 @@ import prisma from "@/config/db";
 
 export async function POST(request, { params }) {
     try {
-        const { orderId } = params;
+        const { orderId } =await params;
 
         // Find the order by orderId
         const order = await prisma.order.findUnique({

@@ -2,7 +2,7 @@
 import prisma from "@/config/db";
 import { NextResponse } from "next/server";
 import razorpayInstance from "@/lib/razorpayinstance.js";
-
+import { withTimeout } from "@/config/timeout";
 
 export async function POST(request) {
   try {
@@ -20,9 +20,10 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: 'Razorpay order not found' });
     }
 
-    const order = await prisma.order.findUnique({
+    const order = await withTimeout(
+    prisma.order.findUnique({
       where: { orderId: razorpayOrder.receipt },
-    });
+    }),30000);
 
     if (!order) {
       return NextResponse.json({ success: false, message: 'No matching order found' });
