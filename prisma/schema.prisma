@@ -20,7 +20,9 @@ model User {
   email     String    @unique
   imageUrl  String    @default("https://th.bing.com/th/id/OIP.CuH_kp6AL_Z3CIZAfzPbmQHaGe?w=3683&h=3223&rs=1&pid=ImgDetMain")
   cartItems Json      @default("{}")
-  
+
+  ratedProductIds Json @default("[]") 
+
   products  Product[]
   orders    Order[]
   addresses Address[]
@@ -43,6 +45,7 @@ model Product {
   material    String
   stock       Int        @default(0)
   rating      Float      @default(0.0)
+  ratingcount Int        @default(0)
   date        DateTime   @default(now())
   colorImageMap  Json? 
   orders      OrderItem[]

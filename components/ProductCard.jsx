@@ -7,17 +7,15 @@ const ProductCard = ({ product }) => {
   const { currency, router } = useAppContext();
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.01 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
+    <div
       onClick={() => {
         router.push('/product/' + product.id);
         scrollTo(0, 0);
       }}
-      className="group flex flex-col rounded-lg overflow-hidden  hover:shadow-md transition cursor-pointer w-full max-w-full sm:max-w-[300px]"
+      className="group  shadow-sm flex flex-col rounded-sm overflow-hidden  hover:shadow-md transition cursor-pointer w-full max-w-full sm:max-w-[300px]"
     >
       {/* Product Image */}
-      <div className="relative w-full h-48 sm:h-60 ">
+      <div className="relative w-full h-48 sm:h-60  bg-gray-100">
         <Image
           src={product?.image[0]}
           alt={product?.name}
@@ -48,13 +46,13 @@ const ProductCard = ({ product }) => {
               e.stopPropagation()
               router.push('/product/'+ product.id);
             }}
-            className="text-xs sm:text-sm border border-green-900 text-green-900 hover:bg-green-900 hover:text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded transition"
+            className="cursor-pointer text-xs sm:text-sm border border-green-900 text-green-900 hover:bg-green-900 hover:text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded transition"
           >
             Buy Now
           </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

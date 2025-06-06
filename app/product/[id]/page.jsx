@@ -7,26 +7,23 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import Loading from "@/components/Loading";
 import { useAppContext } from "@/context/AppContext";
-import { FaStar } from "react-icons/fa";
 import toast from "react-hot-toast";
-
+import axios from "axios";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 const Product = () => {
   const { id } = useParams();
-  const { products, router, addToCart } = useAppContext();
+  const { products, router, addToCart, getToken } = useAppContext();
 
   const [productData, setProductData] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [userRating, setUserRating] = useState(0);
+  const [userRating, setUserRating] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const imgContainerRef = useRef(null);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [isZoomVisible, setIsZoomVisible] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-
-
 
   const fetchProductData = () => {
     const product = products.find((product) => String(product.id) === String(id));
@@ -42,7 +39,7 @@ const Product = () => {
       setSelectedSize(product.size?.[0] || null);
       setSelectedColor(defaultColor);
       setMainImage(defaultImages ? defaultImages[0] : null);
-      setUserRating(product.rating || 0);
+      setUserRating(null); // Reset userRating
     }
   };
 
@@ -56,14 +53,11 @@ const Product = () => {
 
   const handleMouseMove = (e) => {
     if (!imgContainerRef.current) return;
-
     const rect = imgContainerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
     const clampedX = Math.min(Math.max(x, 0), rect.width);
     const clampedY = Math.min(Math.max(y, 0), rect.height);
-
     setZoomPosition({
       x: (clampedX / rect.width) * 100,
       y: (clampedY / rect.height) * 100,
@@ -76,41 +70,59 @@ const Product = () => {
     setMainImage(images[0] || null);
   };
 
-  const handleRatingSubmit = async (rating) => {
-    if (!productData || submitting) return;
+  const handleRatingSubmit = async (e) => {
+    const selectedRating = parseInt(e.target.value);
+    if (!selectedRating || !productData) return;
 
-    setSubmitting(true);
     try {
-      await axios.put("/api/product/rating", {
-        productId: productData.id,
-        rating: rating,
-      });
-      setUserRating(rating);
-      toast.success("Rating submitted successfully");
+      setIsSubmitting(true);
+      const token = await getToken();
+
+      const { data } = await axios.post(
+        "/api/product/rating",
+        {
+          productId: productData.id,
+          rating: selectedRating,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data.success) {
+        setUserRating(selectedRating);
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
       toast.error("Failed to submit rating");
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
+  const avgRating = productData.ratingcount
+    ? productData.rating / productData.ratingcount
+    : 0;
 
   return (
     <>
       <Navbar />
       <div className="px-4 sm:px-6 md:px-16 lg:px-32 pt-14 space-y-10 font-sans text-gray-900 text-sm relative">
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 w-full">
-
           {/* Image Section */}
           <div className="w-full lg:w-[60%] flex flex-col lg:flex-row gap-4">
-
-            <div className="flex lg:flex-col gap-3 lg:gap-4 overflow-x-auto lg:overflow-y-auto lg:w-[80px] order-2 lg:order-none">
+            <div className="flex  lg:flex-col gap-3 lg:gap-4 overflow-x-auto lg:overflow-y-auto lg:w-[80px] order-2 lg:order-none">
               {selectedColor &&
                 productData.colorImageMap?.[selectedColor]?.map((image, index) => (
                   <div
                     key={index}
                     onClick={() => setMainImage(image)}
-                    className={`cursor-pointer relative rounded-md overflow-hidden border-2 ${mainImage === image ? "border-green-900" : "border-gray-300"}`}
+                    className={`cursor-pointer relative  rounded-md overflow-hidden border-2 ${mainImage === image ? "border-green-900" : "border-gray-300"
+                      }`}
                     style={{ width: "60px", height: "70px", flexShrink: 0 }}
                   >
                     {image && (
@@ -125,13 +137,12 @@ const Product = () => {
                 ))}
             </div>
 
-
             <div
               ref={imgContainerRef}
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsZoomVisible(true)}
               onMouseLeave={() => setIsZoomVisible(false)}
-              className="relative overflow-hidden border border-gray-200 bg-white w-full h-[400px] lg:h-[600px]"
+              className="relative overflow-hidden border border-gray-300 bg-gray-200 w-full h-[400px] lg:h-[600px]"
             >
               {mainImage ? (
                 <Image
@@ -149,33 +160,30 @@ const Product = () => {
             </div>
           </div>
 
-          <div className="w-full lg:w-[40%] flex flex-col space-y-5 font-medium text-gray-800 ">
+       
+          <div className="w-full lg:w-[40%] flex flex-col space-y-5 font-medium text-gray-800">
             <h1 className="text-5xl font-semibold tracking-wide">{productData.name}</h1>
-            
-             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold">Rating:</span>
-              <div className="flex gap-0.5">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span
-                    key={star}
-                    onClick={() => handleRatingSubmit(star)}
-                    className={`cursor-pointer text-2xl ${
-                      star <= (userRating || productData.rating)
-                        ? "text-yellow-500"
-                        : "text-gray-300"
-                    }`}
-                  >
-                    <FaStar />
-                  </span>
-                ))}
-              </div>
 
-              <span className="text-sm text-gray-600">
-                ({(userRating || productData.rating).toFixed(1)}/5)
+           
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold">Rating:</span>
+              <div className="flex gap-0.5 items-center">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  if (avgRating >= star) {
+                    return <FaStar key={star} className="text-yellow-500 text-xl" />;
+                  } else if (avgRating >= star - 0.5) {
+                    return <FaStarHalfAlt key={star} className="text-yellow-500 text-xl" />;
+                  } else {
+                    return <FaRegStar key={star} className="text-gray-300 text-xl" />;
+                  }
+                })}
+              </div>
+               <span className="ml-2 text-sm text-gray-600">
+                  ({avgRating.toFixed(1)} / 5 from {productData.ratingcount} ratings)
               </span>
             </div>
 
-
+            {/* Stock */}
             {productData.stock > 0 ? (
               <p className="text-green-700 text-md font-bold">
                 {productData.stock} in stock
@@ -186,15 +194,16 @@ const Product = () => {
               </p>
             )}
 
+            {/* Color Selection */}
             <div>
-              <h3 className=" text-lg mb-1 font-semibold"> Color</h3>
+              <h3 className="text-lg mb-1 font-semibold">Color</h3>
               <div className="flex gap-3 cursor-pointer overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                 {productData.colorImageMap &&
                   Object.keys(productData.colorImageMap).map((color) => (
                     <button
                       key={color}
                       onClick={() => handleColorSelect(color)}
-                      className={`w-9 h-9 cursor-pointer rounded-full border-2 ring-1 ring-offset-1 transition duration-150 ${selectedColor === color
+                      className={`w-9 h-9 rounded-full border-2 ring-1 ring-offset-1 transition duration-150 ${selectedColor === color
                         ? "border-black ring-black"
                         : "border-gray-300 ring-transparent"
                         }`}
@@ -206,16 +215,17 @@ const Product = () => {
               </div>
             </div>
 
+            {/* Size Selection */}
             <div>
-              <h3 className="font-semibold text-lg mb-1 "> Size</h3>
+              <h3 className="font-semibold text-lg mb-1">Size</h3>
               <div className="flex gap-2 flex-wrap">
                 {productData.size?.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-1.5 rounded cursor-pointer border text-sm font-semibold tracking-wide ${selectedSize === size
+                    className={`px-4 py-1.5 rounded border text-sm font-semibold ${selectedSize === size
                       ? "bg-gray-800 text-white border-black"
-                      : "bg-white text-gray-00 border-gray-400 hover:border-black"
+                      : "bg-white text-gray-700 border-gray-400 hover:border-black"
                       }`}
                   >
                     {size}
@@ -224,6 +234,7 @@ const Product = () => {
               </div>
             </div>
 
+            {/* Price */}
             <div className="mt-2">
               <p className="text-3xl font-bold text-green-900">
                 ₹{productData.offerPrice}
@@ -233,8 +244,10 @@ const Product = () => {
               </p>
             </div>
 
+            {/* Description */}
             <p className="text-gray-700 leading-relaxed font-normal">{productData.description}</p>
 
+            {/* Zoom Preview */}
             {isZoomVisible && mainImage && (
               <div
                 className="absolute backdrop-blur-2xl rounded-lg border border-gray-300 z-50 hidden md:block"
@@ -251,13 +264,14 @@ const Product = () => {
 
             <hr className="my-4" />
 
+            {/* Cart Actions */}
             {productData.stock > 0 && (
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() =>
                     addToCart(productData.id, selectedSize, selectedColor)
                   }
-                  className="bg-gray-100 cursor-pointer text-base hover:bg-gray-200 border  text-black font-bold py-3 px-6 rounded w-full sm:w-[240px] transition duration-200"
+                  className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-3 px-6 rounded w-full sm:w-[240px]"
                 >
                   Add to Cart
                 </button>
@@ -266,13 +280,33 @@ const Product = () => {
                     addToCart(productData.id, selectedSize, selectedColor);
                     router.push("/cart");
                   }}
-                  className="bg-gray-800 cursor-pointer text-base hover:bg-gray-900 text-white font-bold py-3 px-6 rounded w-full sm:w-[240px] transition duration-200"
+                  className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-6 rounded w-full sm:w-[240px]"
                 >
                   Buy Now
                 </button>
               </div>
             )}
-            
+
+            {/* Rating Input */}
+            <div className="mt-4">
+              <label htmlFor="rating" className="text-sm font-semibold block mb-1">
+                Rate this product:
+              </label>
+              <select
+                id="rating"
+                className="border rounded px-2 py-1 text-sm"
+                onChange={handleRatingSubmit}
+                value={""}
+                disabled={isSubmitting}
+              >
+                <option value="">Select</option>
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>
