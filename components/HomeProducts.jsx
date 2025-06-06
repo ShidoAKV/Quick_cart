@@ -10,7 +10,7 @@ const HomeProducts = () => {
        <p className="text-3xl font-bold text-black">Popular Products</p>
         <div className="w-24 h-1 bg-green-800 mt-2 rounded-full"></div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8 w-full max-w-screen-xl">
+      <div className="grid grid-cols-1  md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8 w-full max-w-screen-xl">
         {displayedProducts?.map((product, index) => (
           <ProductCard key={index} product={product} />
         ))}

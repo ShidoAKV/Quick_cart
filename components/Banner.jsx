@@ -6,7 +6,7 @@ import { useAppContext } from "@/context/AppContext";
 const Banner = () => {
   const {router}=useAppContext();
   return (
-    <div className="flex flex-row flex-wrap items-center justify-center md:justify-between bg-[#f2f4f8] rounded-3xl overflow-hidden shadow-md my-16 px-6 md:px-20 py-10 gap-6">
+    <div className="flex flex-row flex-wrap items-center justify-center md:justify-between bg-[#f2f4f8] rounded-sm overflow-hidden shadow-md my-16 px-6 md:px-20 py-10 gap-6">
       <Image
         className="w-44 md:w-60 rounded-lg object-cover"
         src={assets.lefttshit}

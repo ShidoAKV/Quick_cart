@@ -42,11 +42,11 @@ const FeaturedProduct = () => {
       </div>
 
       {/* Product Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-14 px-4 md:px-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-14 px-1 md:px-12">
         {products?.map(({ id, image, title, tagline, description }) => (
           <div
             key={id}
-            className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md group hover:shadow-lg transition duration-300"
+            className="bg-white border border-gray-200 rounded-sm overflow-hidden shadow-md group hover:shadow-lg transition duration-300"
           >
             <div className="relative w-full h-64 overflow-hidden">
               <Image
@@ -62,7 +62,7 @@ const FeaturedProduct = () => {
             <div className="p-5 space-y-2">
               <h3 className="text-xl font-semibold text-black">{title}</h3>
               <p className="text-gray-700 text-sm">{description}</p>
-              <button className="mt-3 inline-flex items-center gap-2 cursor-pointer bg-black/80 hover:bg-black text-white text-sm px-4 py-2 rounded transition"
+              <button className="mt-3 inline-flex items-center gap-2 cursor-pointer bg-black/80 hover:bg-black text-white text-sm px-4 py-2 rounded-sm transition"
                onClick={()=>router.push('/all-products')}
               >
                 Buy Now

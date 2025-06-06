@@ -7,6 +7,9 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import Loading from "@/components/Loading";
 import { useAppContext } from "@/context/AppContext";
+import { FaStar } from "react-icons/fa";
+import toast from "react-hot-toast";
+
 
 const Product = () => {
   const { id } = useParams();
@@ -16,28 +19,37 @@ const Product = () => {
   const [mainImage, setMainImage] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-
+  const [userRating, setUserRating] = useState(0);
   const imgContainerRef = useRef(null);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [isZoomVisible, setIsZoomVisible] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const fetchProductData = async () => {
-    const product = products.find((product) => product.id === id);
+
+
+
+  const fetchProductData = () => {
+    const product = products.find((product) => String(product.id) === String(id));
     setProductData(product);
 
     if (product) {
-      const defaultColor = product.colorImageMap
+      const defaultColor = product.colorImageMap && Object.keys(product.colorImageMap).length > 0
         ? Object.keys(product.colorImageMap)[0]
         : null;
+
       const defaultImages = defaultColor ? product.colorImageMap[defaultColor] : null;
-      setSelectedSize(product.size[0] || null);
+
+      setSelectedSize(product.size?.[0] || null);
       setSelectedColor(defaultColor);
       setMainImage(defaultImages ? defaultImages[0] : null);
+      setUserRating(product.rating || 0);
     }
   };
 
   useEffect(() => {
-    fetchProductData();
+    if (products && products.length > 0) {
+      fetchProductData();
+    }
   }, [id, products]);
 
   if (!productData) return <Loading />;
@@ -60,141 +72,132 @@ const Product = () => {
 
   const handleColorSelect = (color) => {
     setSelectedColor(color);
-    const images = productData.colorImageMap?.[color] || [];
+    const images = productData?.colorImageMap?.[color] || [];
     setMainImage(images[0] || null);
   };
+
+  const handleRatingSubmit = async (rating) => {
+    if (!productData || submitting) return;
+
+    setSubmitting(true);
+    try {
+      await axios.put("/api/product/rating", {
+        productId: productData.id,
+        rating: rating,
+      });
+      setUserRating(rating);
+      toast.success("Rating submitted successfully");
+    } catch (error) {
+      toast.error("Failed to submit rating");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
 
   return (
     <>
       <Navbar />
-      <div className="px-6 md:px-16 lg:px-32 pt-14 space-y-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          {/* Left Section: Images */}
-          <div className="flex flex-col md:flex-row gap-6 px-5 lg:px-16 xl:px-20">
-            {/* Main Image */}
-            <div
-              ref={imgContainerRef}
-              onMouseMove={handleMouseMove}
-              onMouseEnter={() => setIsZoomVisible(true)}
-              onMouseLeave={() => setIsZoomVisible(false)}
-              className="relative rounded-lg overflow-hidden bg-gray-500/10 cursor-crosshair w-full h-[75vw] sm:w-[300px] sm:h-[450px] mx-auto"
-            >
-              {mainImage && (
-                <Image
-                  src={mainImage}
-                  alt={productData.name}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              )}
-            </div>
+      <div className="px-4 sm:px-6 md:px-16 lg:px-32 pt-14 space-y-10 font-sans text-gray-900 text-sm relative">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 w-full">
 
-            {/* Thumbnails - vertical on md+, horizontal scroll on mobile */}
-            <div
-              className="mt-4 md:mt-0 md:flex md:flex-col md:overflow-y-auto md:max-h-[450px] md:w-[110px]
-                         flex flex-row md:flex-col overflow-x-auto md:overflow-x-hidden space-x-3 md:space-x-0 md:space-y-4"
-              style={{ maxHeight: "450px" }}
-            >
+          {/* Image Section */}
+          <div className="w-full lg:w-[60%] flex flex-col lg:flex-row gap-4">
+
+            <div className="flex lg:flex-col gap-3 lg:gap-4 overflow-x-auto lg:overflow-y-auto lg:w-[80px] order-2 lg:order-none">
               {selectedColor &&
-                productData?.colorImageMap?.[selectedColor]?.map((image, index) => (
+                productData.colorImageMap?.[selectedColor]?.map((image, index) => (
                   <div
                     key={index}
                     onClick={() => setMainImage(image)}
-                    className={`cursor-pointer rounded-lg overflow-hidden border-2
-                      ${mainImage === image ? "border-green-800" : "border-gray-300"}
-                    `}
+                    className={`cursor-pointer relative rounded-md overflow-hidden border-2 ${mainImage === image ? "border-green-900" : "border-gray-300"}`}
                     style={{ width: "60px", height: "70px", flexShrink: 0 }}
                   >
                     {image && (
                       <Image
                         src={image}
                         alt={`Thumbnail ${index + 1}`}
-                        width={60}
-                        height={70}
-                        className="object-cover"
+                        fill
+                        className="object-cover w-full h-full"
                       />
                     )}
                   </div>
                 ))}
             </div>
+
+
+            <div
+              ref={imgContainerRef}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={() => setIsZoomVisible(true)}
+              onMouseLeave={() => setIsZoomVisible(false)}
+              className="relative overflow-hidden border border-gray-200 bg-white w-full h-[400px] lg:h-[600px]"
+            >
+              {mainImage ? (
+                <Image
+                  src={mainImage}
+                  alt={productData.name}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              ) : (
+                <div className="flex items-center justify-center w-full h-full text-gray-400">
+                  No Image
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Right Section: Product Info */}
-          <div className="flex flex-col">
-            <h1 className="text-3xl font-medium text-gray-800/90 mb-4">
-              {productData.name}
-            </h1>
-
-            {isZoomVisible && (
-              <div
-                className="absolute rounded-lg overflow-hidden border border-gray-300 scale-z-105 z-50 cursor-crosshair hidden md:block"
-                style={{ width: "300px", height: "250px" }}
-              >
-                <div
-                  className="w-full h-full bg-no-repeat bg-contain"
-                  style={{
-                    backgroundImage: `url(${mainImage})`,
-                    backgroundSize: "330%",
-                    backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                  }}
-                />
+          <div className="w-full lg:w-[40%] flex flex-col space-y-5 font-medium text-gray-800 ">
+            <h1 className="text-5xl font-semibold tracking-wide">{productData.name}</h1>
+            
+             <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold">Rating:</span>
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    onClick={() => handleRatingSubmit(star)}
+                    className={`cursor-pointer text-2xl ${
+                      star <= (userRating || productData.rating)
+                        ? "text-yellow-500"
+                        : "text-gray-300"
+                    }`}
+                  >
+                    <FaStar />
+                  </span>
+                ))}
               </div>
-            )}
+
+              <span className="text-sm text-gray-600">
+                ({(userRating || productData.rating).toFixed(1)}/5)
+              </span>
+            </div>
+
 
             {productData.stock > 0 ? (
-              <p className="text-green-700 w-[50%] text-sm sm:text-base font-medium mt-4">
-                {productData.stock} stock remaining
+              <p className="text-green-700 text-md font-bold">
+                {productData.stock} in stock
               </p>
             ) : (
-              <p className="bg-red-500 w-[38%] md:w-[20%] text-white text-xs sm:text-sm font-medium rounded-lg px-3 py-1 inline-block mt-2">
+              <p className="bg-red-600 text-white text-md font-semibold px-3 py-1 rounded w-fit">
                 Out of stock
               </p>
             )}
 
-            <p className="text-gray-600 mt-3">{productData.description}</p>
-
-            <p className="text-3xl font-medium mt-6">
-              ₹{productData.offerPrice}
-              <span className="text-base font-normal text-gray-800/60 line-through ml-2">
-                MRP: ₹{productData.price}
-              </span>
-            </p>
-
-            <hr className="bg-gray-600 my-6" />
-
-            {/* Sizes */}
             <div>
-              <h3 className="font-semibold mb-2">Select Size:</h3>
-              <div className="flex gap-3 flex-wrap">
-                {productData?.size?.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 rounded border ${
-                      selectedSize === size
-                        ? "bg-gray-900/90 text-white border-gray-700"
-                        : "bg-white text-gray-800 border-gray-300"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Colors - horizontal scroll */}
-            <div className="mt-6">
-              <h3 className="font-semibold mb-2">Select Color:</h3>
-              <div className="flex gap-3 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                {productData?.colorImageMap &&
+              <h3 className=" text-lg mb-1 font-semibold"> Color</h3>
+              <div className="flex gap-3 cursor-pointer overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                {productData.colorImageMap &&
                   Object.keys(productData.colorImageMap).map((color) => (
                     <button
                       key={color}
                       onClick={() => handleColorSelect(color)}
-                      className={`w-8 h-8 rounded-full border-2 flex-shrink-0 ${
-                        selectedColor === color ? "border-gray-600" : "border-gray-300"
-                      }`}
+                      className={`w-9 h-9 cursor-pointer rounded-full border-2 ring-1 ring-offset-1 transition duration-150 ${selectedColor === color
+                        ? "border-black ring-black"
+                        : "border-gray-300 ring-transparent"
+                        }`}
                       style={{ backgroundColor: color.toLowerCase() }}
                       aria-label={`Select color ${color}`}
                       title={color}
@@ -203,16 +206,58 @@ const Product = () => {
               </div>
             </div>
 
-            <hr className="my-6" />
+            <div>
+              <h3 className="font-semibold text-lg mb-1 "> Size</h3>
+              <div className="flex gap-2 flex-wrap">
+                {productData.size?.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`px-4 py-1.5 rounded cursor-pointer border text-sm font-semibold tracking-wide ${selectedSize === size
+                      ? "bg-gray-800 text-white border-black"
+                      : "bg-white text-gray-00 border-gray-400 hover:border-black"
+                      }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-            {/* Action Buttons */}
+            <div className="mt-2">
+              <p className="text-3xl font-bold text-green-900">
+                ₹{productData.offerPrice}
+                <span className="text-lg font-semibold text-gray-500 line-through ml-3">
+                  ₹{productData.price}
+                </span>
+              </p>
+            </div>
+
+            <p className="text-gray-700 leading-relaxed font-normal">{productData.description}</p>
+
+            {isZoomVisible && mainImage && (
+              <div
+                className="absolute backdrop-blur-2xl rounded-lg border border-gray-300 z-50 hidden md:block"
+                style={{
+                  width: "300px",
+                  height: "250px",
+                  backgroundImage: `url(${mainImage})`,
+                  backgroundSize: "330%",
+                  backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                  backgroundRepeat: "no-repeat",
+                }}
+              />
+            )}
+
+            <hr className="my-4" />
+
             {productData.stock > 0 && (
-              <div className="flex flex-row items-center mt-10 gap-4 flex-wrap">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() =>
                     addToCart(productData.id, selectedSize, selectedColor)
                   }
-                  className="cursor-pointer w-[280px] py-3.5 rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition"
+                  className="bg-gray-100 cursor-pointer text-base hover:bg-gray-200 border  text-black font-bold py-3 px-6 rounded w-full sm:w-[240px] transition duration-200"
                 >
                   Add to Cart
                 </button>
@@ -221,12 +266,13 @@ const Product = () => {
                     addToCart(productData.id, selectedSize, selectedColor);
                     router.push("/cart");
                   }}
-                  className="cursor-pointer w-[280px]   py-3.5 rounded-sm bg-gray-900/90 text-white hover:bg-gray-900 transition"
+                  className="bg-gray-800 cursor-pointer text-base hover:bg-gray-900 text-white font-bold py-3 px-6 rounded w-full sm:w-[240px] transition duration-200"
                 >
-                  Buy now
+                  Buy Now
                 </button>
               </div>
             )}
+            
           </div>
         </div>
       </div>
