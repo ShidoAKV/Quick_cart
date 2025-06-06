@@ -94,6 +94,7 @@ const Orders = () => {
     }
   }, [user]);
   
+  
   return (
     <div className="flex-1 h-screen overflow-auto flex flex-col justify-between text-sm bg-gray-50">
       {loading ? (
@@ -125,7 +126,7 @@ const Orders = () => {
           <div className="hidden md:grid grid-cols-8 font-semibold border-b border-gray-300 p-5">
             <div>Order Details</div>
             <div>Address</div>
-            <div className="text-center">Total Items</div>
+            <div className="text-center">Items/color/ProductName</div>
             <div className="text-right">Amount/</div>
             <div>Payment Method</div>
             <div>Payment Status</div>
@@ -150,14 +151,12 @@ const Orders = () => {
                     width={64}
                     height={64}
                   />
-                  <p className="font-medium truncate">
-                    {order.items.map(item => `${item.product.name} x${item.quantity}`).join(", ")}
+                  <p className="font-medium truncate bg-black rounded-sm text-white flex flex-wrap">
+                    {order?.items.map(item => `${item.product.name} x${item.quantity},,${item.color}`).join(", ")}
                   </p>
                 </div>
 
                 <p><strong>Address:</strong> {order.address.fullName}, {order.address.area}, {order.address.city}, {order.address.state}, {order.address.phoneNumber}</p>
-
-                <p><strong>Total Items:</strong> {order.items.length}</p>
 
                 <p><strong>Amount:</strong> {currency}{order.amount.toFixed(2)}</p>
 
@@ -175,6 +174,7 @@ const Orders = () => {
                 }) : 'No time found'}</p>
 
                 <p><strong>Status:</strong> {order.status}</p>
+                
 
                 <div className="flex flex-wrap gap-2 mt-2">
                   {!order.cancelled && !order.isCompleted && (
@@ -222,9 +222,6 @@ const Orders = () => {
                   height={64}
                 />
                 <div className="min-w-0">
-                  <p className="font-medium truncate">
-                    {order.items.map(item => `${item.product.name} x${item.quantity}`).join(", ")}
-                  </p>
                   <p className="text-xs text-gray-600 mt-1">
                     <span><strong>Order Date:</strong> {new Date(order.date).toLocaleDateString()}</span><br />
                     <span><strong>Time:</strong> {order.date ? new Date(order.date).toLocaleTimeString('en-IN', {
@@ -247,7 +244,7 @@ const Orders = () => {
               </div>
 
               <div className="hidden md:flex justify-center font-medium">
-                {order.items.length>0?order.items.length:0}
+                    {order?.items.map(item => `${item.product.name},${item.quantity},${item.color}`).join(", ")}
               </div>
 
               <div className="hidden md:flex justify-end font-medium whitespace-nowrap">
