@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useEffect, useState } from "react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
@@ -14,6 +14,11 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState(null);
+
+  const [colorInput, setColorInput] = useState("");
+  const [colorImageMap, setColorImageMap] = useState({});
+  const [imageInputs, setImageInputs] = useState([null, null, null, null]);
+
   const {
     register,
     handleSubmit,
@@ -57,10 +62,42 @@ const ProductList = () => {
     }
   };
 
+  
+  const addColorImage = () => {
+    const colorList = colorInput.split(',').map(c => c.trim().toLowerCase()).filter(Boolean);
+    const validImages = imageInputs.filter(file => file !== null);
+
+    if (!colorList.length) {
+      toast.error("Please enter at least one valid color.");
+      return;
+    }
+
+    if (!validImages.length) {
+      toast.error("Please select at least one image.");
+      return;
+    }
+
+    if (validImages.length > 4) {
+      toast.error("You can upload a maximum of 4 images per color.");
+      return;
+    }
+
+    setColorImageMap(prev => {
+      const updated = { ...prev };
+      colorList.forEach(color => {
+        const existing = updated[color] || [];
+        updated[color] = [...existing, ...validImages];
+      });
+      return updated;
+    });
+
+    setColorInput("");
+    setImageInputs([null, null, null, null]);
+  };
+
   const onSubmit = async (formData) => {
     try {
       const { offerPrice, color, stock } = formData;
-
       const { id } = editingProduct;
       const payload = new FormData();
 
@@ -72,9 +109,29 @@ const ProductList = () => {
         payload.append("color", JSON.stringify(colorArray));
       }
 
+      if(colorImageMap){
+         const rawColorMap = {};
+        Object.entries(colorImageMap).forEach(([color, files]) => {
+          const filenames = [];
+          files.forEach(file => {
+            if (typeof file === "string") {
+              filenames.push(file);
+            } else {
+
+              payload.append("images", file);
+              filenames.push(file.name);
+            }
+          });
+
+          rawColorMap[color] = filenames;
+        });
+        payload.append("colorImageMap", JSON.stringify(rawColorMap));
+     }
+
+     
 
       const { data } = await axios.post(`/api/product/edit/${id}`, payload, {
-        headers: { Authorization: `Bearer ${authToken.current}` }
+        headers: { Authorization: `Bearer ${authToken.current}` },
       });
 
       if (data.success) {
@@ -89,7 +146,6 @@ const ProductList = () => {
     }
   };
 
-
   useEffect(() => {
     if (user) fetchSellerProduct();
   }, [user]);
@@ -99,6 +155,9 @@ const ProductList = () => {
       setValue("offerPrice", editingProduct.offerPrice);
       setValue("color", Array.isArray(editingProduct.color) ? editingProduct.color.join(", ") : editingProduct.color);
       setValue("stock", editingProduct.stock);
+      setColorImageMap(editingProduct.colorImageMap || {});
+      setImageInputs([null, null, null, null]);
+      setColorInput("");
     }
   }, [editingProduct, setValue]);
 
@@ -140,15 +199,16 @@ const ProductList = () => {
                     <td className="px-4 py-3 text-gray-700 font-medium">₹{product.offerPrice}</td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       <div className="flex gap-2">
-                        {product?.color?.map((color, idx) => (
-                          <span
-                            key={idx}
-                            className="w-5 h-5 rounded-full border border-gray-300"
-                            style={{ backgroundColor: color.toLowerCase() }}
-                            title={color}
-                            aria-label={color}
-                          />
-                        ))}
+                        {product?.colorImageMap &&
+                          Object.keys(product.colorImageMap).map((color) => (
+                            <span
+                              key={color}
+                              className="w-5 h-5 rounded-full border border-gray-300 inline-block mr-1"
+                              style={{ backgroundColor: color.toLowerCase() }}
+                              title={color}
+                              aria-label={color}
+                            />
+                          ))}
                       </div>
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell text-gray-800">{product.stock}</td>
@@ -191,23 +251,93 @@ const ProductList = () => {
                   <label className="block text-sm mb-2">Offer Price (₹):</label>
                   <input
                     type="number"
-                    {...register("offerPrice", { required: true })}
+                    {...register("offerPrice")}
                     className="w-full mb-4 p-2 border rounded"
                   />
 
                   <label className="block text-sm mb-2">Colors (comma-separated):</label>
                   <input
                     type="text"
-                    {...register("color", { required: true })}
+                    {...register("color")}
                     className="w-full mb-4 p-2 border rounded"
                   />
 
                   <label className="block text-sm mb-2">Stock:</label>
                   <input
                     type="number"
-                    {...register("stock", { required: true })}
+                    {...register("stock")}
                     className="w-full mb-4 p-2 border rounded"
                   />
+
+                  {/* 4 separate image inputs per color */}
+                  <div className="mb-4">
+                    <label className="block text-sm mb-2">Add Color + Image(s):</label>
+                    <input
+                      type="text"
+                      value={colorInput}
+                      onChange={(e) => setColorInput(e.target.value)}
+                      placeholder="e.g. red, blue, green"
+                      className="p-2 border rounded w-full mb-2"
+                    />
+
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      {[0, 1, 2, 3].map((i) => (
+                        <input
+                          key={i}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            setImageInputs((prev) => {
+                              const updated = [...prev];
+                              updated[i] = file;
+                              return updated;
+                            });
+                          }}
+                          className="p-2 border rounded"
+                        />
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={addColorImage}
+                      className="text-sm bg-indigo-600 text-white px-4 py-1.5 rounded hover:bg-indigo-700"
+                    >
+                      Add Color & Image(s)
+                    </button>
+                  </div>
+
+                  {/* Show preview of color-image map */}
+                  <div className="flex flex-wrap gap-2 mb-4 max-h-48 overflow-auto">
+                    {Object.entries(colorImageMap).map(([color, images]) =>
+                      images
+                        ?.filter((img) => img != null)
+                        .map((img, idx) => {
+                          const fileName = typeof img === "string" ? img : img.name || "Unknown";
+                          return (
+                            <div key={`${color}-${idx}`} className="flex items-center gap-2 border p-1 rounded">
+                              <span
+                                className="w-5 h-5 rounded-full border"
+                                style={{ backgroundColor: color.toLowerCase() }}
+                                title={color}
+                              />
+                              {typeof img === "string" ? (
+                                <span className="text-sm text-gray-700 truncate max-w-xs" title={fileName}>
+                                  {fileName}
+                                </span>
+                              ) : (
+                                <img
+                                  src={URL.createObjectURL(img)}
+                                  alt="preview"
+                                  className="w-10 h-10 object-cover rounded border"
+                                />
+                              )}
+                            </div>
+                          );
+                        })
+                    )}
+                  </div>
 
                   <div className="flex justify-end gap-3">
                     <button
@@ -228,9 +358,9 @@ const ProductList = () => {
               </div>
             </div>
           )}
-
         </div>
       )}
+
       <Footer />
     </div>
   );

@@ -14,7 +14,7 @@ export async function GET(request) {
     
     // Fetch user with cartItems using Prisma
     const user = await withTimeout(
-    prisma.user.findUnique({
+      prisma.user.findUnique({
       where: { id: userId },
       select: {
         cartItems: true,

@@ -16,47 +16,50 @@ export const runtime = 'nodejs';
 
 export async function POST(request) {
   try {
-    
-    
     const { userId } = getAuth(request);
 
     const isSeller = await authSeller(userId);
     if (!isSeller) {
       return NextResponse.json({ success: false, message: 'Not authorised' });
     }
-  
+
     const formData = await request.formData();
+
     const name = formData.get('name');
     const description = formData.get('description');
     const price = formData.get('price');
     const offerPrice = formData.get('offerPrice');
     const category = formData.get('category');
     const material = formData.get('material');
-    const stock=formData.get('stock');
+    const stock = formData.get('stock');
     const size = JSON.parse(formData.get('size') || '[]');
-    const color = JSON.parse(formData.get('color') || '[]');
+    const colorImageMapRaw = formData.get('colorImageMap');
+    const colorImageMap = JSON.parse(colorImageMapRaw || '{}');
+
     const files = formData.getAll('images');
 
-
-    if (!files || files.length === 0||!size||!color||!price||!category||!offerPrice||!stock) {
-      return NextResponse.json({ success: false, message: 'No files uploaded' });
-    }
+    if (!files || files.length === 0 || !size || !price || !category || !offerPrice || !stock || !colorImageMapRaw) {
+      return NextResponse.json({ success: false, message: 'Missing fields or files' });
+    } 
+    console.log(files);
+    
 
     const validFiles = files.filter(file => file && typeof file.arrayBuffer === 'function');
     if (validFiles.length === 0) {
       return NextResponse.json({ success: false, message: 'No valid files uploaded' });
-    } 
-    
-    
-    const uploadedImageUrls = [];
+    }
+
+    const imageUrlMap = {};
 
     for (const file of validFiles) {
+      const filename = file.name;
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
       const uploadResult = await new Promise((resolve, reject) => {
+        
         cloudinary.uploader.upload_stream(
-          { resource_type: 'image' },
+          { resource_type: 'image',public_id:filename.split('.')[0] },
           (error, result) => {
             if (error) return reject(error);
             resolve(result);
@@ -64,27 +67,35 @@ export async function POST(request) {
         ).end(buffer);
       });
 
-      uploadedImageUrls.push(uploadResult.secure_url);
+      imageUrlMap[filename] = uploadResult.secure_url;
+    }
+  
+    const finalColorImageMap = {};
+  
+     for (const [colorKey, filenames] of Object.entries(colorImageMap)) {
+       finalColorImageMap[colorKey] = filenames?.map(filename => imageUrlMap[filename]).filter(Boolean)
     }
 
+  
     const newProduct = await withTimeout(
       prisma.product.create({
-      data: {
-        userId,
-        name: name || 'Untitled',
-        description: description || '',
-        category: category || '',
-        price: Number(price),
-        offerPrice: Number(offerPrice),
-        image: uploadedImageUrls,
-        date: new Date(),
-        size,
-        stock:parseInt(stock),
-        color,
-        material: material || '',
-        brand: 'Pilley',
-      },
-    }),15000);
+        data: {
+          userId,
+          name: name || 'Untitled',
+          description: description || '',
+          category: category || '',
+          price: Number(price),
+          offerPrice: Number(offerPrice),
+          image: Object.values(imageUrlMap),
+          date: new Date(),
+          size,
+          stock: parseInt(stock),
+          material: material || '',
+          brand: 'Pilley',
+          colorImageMap: finalColorImageMap,
+        },
+      }), 15000
+    );
 
     return NextResponse.json({
       success: true,
@@ -94,4 +105,4 @@ export async function POST(request) {
   } catch (error) {
     return NextResponse.json({ success: false, message: error.message });
   }
-} 
+}

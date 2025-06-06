@@ -44,8 +44,9 @@ model Product {
   stock       Int        @default(0)
   rating      Float      @default(0.0)
   date        DateTime   @default(now())
-
+  colorImageMap  Json? 
   orders      OrderItem[]
+  
 }
 
 model Order {

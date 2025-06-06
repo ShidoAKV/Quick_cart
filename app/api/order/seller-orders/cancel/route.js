@@ -15,7 +15,6 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: "not authorized" });
     }
 
-    // Find the order by orderId
     const order = await prisma.order.findUnique({
       where: { orderId },
     });
