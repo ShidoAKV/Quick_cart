@@ -64,6 +64,8 @@ const Product = () => {
     });
   };
 
+  console.log(typeof productData.id);
+  
   const handleColorSelect = (color) => {
     setSelectedColor(color);
     const images = productData?.colorImageMap?.[color] || [];

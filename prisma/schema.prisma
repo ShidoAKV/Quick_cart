@@ -21,7 +21,7 @@ model User {
   imageUrl  String    @default("https://th.bing.com/th/id/OIP.CuH_kp6AL_Z3CIZAfzPbmQHaGe?w=3683&h=3223&rs=1&pid=ImgDetMain")
   cartItems Json      @default("{}")
 
-  ratedProductIds Json @default("[]") 
+  ratedProductIds String[] @default([])
 
   products  Product[]
   orders    Order[]

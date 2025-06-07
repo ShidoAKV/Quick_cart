@@ -93,8 +93,8 @@ const Orders = () => {
       fetchSellerOrders();
     }
   }, [user]);
-  
-  
+
+
   return (
     <div className="flex-1 h-screen overflow-auto flex flex-col justify-between text-sm bg-gray-50">
       {loading ? (
@@ -126,7 +126,7 @@ const Orders = () => {
           <div className="hidden md:grid grid-cols-8 font-semibold border-b border-gray-300 p-5">
             <div>Order Details</div>
             <div>Address</div>
-            <div className="text-center">Items/color/ProductName</div>
+            <div className="text-center">ProductName/Items/color</div>
             <div className="text-right">Amount/</div>
             <div>Payment Method</div>
             <div>Payment Status</div>
@@ -134,7 +134,7 @@ const Orders = () => {
             <div>Actions</div>
           </div>
 
-    
+
           {orders?.map((order, index) => (
             <div
               key={index}
@@ -144,15 +144,23 @@ const Orders = () => {
               {/* MOBILE VIEW: stacked */}
               <div className="md:hidden space-y-1">
                 <div className="flex items-center gap-3">
-                  <Image
-                    className="w-16 h-16 object-cover rounded"
-                    src={assets.box_icon}
-                    alt="box_icon"
-                    width={64}
-                    height={64}
-                  />
-                  <p className="font-medium truncate bg-black rounded-sm text-white flex flex-wrap">
-                    {order?.items.map(item => `${item.product.name} x${item.quantity},,${item.color}`).join(", ")}
+                  {order.items?.map((item, index) => {
+                    const imageUrl = item.product?.colorImageMap?.[item.color]?.[0] || assets.box_icon;
+
+                    return (
+                      <Image
+                        key={index}
+                        className="w-16 h-16 object-cover rounded"
+                        src={imageUrl}
+                        alt="box_icon"
+                        width={64}
+                        height={64}
+                      />
+                    );
+                  })}
+
+                  <p className="font-medium truncate  rounded-sm text-black flex flex-wrap">
+                    {order?.items.map(item => `${item.product.name} x${item.quantity},${item.color}`).join(", ")}
                   </p>
                 </div>
 
@@ -174,7 +182,7 @@ const Orders = () => {
                 }) : 'No time found'}</p>
 
                 <p><strong>Status:</strong> {order.status}</p>
-                
+
 
                 <div className="flex flex-wrap gap-2 mt-2">
                   {!order.cancelled && !order.isCompleted && (
@@ -214,13 +222,21 @@ const Orders = () => {
 
               {/* DESKTOP VIEW: grid columns */}
               <div className="hidden md:flex items-center gap-4">
-                <Image
-                  className="w-16 h-16 object-cover rounded"
-                  src={assets.box_icon}
-                  alt="box_icon"
-                  width={64}
-                  height={64}
-                />
+                {order.items?.map((item, index) => {
+                  const imageUrl = item.product?.colorImageMap?.[item.color]?.[0] || assets.box_icon;
+
+                  return (
+                    <Image
+                      key={index}
+                      className="w-16 h-16 object-cover rounded"
+                      src={imageUrl}
+                      alt="box_icon"
+                      width={64}
+                      height={64}
+                    />
+                  );
+                })}
+
                 <div className="min-w-0">
                   <p className="text-xs text-gray-600 mt-1">
                     <span><strong>Order Date:</strong> {new Date(order.date).toLocaleDateString()}</span><br />
@@ -244,7 +260,7 @@ const Orders = () => {
               </div>
 
               <div className="hidden md:flex justify-center font-medium">
-                    {order?.items.map(item => `${item.product.name},${item.quantity},${item.color}`).join(", ")}
+                {order?.items.map(item => `${item.product.name},${item.quantity},${item.color}`).join(", ")}
               </div>
 
               <div className="hidden md:flex justify-end font-medium whitespace-nowrap">
