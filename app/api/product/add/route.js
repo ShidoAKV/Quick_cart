@@ -41,9 +41,7 @@ export async function POST(request) {
     if (!files || files.length === 0 || !size || !price || !category || !offerPrice || !stock || !colorImageMapRaw) {
       return NextResponse.json({ success: false, message: 'Missing fields or files' });
     } 
-    console.log(files);
     
-
     const validFiles = files.filter(file => file && typeof file.arrayBuffer === 'function');
     if (validFiles.length === 0) {
       return NextResponse.json({ success: false, message: 'No valid files uploaded' });

@@ -35,8 +35,7 @@ export async function POST(request) {
         message: "You have already voted",
       });
     }
-
-    // Apply rating update and store that user rated this product
+    
     await prisma.$transaction([
       prisma.product.update({
         where: { id: productId },

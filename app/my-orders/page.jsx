@@ -36,12 +36,12 @@ const MyOrders = () => {
     };
 
     const initPay = (order) => {
-        //     RAZORPAY_KEY_ID="rzp_test_nxSF77arxy9gvB"
-        if (typeof window === 'undefined' || !window.Razorpay) {
+      
+        if (!window.Razorpay) {
             toast.error('Razorpay is not available');
             return;
         }
-
+        
         const options = {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
             amount: order.amount,
@@ -53,8 +53,7 @@ const MyOrders = () => {
                 try {
                     const token = await getToken();
 
-                    const { data } = await axios.post('/api/order/verify', response, { headers: `Bearer ${token}` })
-
+                    const { data } = await axios.post('/api/order/verify', response, { headers:{Authorization: `Bearer ${token}` }})
                     if (data.success) {
                         fetchOrders();
                         router.push('/my-orders')
@@ -79,17 +78,18 @@ const MyOrders = () => {
             toast.loading("Processing payment...");
             const token = await getToken();
             const { data } = await axios.post(`/api/order/payment`, { orderId }, {
-                headers: { Authorization: ` Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` }
             });
+          
             toast.dismiss();
             if (data.success) {
+                console.log(data);
                 toast.success("Payment initiats");
                 initPay(data.order);
             } else {
                 toast.error(data.message);
             }
         } catch (error) {
-            toast.dismiss();
             toast.error("Payment Failed: " + error.message);
         } finally {
             setProcessingOrderId(null);

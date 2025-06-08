@@ -12,7 +12,10 @@ export async function POST(request) {
 
     if (!razorpay_order_id) {
       return NextResponse.json({ success: false, message: 'Missing required fields' });
-    }
+    } 
+
+   
+    
 
     const razorpayOrder = await razorpayInstance.orders.fetch(razorpay_order_id);
 
@@ -20,6 +23,7 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: 'Razorpay order not found' });
     }
 
+     
     const order = await withTimeout(
     prisma.order.findUnique({
       where: { orderId: razorpayOrder.receipt },
@@ -28,6 +32,7 @@ export async function POST(request) {
     if (!order) {
       return NextResponse.json({ success: false, message: 'No matching order found' });
     }
+  
 
     if (razorpayOrder.status === 'paid') {
       // Update payment status in DB

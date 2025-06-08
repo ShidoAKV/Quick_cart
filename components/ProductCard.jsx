@@ -12,10 +12,10 @@ const ProductCard = ({ product }) => {
         router.push('/product/' + product.id);
         scrollTo(0, 0);
       }}
-      className="group  shadow-sm flex flex-col rounded-sm overflow-hidden  hover:shadow-md transition cursor-pointer w-full max-w-full sm:max-w-[300px]"
+      className="group  shadow-sm flex flex-col rounded-sm overflow-hidden hover:shadow-md transition cursor-pointer w-full max-w-full sm:max-w-[300px]"
     >
       {/* Product Image */}
-      <div className="relative w-full h-48 sm:h-60  bg-gray-100">
+      <div className="relative w-full   h-48 sm:h-60  ">
         <Image
           src={product?.image[0]}
           alt={product?.name}

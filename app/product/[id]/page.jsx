@@ -64,8 +64,8 @@ const Product = () => {
     });
   };
 
-  console.log(typeof productData.id);
-  
+
+
   const handleColorSelect = (color) => {
     setSelectedColor(color);
     const images = productData?.colorImageMap?.[color] || [];
@@ -106,53 +106,57 @@ const Product = () => {
     }
   };
 
+
   const avgRating = productData.ratingcount
     ? productData.rating / productData.ratingcount
     : 0;
-
+  
   return (
     <>
       <Navbar />
-      <div className="px-4 sm:px-6 md:px-16 lg:px-32 pt-14 space-y-10 font-sans text-gray-900 text-sm relative">
+      <div className="px-4 sm:px-6 md:px-16 lg:px-32 pt-12 space-y-10 font-sans text-gray-900 text-sm relative">
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 w-full">
           {/* Image Section */}
-          <div className="w-full lg:w-[60%] flex flex-col lg:flex-row gap-4">
-            <div className="flex  lg:flex-col gap-3 lg:gap-4 overflow-x-auto lg:overflow-y-auto lg:w-[80px] order-2 lg:order-none">
+          <div className="w-full xl:w-full flex flex-col lg:flex-row gap-2 max-w-[1280px] mx-auto">
+            {/* Thumbnails (smaller width) */}
+            <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto lg:w-[60px] order-2 lg:order-none">
               {selectedColor &&
-                productData.colorImageMap?.[selectedColor]?.map((image, index) => (
+                productData?.colorImageMap?.[selectedColor]?.map((image, index) => (
                   <div
                     key={index}
                     onClick={() => setMainImage(image)}
-                    className={`cursor-pointer relative  rounded-md overflow-hidden border-2 ${mainImage === image ? "border-green-900" : "border-gray-300"
+                    className={`cursor-pointer relative rounded-md overflow-hidden border-2 ${mainImage === image ? "border-green-900" : "border-gray-300"
                       }`}
-                    style={{ width: "60px", height: "70px", flexShrink: 0 }}
+                    style={{ width: "50px", height: "60px", flexShrink: 0 }}
                   >
                     {image && (
                       <Image
                         src={image}
                         alt={`Thumbnail ${index + 1}`}
-                        fill
-                        className="object-cover w-full h-full"
+                         width={300}
+                         height={400}
+                         className="object-cover"
                       />
                     )}
                   </div>
                 ))}
             </div>
 
+            {/* Main Image: Full width with reduced gap */}
             <div
               ref={imgContainerRef}
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsZoomVisible(true)}
               onMouseLeave={() => setIsZoomVisible(false)}
-              className="relative overflow-hidden border border-gray-300 bg-gray-200 w-full h-[400px] lg:h-[600px]"
+              className="relative rounded-sm overflow-hidden border border-gray-300 flex-grow h-[450px] lg:h-[700px]  flex items-center justify-center"
             >
               {mainImage ? (
                 <Image
                   src={mainImage}
                   alt={productData.name}
-                  fill
-                  className="object-contain"
-                  priority
+                  className="w-[500px] h-[450px]   lg:w-[700px] lg:mt-60 lg:h-[950px] object-cover"
+                  width={900}
+                  height={600}
                 />
               ) : (
                 <div className="flex items-center justify-center w-full h-full text-gray-400">
@@ -162,11 +166,13 @@ const Product = () => {
             </div>
           </div>
 
-       
-          <div className="w-full lg:w-[40%] flex flex-col space-y-5 font-medium text-gray-800">
-            <h1 className="text-5xl font-semibold tracking-wide">{productData.name}</h1>
 
-           
+
+
+          <div className="w-full lg:w-[40%] flex flex-col space-y-6 font-medium text-gray-800">
+            <h1 className="text-2xl font-bold  lg:text-5xl lg:font-semibold tracking-wide">{productData.name}</h1>
+
+
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold">Rating:</span>
               <div className="flex gap-0.5 items-center">
@@ -180,18 +186,18 @@ const Product = () => {
                   }
                 })}
               </div>
-               <span className="ml-2 text-sm text-gray-600">
-                  ({avgRating.toFixed(1)} / 5 from {productData.ratingcount} ratings)
+              <span className="ml-2 text-sm text-gray-600">
+                ({avgRating.toFixed(1)} / 5 from {productData.ratingcount} ratings)
               </span>
             </div>
 
             {/* Stock */}
             {productData.stock > 0 ? (
-              <p className="text-green-700 text-md font-bold">
+              <p className="text-green-700 text-xl font-bold">
                 {productData.stock} in stock
               </p>
             ) : (
-              <p className="bg-red-600 text-white text-md font-semibold px-3 py-1 rounded w-fit">
+              <p className="bg-red-600 text-white text-xl font-semibold px-3 py-1 rounded w-fit">
                 Out of stock
               </p>
             )}
@@ -219,14 +225,14 @@ const Product = () => {
 
             {/* Size Selection */}
             <div>
-              <h3 className="font-semibold text-lg mb-1">Size</h3>
+              <h3 className="font-semibold text-lg mb-1 ">Size</h3>
               <div className="flex gap-2 flex-wrap">
                 {productData.size?.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-1.5 rounded border text-sm font-semibold ${selectedSize === size
-                      ? "bg-gray-800 text-white border-black"
+                    className={`px-6 py-2 rounded border  text-md font-bold ${selectedSize === size
+                      ? "bg-gray-900 text-white border-black"
                       : "bg-white text-gray-700 border-gray-400 hover:border-black"
                       }`}
                   >
@@ -254,8 +260,8 @@ const Product = () => {
               <div
                 className="absolute backdrop-blur-2xl rounded-lg border border-gray-300 z-50 hidden md:block"
                 style={{
-                  width: "300px",
-                  height: "250px",
+                  width: "400px",
+                  height: "400px",
                   backgroundImage: `url(${mainImage})`,
                   backgroundSize: "330%",
                   backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,

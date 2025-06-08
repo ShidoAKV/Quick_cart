@@ -275,6 +275,8 @@ const AddProduct = () => {
               <option value="M">M</option>
               <option value="L">L</option>
               <option value="XL">XL</option>
+              <option value="XL">XXL</option>
+              <option value="XL">3XXL</option>
             </select>
             <div className="flex flex-wrap gap-2 mt-1">
               {size.map((s, idx) => (

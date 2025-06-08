@@ -4,7 +4,6 @@ import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 
-
 export async function POST(request) {
   try {
     const { userId } = getAuth(request);
@@ -23,7 +22,6 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: "orderId wrong" });
     }
 
-    // Update order to cancelled = true
     await prisma.order.update({
       where: { orderId },
       data: { cancelled: true },
