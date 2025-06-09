@@ -136,7 +136,7 @@ const Orders = () => {
 
 
           {orders?.map((order, index) => (
-            <div
+            (order.payment) && <div
               key={index}
               className="border-t border-gray-300 p-5 bg-white rounded-md shadow-sm
                 md:grid md:grid-cols-8 md:items-center md:gap-2 mb-4"
@@ -144,7 +144,7 @@ const Orders = () => {
               {/* MOBILE VIEW: stacked */}
               <div className="md:hidden space-y-1">
                 <div className="flex items-center gap-3">
-                  {order.items?.map((item, index) => {
+                  {order?.items?.map((item, index) => {
                     const imageUrl = item.product?.colorImageMap?.[item.color]?.[0] || assets.box_icon;
 
                     return (
@@ -160,7 +160,7 @@ const Orders = () => {
                   })}
 
                   <p className="font-medium truncate  rounded-sm text-black flex flex-wrap">
-                    {order?.items.map(item => `${item.product.name} x${item.quantity},${item.color}`).join(", ")}
+                    {order?.items.map(item => `${item.product.name},${item.quantity},${item.color}`).join(", ")}
                   </p>
                 </div>
 
@@ -185,17 +185,7 @@ const Orders = () => {
 
 
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {!order.cancelled && !order.isCompleted && (
-                    <button
-                      disabled={cancellingId === order.orderId}
-                      onClick={() => cancelOrder(order.orderId)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:opacity-50"
-                    >
-                      {cancellingId === order.orderId ? "Cancelling..." : "Cancel Order"}
-                    </button>
-                  )}
-
-                  {order.cancelled && order.payment && !order.refunded && (
+                  {order.claimedRefund && !order.refunded && (
                     <button
                       disabled={refundingId !== null}
                       onClick={() => refundOrder(order.PaymentId)}
@@ -205,19 +195,16 @@ const Orders = () => {
                     </button>
                   )}
 
-                  {order.cancelled && order.payment && order.refunded && (
+                  {order.claimedRefund && order.refunded && (
                     <button
-                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 disabled:opacity-50"
+                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                       disabled
                     >
                       Refunded
                     </button>
                   )}
-
-                  {!order.cancelled && order.isCompleted && (
-                    <span className="text-gray-500 italic">Completed</span>
-                  )}
                 </div>
+
               </div>
 
               {/* DESKTOP VIEW: grid columns */}
@@ -239,7 +226,7 @@ const Orders = () => {
 
                 <div className="min-w-0">
                   <p className="text-xs text-gray-600 mt-1">
-                    <span><strong>Order Date:</strong> {new Date(order.date).toLocaleDateString()}</span><br />
+                    <span><strong>Date:</strong> {new Date(order.date).toLocaleDateString()}</span><br />
                     <span><strong>Time:</strong> {order.date ? new Date(order.date).toLocaleTimeString('en-IN', {
                       hour: '2-digit',
                       minute: '2-digit',

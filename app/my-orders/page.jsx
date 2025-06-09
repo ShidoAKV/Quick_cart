@@ -36,12 +36,12 @@ const MyOrders = () => {
     };
 
     const initPay = (order) => {
-      
+
         if (!window.Razorpay) {
             toast.error('Razorpay is not available');
             return;
         }
-        
+
         const options = {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
             amount: order.amount,
@@ -52,7 +52,7 @@ const MyOrders = () => {
             handler: async (response) => {
                 try {
                     const token = await getToken();
-                    const { data } = await axios.post('/api/order/verify', response, { headers:{Authorization: `Bearer ${token}` }})
+                    const { data } = await axios.post('/api/order/verify', response, { headers: { Authorization: `Bearer ${token}` } })
                     if (data.success) {
                         fetchOrders();
                         router.push('/my-orders')
@@ -71,6 +71,7 @@ const MyOrders = () => {
     };
 
 
+
     const handlePayment = async (orderId) => {
         try {
             setProcessingOrderId(orderId);
@@ -79,7 +80,7 @@ const MyOrders = () => {
             const { data } = await axios.post(`/api/order/payment`, { orderId }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-          
+
             toast.dismiss();
             if (data.success) {
                 console.log(data);
@@ -120,17 +121,19 @@ const MyOrders = () => {
         }
     };
 
+ 
+
     useEffect(() => {
         if (user) fetchOrders();
     }, [user]);
-     
+
 
     return (
         <>
             <Navbar />
             <div className="flex flex-col px-2 md:px-8 py-4 min-h-screen bg-gray-50">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold  mx-11 ">My Orders</h2>
-                <div className="w-24 md:w-30 h-1 bg-green-800  rounded-full ml-10"></div>
+                <h2 className="text-lg sm:text-xl md:text-2xl   mx-11  text-black ">My Orders</h2>
+                
                 {loading ? (
                     <Loading />
                 ) : (
@@ -162,9 +165,6 @@ const MyOrders = () => {
 
                                     </div>
 
-
-
-
                                     <div className="grid sm:grid-cols-3 gap-4 text-sm text-gray-700 ">
                                         <div>
                                             <p><strong>Name:</strong> {order.address.fullName}</p>
@@ -176,8 +176,21 @@ const MyOrders = () => {
                                             <p><strong>Amount:</strong> ₹{order.amount.toFixed(2)} {currency}</p>
                                             <p><strong>Status:</strong> <span className={`font-semibold ${order.cancelled ? 'text-red-600' : order.payment ? order.isCompleted ? 'text-green-600' : 'text-blue-600' : 'text-yellow-600'}`}>
                                                 {order.cancelled ? "Cancelled" : order.payment ? order.isCompleted ? "Completed" : "Paid" : "Pending"}
-                                            </span></p>
+                                            </span>
+                                            </p>
                                         </div>
+
+                                        <div className="flex justify-end h-8">
+                                            {order.payment && !order.refunded && (
+                                                <button
+                                                    className=" text-sm px-4 mx-2 rounded bg-blue-900 text-white hover:bg-blue-950 "
+                                                >
+                                                    Claim Refund
+                                                </button>
+                                            )}
+
+                                        </div>
+
 
                                         {/* Action Buttons */}
                                         <div className="flex gap-2 items-start sm:items-center justify-start sm:justify-end">
