@@ -21,7 +21,7 @@ export const AppContextProvider = (props) => {
     const [userData, setUserData] = useState(null);
     const [isSeller, setIsSeller] = useState(false);
     const [cartItems, setCartItems] = useState({});
-
+   
 
     const fetchProductData = async () => {
         try {

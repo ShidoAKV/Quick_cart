@@ -52,7 +52,6 @@ const MyOrders = () => {
             handler: async (response) => {
                 try {
                     const token = await getToken();
-
                     const { data } = await axios.post('/api/order/verify', response, { headers:{Authorization: `Bearer ${token}` }})
                     if (data.success) {
                         fetchOrders();
@@ -140,8 +139,8 @@ const MyOrders = () => {
 
                             {orders.length === 0 ? (
                                 <p className="p-6 text-center text-gray-600">No orders found.</p>
-                            ) : orders.map((order, index) => (
-                                <div key={index} className="border-b p-4 sm:p-6 flex flex-col gap-4">
+                            ) : orders?.map((order, index) => (
+                                <div key={index} className="border-b p-2 sm:p-6 flex flex-col gap-4">
 
 
                                     <div className="grid sm:grid-cols-2 gap-4">

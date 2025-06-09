@@ -19,7 +19,7 @@ const ProductCard = ({ product }) => {
         <Image
           src={product?.image[0]}
           alt={product?.name}
-          fill
+          fill 
           className="object-contain p-3"
         />
       </div>
