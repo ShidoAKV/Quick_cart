@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { useAppContext } from '@/context/AppContext';
 import { ChevronDown } from 'lucide-react';
 import Loadingcomponent from '../loading';
+
 const AllProducts = () => {
     const { products } = useAppContext();
 
@@ -36,6 +37,7 @@ const AllProducts = () => {
         });
         return [...cols];
     }, [products]);
+
 
     const sizes = useMemo(() => {
         const szs = new Set();
@@ -85,10 +87,13 @@ const AllProducts = () => {
         if (filters.material.length)
             filtered = filtered.filter((p) => filters.material.includes(p.material));
 
-        if (filters.color.length)
+        if (filters.color.length) {
             filtered = filtered.filter((p) =>
-                filters.color.some((color) => p.color.includes(color))
+                filters.color.some((color) =>
+                    Object.keys(p.colorImageMap || {}).includes(color)
+                )
             );
+        }
 
         if (filters.size.length)
             filtered = filtered.filter((p) =>
@@ -212,9 +217,7 @@ const AllProducts = () => {
                             <ProductCard key={index} product={product} />
                         ))
                     ) : (
-                        <p className="col-span-full text-center text-gray-600">
-                            No products found.
-                        </p>
+                        <Loadingcomponent />
                     )}
                 </div>
 
