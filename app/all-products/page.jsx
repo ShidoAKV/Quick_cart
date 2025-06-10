@@ -1,51 +1,51 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import ProductCard from '@/components/ProductCard';
 import Footer from '@/components/Footer';
 import { useAppContext } from '@/context/AppContext';
 import { ChevronDown } from 'lucide-react';
-import Loadingcomponent from '../loading';
-import { CiFilter } from "react-icons/ci";
+import { CiFilter } from 'react-icons/ci';
 
 const AllProducts = () => {
     const { products } = useAppContext();
+    const searchParams = useSearchParams();
+    const router = useRouter();
 
-    const [filteredProducts, setFilteredProducts] = useState(products);
-    const [activeDropdown, setActiveDropdown] = useState(null);
-    const [showMobileFilter, setShowMobileFilter] = useState(false);
+    const getFilterArray = (key) => searchParams.getAll(key) || [];
 
     const [filters, setFilters] = useState({
-        type: [],
-        material: [],
-        color: [],
-        size: [],
-        price: [],
+        type: getFilterArray('type'),
+        material: getFilterArray('material'),
+        color: getFilterArray('color'),
+        size: getFilterArray('size'),
+        price: getFilterArray('price'),
     });
+
+    const [activeDropdown, setActiveDropdown] = useState(null);
+    const [showMobileFilter, setShowMobileFilter] = useState(false);
 
     const tshirtTypes = ['Plain', 'Oversized', 'Printed'];
 
     const materials = useMemo(() => {
-        const mats = new Set();
-        products.forEach((p) => p.material && mats.add(p.material));
-        return [...mats];
+        const set = new Set();
+        products.forEach(p => p.material && set.add(p.material));
+        return [...set];
     }, [products]);
 
     const colors = useMemo(() => {
-        const cols = new Set();
-        products.forEach((p) => {
-            const colorKeys = Object.keys(p.colorImageMap || {});
-            colorKeys.forEach((c) => cols.add(c));
+        const set = new Set();
+        products.forEach(p => {
+            const keys = Object.keys(p.colorImageMap || {});
+            keys.forEach(k => set.add(k));
         });
-        return [...cols];
+        return [...set];
     }, [products]);
 
-
     const sizes = useMemo(() => {
-        const szs = new Set();
-        products.forEach((p) =>
-            p.size?.forEach((s) => szs.add(s))
-        );
-        return [...szs];
+        const set = new Set();
+        products.forEach(p => p.size?.forEach(s => set.add(s)));
+        return [...set];
     }, [products]);
 
     const prices = [
@@ -62,60 +62,60 @@ const AllProducts = () => {
         price: prices,
     };
 
-    const toggleOption = (category, option) => {
-        setFilters((prev) => {
-            const exists = prev[category].includes(option);
-            const updated = exists
-                ? prev[category].filter((item) => item !== option)
-                : [...prev[category], option];
-            return { ...prev, [category]: updated };
+    const updateURLParams = (newFilters) => {
+        const params = new URLSearchParams();
+        Object.entries(newFilters).forEach(([key, arr]) => {
+            arr.forEach(v => params.append(key, v));
         });
+        router.push(`?${params.toString()}`);
+    };
+
+    const toggleOption = (category, option) => {
+        const current = filters[category] || [];
+        const exists = current.includes(option);
+        const updated = exists
+            ? current.filter(val => val !== option)
+            : [...current, option];
+
+        const newFilters = { ...filters, [category]: updated };
+        setFilters(newFilters);
+        updateURLParams(newFilters);
     };
 
     const removeFilter = (category, option) => {
-        setFilters((prev) => ({
-            ...prev,
-            [category]: prev[category].filter((item) => item !== option),
-        }));
+        const updated = filters[category].filter(val => val !== option);
+        const newFilters = { ...filters, [category]: updated };
+        setFilters(newFilters);
+        updateURLParams(newFilters);
     };
 
-    useEffect(() => {
-        let filtered = products;
+    const filteredProducts = useMemo(() => {
+        let result = products;
 
         if (filters.type.length)
-            filtered = filtered.filter((p) => filters.type.includes(p.name));
-
+            result = result.filter(p => filters.type.includes(p.name));
         if (filters.material.length)
-            filtered = filtered.filter((p) => filters.material.includes(p.material));
-
-        if (filters.color.length) {
-            filtered = filtered.filter((p) =>
-                filters.color.some((color) =>
-                    Object.keys(p.colorImageMap || {}).includes(color)
-                )
+            result = result.filter(p => filters.material.includes(p.material));
+        if (filters.color.length)
+            result = result.filter(p =>
+                filters.color.some(c => Object.keys(p.colorImageMap || {}).includes(c))
             );
-        }
-
         if (filters.size.length)
-            filtered = filtered.filter((p) =>
-                filters.size.some((size) => p.size.includes(size))
+            result = result.filter(p =>
+                filters.size.some(s => p.size.includes(s))
             );
-
-        if (filters.price.length) {
-            filtered = filtered.filter((p) => {
+        if (filters.price.length)
+            result = result.filter(p => {
                 const price = Number(p.offerPrice);
-                return filters.price.some((priceRange) => {
-                    if (priceRange === 'under500') return price < 500;
-                    if (priceRange === '500to1000') return price >= 500 && price <= 1000;
-                    if (priceRange === 'above1000') return price > 1000;
-                    return false;
+                return filters.price.some(r => {
+                    if (r === 'under500') return price < 500;
+                    if (r === '500to1000') return price >= 500 && price <= 1000;
+                    if (r === 'above1000') return price > 1000;
                 });
             });
-        }
 
-
-        setFilteredProducts(filtered);
-    }, [filters, products]);
+        return result;
+    }, [products, filters]);
 
     const FilterSection = () => (
         <>
@@ -123,10 +123,7 @@ const AllProducts = () => {
                 <div key={key} className="mb-4">
                     <h3 className="font-semibold capitalize mb-1">{key}</h3>
                     {options.map((opt) => (
-                        <label
-                            key={opt.value || opt}
-                            className="block text-sm mb-1 cursor-pointer"
-                        >
+                        <label key={opt.value || opt} className="block text-sm mb-1 cursor-pointer">
                             <input
                                 type="checkbox"
                                 className="mr-2"
@@ -140,24 +137,23 @@ const AllProducts = () => {
             ))}
         </>
     );
-    console.log(filteredProducts);
-
 
     return (
         <>
             <div className="px-4 md:px-10 lg:px-32 pt-8 pb-28">
-                <div className="mb-8 px-4 py-3 mix-blend-color bg-gradient-to-r from-gray-700 to-gray-900 rounded-md  md:hidden shadow text-white">
-                    <h2 className="text-xl font-medium tracking-wide">Explore All Products</h2>
+                <div className="mb-6 px-4 md:px-0 md:hidden">
+                    <div className="flex justify-between items-center">
+                        <h1 className="text-2xl font-semibold text-gray-800">All Products</h1>
+                        
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">Browse our latest collection tailored for you.</p>
                 </div>
 
-
                 <div className="hidden lg:flex max-w-2xl mx-auto flex-wrap gap-4 border border-gray-300 p-4 rounded-md bg-white mb-6">
-                  
                     <div className="flex items-center gap-2">
                         <CiFilter className="w-6 h-6" />
                         <h2 className="text-xl tracking-wide">Filters</h2>
                     </div>
-                    {/* Filter Buttons */}
                     {Object.keys(allOptions).map((category) => (
                         <div key={category} className="relative">
                             <button
@@ -191,7 +187,6 @@ const AllProducts = () => {
                     ))}
                 </div>
 
-
                 {/* Active Filters */}
                 <div className="flex flex-wrap gap-2 mb-4">
                     {Object.entries(filters).flatMap(([category, values]) =>
@@ -201,12 +196,7 @@ const AllProducts = () => {
                                 className="flex items-center gap-2 bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full"
                             >
                                 {value}
-                                <button
-                                    className="font-bold"
-                                    onClick={() => removeFilter(category, value)}
-                                >
-                                    ×
-                                </button>
+                                <button className="font-bold" onClick={() => removeFilter(category, value)}>×</button>
                             </div>
                         ))
                     )}
@@ -215,14 +205,13 @@ const AllProducts = () => {
                 {/* Product Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {filteredProducts.length > 0 ? (
-                        filteredProducts?.map((product, index) => (
+                        filteredProducts.map((product, index) => (
                             <ProductCard key={index} product={product} />
                         ))
-                    ) :
+                    ) : (
                         <p>No product found</p>
-                    }
+                    )}
                 </div>
-
             </div>
 
             <div className="lg:hidden fixed bottom-4 left-0 right-0 z-50 px-4">
@@ -234,7 +223,6 @@ const AllProducts = () => {
                 </button>
             </div>
 
-            {/* Mobile Filter Drawer */}
             {showMobileFilter && (
                 <div className="lg:hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-40 flex justify-center items-end">
                     <div className="bg-white w-full max-h-[80vh] overflow-y-auto rounded-t-2xl p-4">

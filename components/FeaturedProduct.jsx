@@ -62,7 +62,7 @@ const FeaturedProduct = () => {
             <div className="p-5 space-y-2">
               <h3 className="text-xl font-semibold text-black">{title}</h3>
               <p className="text-gray-700 text-sm">{description}</p>
-              <button className="mt-3 inline-flex items-center gap-2 cursor-pointer bg-black/80 hover:bg-black text-white text-sm px-4 py-2 rounded-sm transition"
+              <button className="mt-3 inline-flex items-center gap-2 cursor-pointer bg-gray-900 hover:bg-black text-white text-sm px-4 py-2 rounded-sm transition"
                onClick={()=>router.push('/all-products')}
               >
                 Buy Now

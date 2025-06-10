@@ -18,7 +18,7 @@ const HomeProducts = () => {
 
       <button
         onClick={() => router.push("/all-products")}
-        className="mt-10 px-8 py-3 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-100 transition"
+        className="cursor-pointer mt-10 px-8 py-3 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-100 transition"
       >
         See more
       </button>
