@@ -6,6 +6,7 @@ import Banner from "@/components/Banner";
 import FeaturedProduct from "@/components/FeaturedProduct";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import TshirtHeroSection from "@/components/Tshirtsection";
 
 const Home = () => {
   
@@ -16,7 +17,9 @@ const Home = () => {
         <HeaderSlider />
         <HomeProducts /> 
          <FeaturedProduct />
+         <TshirtHeroSection/>
          <Banner />
+
         </div>
         <Footer />
     </>

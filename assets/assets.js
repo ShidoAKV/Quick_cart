@@ -57,6 +57,7 @@ import oversized from './oversized.webp';
 import logo from './logo.png';
 import heart_icon_red from './heart_icon_red.jpg';
 
+
 export const assets = {
   logo,
   search_icon,
