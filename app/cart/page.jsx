@@ -20,7 +20,6 @@ const Cart = () => {
 
   return (
     <>
-      <Navbar />
       <div className="flex flex-col md:flex-row gap-10 px-6 md:px-16 lg:px-32 pt-14 mb-20">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-8 border-b border-gray-500/30 pb-6">
@@ -65,7 +64,7 @@ const Cart = () => {
                           <div>
                             <p className="text-gray-800 font-medium text-sm md:text-base">{product.name}</p>
                             <button
-                              className="text-xs text-red-600 mt-1 hover:underline"
+                              className="text-xs cursor-pointer text-red-600 mt-1 hover:underline"
                               onClick={() => updateCartQuantity(productId, size, color, 0)}
                             >
                               Remove
@@ -89,7 +88,7 @@ const Cart = () => {
                           <button
                             onClick={() => updateCartQuantity(productId, size, color, quantity - 1)}
                             disabled={quantity <= 1}
-                            className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-40"
+                            className="w-8 h-8 cursor-pointer flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-40"
                             aria-label="Decrease quantity"
                           >
                             −
@@ -98,7 +97,7 @@ const Cart = () => {
                             type="number"
                             value={quantity}
                             min={1}
-                            className="w-12 border border-gray-300 text-center rounded-md text-sm"
+                            className="w-12 cursor-pointer border border-gray-300 text-center rounded-md text-sm"
                             onChange={(e) => {
                               let val = Number(e.target.value);
                               if (val < 1 || isNaN(val)) val = 1;
@@ -107,7 +106,7 @@ const Cart = () => {
                           />
                           <button
                             onClick={() => addToCart(productId, size, color)}
-                            className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300"
+                            className="w-8 h-8 cursor-pointer flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300"
                             aria-label="Increase quantity"
                           >
                             +

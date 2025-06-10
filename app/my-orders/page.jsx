@@ -130,7 +130,6 @@ const MyOrders = () => {
 
     return (
         <>
-            <Navbar />
             <div className="flex flex-col px-2 md:px-8 py-4 min-h-screen bg-gray-50">
                 <h2 className="text-lg sm:text-xl md:text-2xl   mx-11  text-black ">My Orders</h2>
                 

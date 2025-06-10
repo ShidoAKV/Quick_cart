@@ -1,7 +1,5 @@
 "use client";
-
 import { useEffect, useState, useRef } from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -10,6 +8,7 @@ import { useAppContext } from "@/context/AppContext";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import RelatedProducts from "@/components/RelatableProduct";
 
 const Product = () => {
   const { id } = useParams();
@@ -134,7 +133,7 @@ const Product = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="px-4 sm:px-6 md:px-16 lg:px-32 pt-12 space-y-10 font-sans text-gray-900 text-sm relative">
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 w-full">
           {/* Image Section */}
@@ -349,6 +348,7 @@ const Product = () => {
           </div>
         </div>
       </div>
+      <RelatedProducts products={products}/>
       <Footer />
     </>
   );

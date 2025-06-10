@@ -101,9 +101,9 @@ const HeaderSlider = () => {
                 </motion.div>
               </div>
 
-              <div className="w-full h-90  m-auto flex justify-center md:hidden   ">
+              <div className="w-full h-90  m-auto flex justify-center md:hidden    ">
                 <Image
-                  className="w-full  h-60  shadow-gray-700 shadow-2xl  rounded-md  bg-black/80 brightness-75"
+                  className="w-full contain-content h-60  shadow-gray-700 shadow-2xl  rounded-md  bg-black/80 brightness-75"
                   src={slide.imgSrc}
                   alt={`Slide ${index + 1}`}
                 />
