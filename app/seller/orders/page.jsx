@@ -94,7 +94,8 @@ const Orders = () => {
     }
   }, [user]);
 
-
+  
+  
   return (
     <div className="flex-1 h-screen overflow-auto flex flex-col justify-between text-sm bg-gray-50">
       {loading ? (
@@ -259,27 +260,24 @@ const Orders = () => {
               </div>
 
               <div className="hidden md:block">
-                {order.payment ? "Paid" : "Pending"}
+                {order.payment ? "Paid" : ""}
               </div>
 
-              <div className="hidden md:block">
-                {order.cancelled
-                  ? order.refunded ? "Refunded" : "Pending Refund"
-                  : "N/A"}
+              <div className="flex md:block">
+                <div>
+                  {
+                  order.claimedRefund?"Refund claimed":'NA'
+                  }
+                </div>
+                <div>
+                 <button className="bg-gray-800 rounded-sm text-white">View</button>
+                </div>
+
               </div>
 
               <div className="hidden md:flex flex-col gap-2 items-center">
-                {!order.cancelled && !order.isCompleted && (
-                  <button
-                    disabled={cancellingId === order.orderId}
-                    onClick={() => cancelOrder(order.orderId)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:opacity-50"
-                  >
-                    {cancellingId === order.orderId ? "Cancelling..." : "Cancel Order"}
-                  </button>
-                )}
-
-                {order.cancelled && order.payment && !order.refunded && (
+              
+                {order.payment && !order.refunded && (
                   <button
                     disabled={refundingId !== null}
                     onClick={() => refundOrder(order.PaymentId)}

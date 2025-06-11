@@ -8,8 +8,6 @@ export async function POST(req) {
 
     const { id, name, email, imageUrl } = body;
     
-    
-    // Try to find existing user by ID
     let existingUser = await prisma.user.findUnique({
       where: { id },
     });
@@ -27,14 +25,13 @@ export async function POST(req) {
 
       return NextResponse.json({ success: true, user: newUser });
     } else {
-      // Check if any fields changed
       const updates = {};
       if (name && name !== existingUser.name) updates.name = name;
       if (email && email !== existingUser.email) updates.email = email;
       if (imageUrl && imageUrl !== existingUser.imageUrl) updates.imageUrl = imageUrl;
 
       if (Object.keys(updates).length > 0) {
-        existingUser = await prisma.user.update({
+         existingUser = await prisma.user.update({
           where: { id },
           data: updates,
         });

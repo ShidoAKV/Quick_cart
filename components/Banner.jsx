@@ -39,12 +39,12 @@ const Banner = () => {
   }, []);
 
   return (
-    <div className="mt-6 px-4 md:px-16 lg:px-32 ">
-      <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+    <div className="mt-20 px-4 md:px-16 lg:px-32 ">
+      <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-8 text-center">
         What Men Say About Our T-Shirts
       </h2>
 
-      <div className="relative">
+      <div className="relative pt-5">
         {/* Scroll buttons */}
         <button
           onClick={() => handleScroll('left')}

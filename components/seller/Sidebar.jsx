@@ -14,7 +14,7 @@ const SideBar = () => {
     ];
 
     return (
-         <div className='md:w-64 w-16 border-r min-h-screen text-base border-gray-300 py-4 flex flex-col bg-white  '>
+         <div className='md:w-64 w-16 border-r min-h-screen text-base border-gray-300  flex flex-col bg-white  '>
             {menuItems?.map((item) => {
                 const isActive = pathname === item.path;
 
