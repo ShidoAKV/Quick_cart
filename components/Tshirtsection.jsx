@@ -1,19 +1,14 @@
 'use client';
-import React, { useRef,useEffect } from 'react';
+import React, { useRef } from 'react';
 
 const TshirtHeroSection = () => {
   const videoRefs = useRef({});
 
   const videoThumbnails = [
-    { id: 1, src: '/videos/Tshirtvideo.webm' },
-    { id: 2, src: '/videos/Tshirtvideo.webm' },
+    { id: 1, src: '/videos/Tshirtvideo1.mp4' },
+    { id: 2, src: '/videos/Tshirtvideo1.mp4' },
   ];
 
-  useEffect(() => {
-  Object.values(videoRefs.current).forEach((video) => {
-    video?.play?.().catch(() => {});
-  });
-}, []);
   
   return (
     <section className="w-full mt-14">
@@ -36,7 +31,7 @@ const TshirtHeroSection = () => {
             {videoThumbnails?.map((video) => (
               <div
                 key={video.id}
-                className="relative w-[90vw] max-w-[360px] h-[200px] md:w-64 md:h-64 bg-gray-100 overflow-hidden shadow rounded-lg"
+                className="relative w-[90vw] max-w-[360px] h-[200px] md:w-64 md:h-64 bg-gray-100 overflow-hidden shadow "
               >
                 <video
                   ref={(el) => (videoRefs.current[video.id] = el)}
@@ -47,7 +42,7 @@ const TshirtHeroSection = () => {
                   playsInline
                   preload="auto"
                 >
-                  <source src={video.src} type="video/webm" />
+                  <source src={video.src} type="video/mp4" />
                 </video>
               </div>
             ))}
