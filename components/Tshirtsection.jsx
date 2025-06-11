@@ -4,10 +4,9 @@ import { Pause, Play } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 
 const TshirtHeroSection = () => {
-  const [activeVideo, setActiveVideo] = useState(null);
   const [playingStates, setPlayingStates] = useState({});
-  const videoRefs =useRef({});
-  const {router}=useAppContext();
+  const videoRefs = useRef({});
+  const { router } = useAppContext();
 
   const videoThumbnails = [
     { id: 1, src: '/videos/tshirtvideo.mp4' },
@@ -17,26 +16,21 @@ const TshirtHeroSection = () => {
   ];
 
   const handleVideoClick = (video) => {
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      setActiveVideo(video);
-    } else {
-      const vid = videoRefs.current[video.id];
-      if (vid) {
-        if (vid.paused) {
-          vid.play();
-          setPlayingStates((prev) => ({ ...prev, [video.id]: true }));
-        } else {
-          vid.pause();
-          setPlayingStates((prev) => ({ ...prev, [video.id]: false }));
-        }
+    const vid = videoRefs.current[video.id];
+    if (vid) {
+      if (vid.paused) {
+        vid.play();
+        setPlayingStates((prev) => ({ ...prev, [video.id]: true }));
+      } else {
+        vid.pause();
+        setPlayingStates((prev) => ({ ...prev, [video.id]: false }));
       }
     }
   };
 
   return (
-    <section className="w-full mt-24">
-      {/* Main Hero Section */}
+    <section className="w-full mt-20">
+      {/* Hero Section */}
       <div className="relative h-[90vh] rounded-sm w-full flex items-center justify-center overflow-hidden">
         <video
           className="absolute inset-0 w-full h-full object-cover"
@@ -56,7 +50,7 @@ const TshirtHeroSection = () => {
             From high-quality fabric to perfect packaging — experience comfort, confidence, and craftsmanship.
           </p>
           <a
-            onClick={()=>router.push('/all-products')}
+            onClick={() => router.push('/all-products')}
             className="inline-block cursor-pointer bg-white text-black font-semibold px-6 py-3 rounded-full hover:bg-gray-200 transition"
           >
             Shop Now
@@ -73,16 +67,16 @@ const TshirtHeroSection = () => {
           Real video insights into our T-shirt quality, detailed packaging, and trusted customer experience.
         </p>
 
-        {/* Mobile Scroll Indicator */}
+        {/* Mobile scroll hint */}
         <div className="block md:hidden text-sm text-center text-gray-900 mb-2">
-          Swipe to explore →
+          Scroll to explore ↓
         </div>
 
-        <div className="flex gap-4 overflow-x-auto md:overflow-visible scrollbar-hide md:scrollbar-default pb-2">
+        <div className="flex gap-4 overflow-x-auto md:overflow-visible scrollbar-hide md:scrollbar-default pb-2 flex-col md:flex-row items-center md:items-stretch">
           {videoThumbnails.map((video) => (
             <div
               key={video.id}
-              className="relative min-w-[140px] h-[140px] md:w-64 md:h-64 bg-gray-200 rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer group"
+              className="relative w-[80vw] h-[200px] md:w-64 md:h-64 bg-gray-200  overflow-hidden shadow hover:shadow-lg transition cursor-pointer group"
               onClick={() => handleVideoClick(video)}
             >
               <video
@@ -96,7 +90,7 @@ const TshirtHeroSection = () => {
                 <source src={video.src} type="video/mp4" />
               </video>
 
-              {/* Pause/Play Icon (Desktop only) */}
+              {/* Pause/Play icon - only visible on desktop/tablet */}
               <div className="hidden md:flex absolute inset-0 items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
                 {playingStates[video.id] ? (
                   <Pause className="text-white w-10 h-10" />
@@ -108,23 +102,7 @@ const TshirtHeroSection = () => {
           ))}
         </div>
       </div>
-
-      {/* Mobile Fullscreen Modal */}
-      {activeVideo && (
-        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
-          <video className="w-full h-full object-contain" controls autoPlay>
-            <source src={activeVideo.src} type="video/mp4" />
-          </video>
-          <button
-            className="absolute top-4 right-4 text-white text-2xl font-bold z-50"
-            onClick={() => setActiveVideo(null)}
-          >
-            ×
-          </button>
-        </div>
-      )}
     </section>
-
   );
 };
 
