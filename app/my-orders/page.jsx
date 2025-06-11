@@ -126,11 +126,10 @@ const MyOrders = () => {
     useEffect(() => {
         if (user) fetchOrders();
     }, [user]);
-
-
+ 
     return (
         <>
-            <div className="flex flex-col px-2 md:px-8 py-4 min-h-screen bg-gray-50">
+        <div className="flex flex-col px-2 md:px-8 py-4 min-h-screen bg-gray-50">
                 <h2 className="text-lg sm:text-xl md:text-2xl   mx-11  text-black ">My Orders</h2>
                 
                 {loading ? (
@@ -183,6 +182,7 @@ const MyOrders = () => {
                                             {order.payment && !order.refunded && (
                                                 <button
                                                     className=" text-sm px-4 mx-2 rounded bg-blue-900 text-white hover:bg-blue-950 "
+                                                    onClick={()=>router.push(`/refundpage/${order.orderId}`)}
                                                 >
                                                     Claim Refund
                                                 </button>

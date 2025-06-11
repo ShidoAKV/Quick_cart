@@ -17,6 +17,7 @@ model User {
   addresses       Address[]
   orders          Order[]
   products        Product[]
+  refunds        Refund[]
 }
 
 model Product {
@@ -60,6 +61,7 @@ model Order {
   address       Address     @relation(fields: [addressId], references: [id])
   user          User        @relation(fields: [userId], references: [id])
   items         OrderItem[]
+  refunds       Refund[]
 }
 
 model OrderItem {
@@ -85,3 +87,24 @@ model Address {
   user        User    @relation(fields: [userId], references: [id])
   orders      Order[]
 }
+
+model Refund {
+  id           String   @id @default(cuid())
+  userId       String
+  orderId      String
+  reason       String?
+  photoUrl     String?
+  status       RefundStatus @default(PENDING)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         User     @relation(fields: [userId], references: [id])
+  order        Order    @relation(fields: [orderId], references: [id])
+}
+
+enum RefundStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
