@@ -40,8 +40,7 @@ const TshirtHeroSection = () => {
                   loop
                   autoPlay
                   playsInline
-                  preload="none"
-                   controls={false}
+                  preload="auto"
                 >
                   <source src={video.src} type="video/mp4" />
                 </video>
