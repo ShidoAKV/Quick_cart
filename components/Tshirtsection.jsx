@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Pause, Play } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 
@@ -15,7 +15,7 @@ const TshirtHeroSection = () => {
     { id: 4, src: '/videos/tshirtvideo.mp4' },
   ];
 
-  const handleVideoClick = (video) => {
+  const handleVideoClick = useCallback((video) => {
     const vid = videoRefs.current[video.id];
     if (vid) {
       if (vid.paused) {
@@ -26,11 +26,34 @@ const TshirtHeroSection = () => {
         setPlayingStates((prev) => ({ ...prev, [video.id]: false }));
       }
     }
-  };
+  }, []);
+
+  // Optional: auto play visible videos using Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.getAttribute('data-id');
+          const vid = videoRefs.current[id];
+          if (entry.isIntersecting && vid && vid.paused) {
+            vid.play().catch(() => {});
+            setPlayingStates((prev) => ({ ...prev, [id]: true }));
+          }
+        });
+      },
+      { threshold: 0.6 }
+    );
+
+    Object.values(videoRefs.current).forEach((vid) => {
+      if (vid) observer.observe(vid);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section className="w-full mt-20">
-      {/* Hero Section */}
+      {/* Hero Video */}
       <div className="relative h-[90vh] rounded-sm w-full flex items-center justify-center overflow-hidden">
         <video
           className="absolute inset-0 w-full h-full object-cover"
@@ -38,6 +61,7 @@ const TshirtHeroSection = () => {
           loop
           muted
           playsInline
+          preload="auto"
         >
           <source src="/videos/tshirtvideo.mp4" type="video/mp4" />
         </video>
@@ -67,7 +91,6 @@ const TshirtHeroSection = () => {
           Real video insights into our T-shirt quality, detailed packaging, and trusted customer experience.
         </p>
 
-        {/* Mobile scroll hint */}
         <div className="block md:hidden text-sm text-center text-gray-900 mb-2">
           Scroll to explore ↓
         </div>
@@ -76,21 +99,21 @@ const TshirtHeroSection = () => {
           {videoThumbnails.map((video) => (
             <div
               key={video.id}
-              className="relative w-[80vw] h-[200px] md:w-64 md:h-64 bg-gray-200  overflow-hidden shadow hover:shadow-lg transition cursor-pointer group"
+              className="relative w-[80vw] h-[200px] md:w-64 md:h-64 bg-gray-200 overflow-hidden shadow hover:shadow-lg transition cursor-pointer group"
               onClick={() => handleVideoClick(video)}
             >
               <video
-                id={`video-${video.id}`}
                 ref={(el) => (videoRefs.current[video.id] = el)}
+                data-id={video.id}
                 className="w-full h-full object-cover"
                 muted
                 loop
                 playsInline
+                preload="metadata"
               >
                 <source src={video.src} type="video/mp4" />
               </video>
 
-              {/* Pause/Play icon - only visible on desktop/tablet */}
               <div className="hidden md:flex absolute inset-0 items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
                 {playingStates[video.id] ? (
                   <Pause className="text-white w-10 h-10" />
