@@ -26,7 +26,7 @@ const TrustSection = () => {
             playsInline
             preload="metadata"
           >
-            <source src="/videos/Tshirtvideo.webm" type="video/webm" />
+            <source src="/videos/Tshirtvideo1.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-black/40 z-0" />
           <div className="relative z-10 flex items-center justify-center h-full">
@@ -46,7 +46,7 @@ const TrustSection = () => {
             playsInline
             preload="metadata"
           >
-            <source src="/videos/Tshirtvideo.webm" type="video/webm" />
+            <source src="/videos/Tshirtvideo1.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-black/40 z-0" />
           <div className="relative z-10 flex items-center justify-center h-full">

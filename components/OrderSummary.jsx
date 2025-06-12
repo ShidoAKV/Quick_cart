@@ -1,12 +1,12 @@
 import { addressDummyData } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
-import  { useEffect, useState,useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 
 const OrderSummary = () => {
 
-   const {
+  const {
     currency,
     router,
     getCartCount,
@@ -16,12 +16,12 @@ const OrderSummary = () => {
     cartItems,
   } = useAppContext();
 
-  
+
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [userAddresses, setUserAddresses] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  
+
   const payloadRef = useRef(null);
 
   const fetchUserAddresses = async () => {
@@ -62,13 +62,13 @@ const OrderSummary = () => {
       if (cartItemArray.length === 0) {
         return toast.error("Cart is empty");
       }
-      
+
       toast.loading('creating order')
       const token = await getToken();
 
       const totalAmount = getCartAmount() + Math.floor(getCartAmount() * 0.02);
 
-     
+
       payloadRef.current = {
         address: selectedAddress.id,
         items: cartItemArray,
@@ -96,18 +96,22 @@ const OrderSummary = () => {
 
   useEffect(() => {
     if (user) {
-       fetchUserAddresses();
+      fetchUserAddresses();
     }
   }, [user]);
 
   const checksizecost = (cartItems) => {
-  return Object.values(cartItems).some(
-    (item) => item && (item.size === 'XXL' || item.size === '3XXL')
-  );
-};
+    return Object.values(cartItems).reduce((total, item) => {
+      if (item && (item.size === 'XXL' || item.size === '3XXL')) {
+        return total + (item.quantity || 1); 
+      }
+      return total;
+    }, 0);
+  };
 
-  
- 
+
+
+
 
   return (
     <div className="w-full md:w-96 bg-gray-500/5 p-5">
@@ -160,8 +164,8 @@ const OrderSummary = () => {
         </div>
 
         <div>
-         
-         
+
+
         </div>
 
         <hr className="border-gray-500/30 my-5" />
@@ -171,9 +175,9 @@ const OrderSummary = () => {
             <p className="uppercase text-gray-600">Items {getCartCount()}</p>
             <p className="text-gray-800">{currency}{getCartAmount()}</p>
           </div>
-           <div className="flex justify-between">
-            <p className="text-gray-600">Size cost</p>
-            <p className="font-medium text-gray-800">{currency}{checksizecost(cartItems)?100:0}</p>
+          <div className="flex justify-between">
+            <p className="text-gray-600">Size cost (XXL,3XXL)</p>
+            <p className="font-medium text-gray-800">{currency}{checksizecost(cartItems)* 100}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Shipping Fee</p>
@@ -185,7 +189,7 @@ const OrderSummary = () => {
           </div>
           <div className="flex justify-between text-lg md:text-xl font-medium border-t pt-3">
             <p>Total</p>
-            <p>₹{getCartAmount() + Math.floor(getCartAmount() * 0.02)+100 }</p>
+            <p>₹{getCartAmount() + Math.floor(getCartAmount() * 0.02) + checksizecost(cartItems) * 100 + 100}</p>
           </div>
         </div>
       </div>

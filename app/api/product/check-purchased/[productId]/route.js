@@ -36,8 +36,6 @@ export async function POST(request, { params }) {
     if (!orders || orders.length === 0) {
       return NextResponse.json({ success: false, message: "No paid order found with this product" });
     }
-
-   
     return NextResponse.json({ success: true, message: "Paid order found" });
 
   } catch (error) {

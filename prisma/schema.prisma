@@ -90,7 +90,7 @@ model Address {
 
 model Refund {
   id        String       @id @default(cuid())
-  userId    String
+  userId    String       
   orderId   String
   reason    String?
   photoUrl  String?
