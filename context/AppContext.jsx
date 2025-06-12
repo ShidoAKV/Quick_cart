@@ -53,8 +53,35 @@ export const AppContextProvider = (props) => {
             toast.error(error.message);
         }
     }
-
-    const createUserIfNotExists = async () => {
+    
+   
+     const createUser = async (token) => {
+        try {
+            const payload = {
+                id: user.id,
+                name: user.firstName + ' ' + user.lastName,
+                email: user.emailAddresses[0].emailAddress,
+                imageUrl: user.imageUrl,
+            };
+    
+            const { data } = await axios.post('/api/user/add', payload, {
+                headers: {
+                    Authorization: `Bearer${token}`,
+                },
+            });
+    
+            if (data.success) {
+                toast.success('user created successfully');
+                fetchUserData();
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+             toast.error(error.message)
+        }
+     };
+      
+     const createUserIfNotExists = async () => {
         try {
             if (!user) return;
 
@@ -62,47 +89,25 @@ export const AppContextProvider = (props) => {
             authToken.current = token;
 
             const {data} = await axios.get('/api/user/data', {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer${token}` },
             });
 
             if (data.success) {
                 setUserData(data.user);
                 setCartItems(data.user.cartItems);
                 setIsSeller((user.publicMetadata.role === 'seller')?true:false);
-            } else {
-                await createUser(token);
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {
                 const token = await getToken();
                 await createUser(token);
-            } else {
-                toast.error("Error fetching user data");
-            }
+            } 
         }
     };
 
-    const createUser = async (token) => {
-        const payload = {
-            id: user.id,
-            name: user.firstName + ' ' + user.lastName,
-            email: user.emailAddresses[0].emailAddress,
-            imageUrl: user.imageUrl,
-        };
+    
 
-        const { data } = await axios.post('/api/user/add', payload, {
-            headers: {
-                Authorization: `Bearer${token}`,
-            },
-        });
-
-        if (data.success) {
-            toast.success('User created successfully');
-            fetchUserData(); // fetch again after creation
-        } else {
-            toast.error(data.message);
-        }
-    };
+    
 
 
     const generateCartKey = (productId, size, color) => `${productId}|${size}|${color}`;
@@ -189,7 +194,9 @@ export const AppContextProvider = (props) => {
 
 
     useEffect(() => {
-       if(user) createUserIfNotExists();
+       if(user){
+        createUserIfNotExists();
+       }
     }, [user]);
 
 

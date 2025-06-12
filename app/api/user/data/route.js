@@ -12,18 +12,17 @@ export async function GET(request) {
       return NextResponse.json({ success: false, message: 'Unauthorized' });
     }
 
-    // Fetch user using Prisma
     const user = await withTimeout(
     prisma.user.findUnique({
       where: { id: userId },
     }),8000);
 
     if (!user) {
-      return NextResponse.json({ success: false, message: 'User not found' });
+      return NextResponse.json({ success: false, message: 'User not found' },{ status: 404 });
     }
 
     return NextResponse.json({ success: true, user });
   } catch (error) {
-    return NextResponse.json({ success: false, message: error.message });
+    return NextResponse.json({ success: false, message: error.message },{status:404});
   }
 }
