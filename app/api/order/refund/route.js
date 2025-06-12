@@ -26,7 +26,7 @@ export async function GET(req) {
         });
     
         if (!refunddata) {
-            return NextResponse.json({ success: false, message: "Refund not found" });
+            return NextResponse.json({ success: false, message: "Refund not claimed" });
         }
 
         return NextResponse.json({ success: true, refunddata });

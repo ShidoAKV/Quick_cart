@@ -53,9 +53,9 @@ export const AppContextProvider = (props) => {
             toast.error(error.message);
         }
     }
-    
-   
-     const createUser = async (token) => {
+
+
+    const createUser = async (token) => {
         try {
             const payload = {
                 id: user.id,
@@ -63,51 +63,59 @@ export const AppContextProvider = (props) => {
                 email: user.emailAddresses[0].emailAddress,
                 imageUrl: user.imageUrl,
             };
-    
+
             const { data } = await axios.post('/api/user/add', payload, {
                 headers: {
                     Authorization: `Bearer${token}`,
                 },
             });
-    
+
             if (data.success) {
                 toast.success('user created successfully');
-                fetchUserData();
+               if (user?.publicMetadata.role === 'seller') {
+                    setIsSeller(true);
+                } else {
+                    setIsSeller(false);
+                }
             } else {
                 toast.error(data.message);
             }
         } catch (error) {
-             toast.error(error.message)
+            toast.error(error.message)
         }
-     };
-      
-     const createUserIfNotExists = async () => {
+    };
+
+    const createUserIfNotExists = async () => {
         try {
             if (!user) return;
 
             const token = await getToken();
             authToken.current = token;
 
-            const {data} = await axios.get('/api/user/data', {
-                headers: { Authorization: `Bearer${token}` },
+            const { data } = await axios.get('/api/user/data', {
+                headers: { Authorization: `Bearer ${token}` },
             });
-
             if (data.success) {
                 setUserData(data.user);
                 setCartItems(data.user.cartItems);
-                setIsSeller((user.publicMetadata.role === 'seller')?true:false);
+                
+                if (user?.publicMetadata.role === 'seller') {
+                    setIsSeller(true);
+                } else {
+                    setIsSeller(false);
+                }
+
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {
                 const token = await getToken();
                 await createUser(token);
-            } 
+            } else {
+                toast.error(error.message)
+            }
         }
     };
 
-    
-
-    
 
 
     const generateCartKey = (productId, size, color) => `${productId}|${size}|${color}`;
@@ -194,9 +202,9 @@ export const AppContextProvider = (props) => {
 
 
     useEffect(() => {
-       if(user){
-        createUserIfNotExists();
-       }
+        if (user) {
+            createUserIfNotExists();
+        }
     }, [user]);
 
 

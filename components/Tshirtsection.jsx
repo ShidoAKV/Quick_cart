@@ -24,7 +24,7 @@ const TrustSection = () => {
           playsInline
           preload="auto"
         >
-          <source src="/videos/Tshirtvideo.webm" type="video/webm" />
+          
           <source src="/videos/Tshirtvideo1.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>

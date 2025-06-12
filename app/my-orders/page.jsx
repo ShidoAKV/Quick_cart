@@ -117,16 +117,15 @@ const MyOrders = () => {
         }
     };
 
-    const fetchRefundStatus = async(orderId) => {
+    const fetchRefundStatus = async (orderId) => {
         try {
             const token = await getToken();
-           
+
             const { data } = await axios.get(`/api/order/refund`, {
                 headers: { Authorization: `Bearer ${token}` },
-                params:{orderId}
+                params: { orderId }
             });
-            console.log(data);
-            
+
             if (data.success) {
                 setSelectedRefund(data.refunddata);
                 setShowRefundModal(true);
@@ -168,79 +167,93 @@ const MyOrders = () => {
 
     return (
         <>
-            <div className="flex flex-col px-2 md:px-8 py-4 min-h-screen bg-gray-50">
-                <h2 className="text-lg sm:text-xl md:text-2xl mx-11 text-black">My Orders</h2>
+            <div className="px-2 md:px-8 py-4 min-h-screen bg-gray-50">
+                <h2 className="text-xl md:text-2xl font-semibold text-black mb-6 ml-4">My Orders</h2>
 
                 {loading ? (
                     <Loading />
                 ) : (
-                    <div className="overflow-x-auto mx-11 mt-5">
-                        <div className="w-full rounded-md bg-gray-200 shadow">
-                            {orders.length === 0 ? (
-                                <p className="p-6 text-center text-gray-600">No orders found.</p>
-                            ) : orders?.map((order, index) => (
-                                <div key={index} className="border-b p-2 sm:p-6 flex flex-col gap-4">
-                                    <div className="grid sm:grid-cols-2 gap-4">
-                                        {order.items.map((item, idx) => (
-                                            <div key={idx} className="flex gap-4 p-2 rounded">
+                    <div className="flex flex-col gap-6">
+                        {orders.length === 0 ? (
+                            <p className="text-center text-gray-600 text-base">No orders found.</p>
+                        ) : (
+                            orders.map((order, index) => (
+                                <div key={index} className="bg-white shadow-md rounded-md border border-gray-200 px-4 py-4 sm:px-6">
+                                    {/* Order Items */}
+                                    <div className="flex flex-col sm:grid sm:grid-cols-5 gap-4 mb-2">
+                                        {order?.items.map((item, idx) => (
+                                            <div key={idx} className="flex items-start gap-4 border-b pb-3">
                                                 <Image src={assets.box_icon} alt="item" width={44} height={44} />
                                                 <div className="text-sm">
                                                     <p className="font-semibold text-gray-800">{item.product.name} x{item.quantity}</p>
-                                                    <div className="flex gap-2 mt-1">
+                                                    <div className="flex gap-2 mt-1 flex-wrap">
                                                         {item.color && <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{item.color}</span>}
                                                         {item.size && <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{item.size}</span>}
                                                     </div>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <p className="text-xs sm:text-sm text-gray-700">{new Date(order.date).toLocaleDateString()}</p>
+                                                    <p className="text-xs text-gray-600 mt-1">{new Date(order.date).toLocaleDateString()}</p>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
 
-                                    <div className="grid sm:grid-cols-4 gap-4 text-sm text-gray-700">
+                                    {/* Address & Order Info */}
+                                    <div className="grid sm:grid-cols-4 gap-4 text-sm text-gray-700 mb-4">
                                         <div>
                                             <p><strong>Name:</strong> {order.address.fullName}</p>
                                             <p><strong>Area:</strong> {order.address.area}</p>
                                             <p><strong>City/State:</strong> {order.address.city}, {order.address.state}</p>
                                             <p><strong>Phone:</strong> {order.address.phoneNumber}</p>
                                         </div>
+
                                         <div>
                                             <p><strong>Amount:</strong> ₹{order.amount.toFixed(2)} {currency}</p>
-                                            <p><strong>Status:</strong> <span className={`font-semibold ${order.cancelled ? 'text-red-600' : order.payment ? order.isCompleted ? 'text-green-600' : 'text-blue-600' : 'text-yellow-600'}`}>
-                                                {order.cancelled ? "Cancelled" : order.payment ? order.isCompleted ? "Completed" : "Paid" : "Pending"}
-                                            </span></p>
+                                            <p>
+                                                <strong>Status:</strong>{' '}
+                                                <span className={`font-semibold ${order.cancelled ? 'text-red-600' : order.payment ? order.isCompleted ? 'text-green-600' : 'text-blue-600' : 'text-yellow-600'}`}>
+                                                    {order.cancelled ? "Cancelled" : order.payment ? order.isCompleted ? "Completed" : "Paid" : "Pending"}
+                                                </span>
+                                            </p>
                                         </div>
-                                        <div className="flex justify-end h-8 gap-2">
+
+                                        {/* Refund Status */}
+                                        <div className="col-span-2 sm:col-span-1 flex flex-col sm:items-end gap-2">
                                             {order.payment && !order.refunded && (
-                                                <>
+                                                <div className="flex flex-wrap gap-2">
                                                     <button
-                                                        className="text-sm px-4 rounded bg-blue-900 text-white hover:bg-blue-950"
+                                                        className="text-sm px-4 py-1.5 bg-blue-900 text-white rounded hover:bg-blue-950"
                                                         onClick={() => window.open(`/refundpage/?id=${order.orderId}`)}
                                                     >
                                                         Claim Refund
                                                     </button>
                                                     <button
-                                                        className="text-sm px-4 rounded bg-gray-800 text-white hover:bg-gray-900"
+                                                        className="text-sm px-4 py-1.5 bg-gray-800 text-white rounded hover:bg-gray-900"
                                                         onClick={() => fetchRefundStatus(order.id)}
                                                     >
                                                         Check Refund Status
                                                     </button>
-                                                </>
+                                                </div>
+                                            )}
+
+                                            {order.payment && order.refunded && (
+                                                <div className="bg-green-100 text-green-800 px-4 py-2 rounded shadow text-center w-full sm:w-auto">
+                                                    ✅ Refund of ₹{order.amount.toFixed(2)} {currency} approved. It will be returned in 8–10 working days.
+                                                </div>
                                             )}
                                         </div>
-                                        <div className="flex gap-2 items-start sm:items-center justify-start sm:justify-end">
+
+                                        {/* Payment Action Buttons */}
+                                        <div className="col-span-2 sm:col-span-1 flex flex-wrap gap-2 items-start sm:justify-end">
                                             {!order.cancelled && !order.payment && (
                                                 <>
                                                     <button
-                                                        className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
+                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
                                                         onClick={() => handlePayment(order.orderId)}
                                                         disabled={processingOrderId === order.orderId}
                                                     >
                                                         Pay Now
                                                     </button>
                                                     <button
-                                                        className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
+                                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
                                                         onClick={() => handleCancelOrder(order.orderId)}
                                                         disabled={processingOrderId === order.orderId}
                                                     >
@@ -251,11 +264,45 @@ const MyOrders = () => {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            ))
+                        )}
+                    </div>
+                )}
+
+                {/* Refund Modal */}
+                {showRefundModal && selectedRefund && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white rounded-lg p-6 w-[90%] max-w-md">
+                            <h2 className="text-lg font-semibold mb-4">Refund Details</h2>
+                            <p><strong>Status:</strong> {selectedRefund.status}</p>
+                            <p><strong>Reason:</strong> {selectedRefund.reason}</p>
+                            <p><strong>Requested On:</strong> {new Date(selectedRefund.createdAt).toLocaleDateString()}</p>
+
+                            {selectedRefund.status === "PENDING" && (
+                                <p className="mt-2 text-yellow-600">Waiting for seller approval.</p>
+                            )}
+
+                            {selectedRefund.status === "APPROVED" && (
+                                <button
+                                    className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                                    onClick={() => claimRefundPayment(selectedRefund.orderId)}
+                                >
+                                    Claim Refund Payment
+                                </button>
+                            )}
+
+                            <button
+                                className="mt-4 ml-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                                onClick={() => setShowRefundModal(false)}
+                            >
+                                Close
+                            </button>
                         </div>
                     </div>
                 )}
             </div>
+
+
 
             {showRefundModal && selectedRefund && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
