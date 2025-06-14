@@ -23,8 +23,9 @@ export async function POST(req, { params }) {
         const name = body.get('name');
         const email = body.get('email');
         const file = body.get('file');
+        const reason=body.get('reason');
 
-        if (!name || !email || !file || !orderId) {
+        if (!name || !email || !file || !orderId||!reason) {
             return NextResponse.json({ success: false, message: "Missing fields" });
         }
 
@@ -53,7 +54,7 @@ export async function POST(req, { params }) {
 
         await prisma.order.update({
             where: { orderId },
-            data: { claimedRefund: true },
+            data: { claimedRefund: true},
         });
 
         const refund = await prisma.refund.create({
@@ -64,7 +65,7 @@ export async function POST(req, { params }) {
                 email,
                 photoUrl: cloudinaryUpload.secure_url,
                 status: "PENDING",
-
+                reason,
             },
         });
 

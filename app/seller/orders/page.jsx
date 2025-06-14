@@ -78,7 +78,6 @@ const Orders = () => {
       const { data } = await axios.post('/api/order/seller-orders/refund', { PaymentId }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log(data);
       
       if (data.success) {
         toast.success("Refund issued successfully");

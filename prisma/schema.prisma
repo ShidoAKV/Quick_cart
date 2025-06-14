@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   id              String    @id @default(cuid())
   name            String?
@@ -18,6 +19,7 @@ model User {
   orders          Order[]
   products        Product[]
   refunds         Refund[]
+  comments        Comment[]
 }
 
 model Product {
@@ -40,6 +42,7 @@ model Product {
   ratingcount   Int         @default(0)
   orders        OrderItem[]
   user          User        @relation(fields: [userId], references: [id])
+  comments     Comment[]
 }
 
 model Order {
@@ -101,6 +104,19 @@ model Refund {
   name      String?
   order     Order        @relation(fields: [orderId], references: [id])
   user      User         @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  rating    Int      // e.g., 1 to 5
+  createdAt DateTime @default(now())
+  
+  userId    String
+  productId String
+
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
 }
 
 

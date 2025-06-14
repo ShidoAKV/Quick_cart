@@ -32,10 +32,11 @@ export async function POST(request) {
     const category = formData.get('category');
     const material = formData.get('material');
     const stock = formData.get('stock');
+    const color=JSON.parse(formData.get('color'));
     const size = JSON.parse(formData.get('size') || '[]');
     const colorImageMapRaw = formData.get('colorImageMap');
     const colorImageMap = JSON.parse(colorImageMapRaw || '{}');
-
+    
     const files = formData.getAll('images');
 
     if (!files || files.length === 0 || !size || !price || !category || !offerPrice || !stock || !colorImageMapRaw) {
@@ -46,7 +47,7 @@ export async function POST(request) {
     if (validFiles.length === 0) {
       return NextResponse.json({ success: false, message: 'No valid files uploaded' });
     }
-
+    
     const imageUrlMap = {};
 
     for (const file of validFiles) {
@@ -73,10 +74,10 @@ export async function POST(request) {
      for (const [colorKey, filenames] of Object.entries(colorImageMap)) {
        finalColorImageMap[colorKey] = filenames?.map(filename => imageUrlMap[filename]).filter(Boolean)
     }
-
-  
-    const newProduct = await withTimeout(
-      prisma.product.create({
+     // color me type stored hai
+    
+   
+    const newProduct = await prisma.product.create({
         data: {
           userId,
           name: name || 'Untitled',
@@ -91,10 +92,13 @@ export async function POST(request) {
           material: material || '',
           brand: 'Pilley',
           colorImageMap: finalColorImageMap,
+          color
         },
-      }), 15000
+      }
     );
 
+     console.log(newProduct);
+     
     return NextResponse.json({
       success: true,
       message: 'Product added successfully',

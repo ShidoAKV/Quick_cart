@@ -25,7 +25,7 @@ const MyOrders = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (data.success) {
-                setOrders(data.orders);
+                setOrders(data.orders.reverse());
             } else {
                 toast.error(data.message);
             }
@@ -165,6 +165,7 @@ const MyOrders = () => {
         }
     }, [user]);
 
+    
     return (
         <>
             <div className="px-2 md:px-8 py-4 min-h-screen bg-gray-50">
@@ -177,7 +178,7 @@ const MyOrders = () => {
                         {orders.length === 0 ? (
                             <p className="text-center text-gray-600 text-base">No orders found.</p>
                         ) : (
-                            orders.map((order, index) => (
+                            orders?.map((order, index) => (
                                 <div key={index} className="bg-white shadow-md rounded-md border border-gray-200 px-4 py-4 sm:px-6">
                                     {/* Order Items */}
                                     <div className="flex flex-col sm:grid sm:grid-cols-5 gap-4 mb-2">
@@ -220,13 +221,13 @@ const MyOrders = () => {
                                             {order.payment && !order.refunded && (
                                                 <div className="flex flex-wrap gap-2">
                                                     <button
-                                                        className="text-sm px-4 py-1.5 bg-blue-900 text-white rounded hover:bg-blue-950"
+                                                        className=" cursor-pointer text-sm px-4 py-1.5 bg-blue-900 text-white rounded hover:bg-blue-950"
                                                         onClick={() => window.open(`/refundpage/?id=${order.orderId}`)}
                                                     >
                                                         Claim Refund
                                                     </button>
                                                     <button
-                                                        className="text-sm px-4 py-1.5 bg-gray-800 text-white rounded hover:bg-gray-900"
+                                                        className="text-sm cursor-pointer px-4 py-1.5 bg-gray-800 text-white rounded hover:bg-gray-900"
                                                         onClick={() => fetchRefundStatus(order.id)}
                                                     >
                                                         Check Refund Status
@@ -236,7 +237,7 @@ const MyOrders = () => {
 
                                             {order.payment && order.refunded && (
                                                 <div className="bg-green-100 text-green-800 px-4 py-2 rounded shadow text-center w-full sm:w-auto">
-                                                    ✅ Refund of ₹{order.amount.toFixed(2)} {currency} approved. It will be returned in 8–10 working days.
+                                                    ✅ Refund of ₹{order.amount.toFixed(2)}  approved. It will be returned in 8–10 working days.
                                                 </div>
                                             )}
                                         </div>

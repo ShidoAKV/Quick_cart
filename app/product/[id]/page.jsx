@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import RelatedProducts from "@/components/RelatableProduct";
+import CommentOnProduct from "@/components/CommentonProduct";
 
 const Product = () => {
   const { id } = useParams();
@@ -18,12 +19,13 @@ const Product = () => {
   const [mainImage, setMainImage] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [userRating, setUserRating] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [avgrating, setAvgrating] = useState(0)
+  const [ratingcount,setRatingcount] = useState(0);
   const imgContainerRef = useRef(null);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [isZoomVisible, setIsZoomVisible] = useState(false);
   const [hasPurchased, setHasPurchased] = useState(false);
+
 
   const checkPurchase = async () => {
     const token = await getToken();
@@ -55,20 +57,43 @@ const Product = () => {
       setSelectedSize(product.size?.[0] || null);
       setSelectedColor(defaultColor);
       setMainImage(defaultImages ? defaultImages[0] : null);
-      setUserRating(null); // Reset userRating
+    }
+  };
+
+  const fetchrating = async () => {
+    if (!id) {
+     toast.error("Product ID is missing");
+      return;
+    }
+
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(`/api/product/comment/list/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if(data.success){
+        setAvgrating(data.avgRating);
+        setRatingcount(data.ratingCount)
+      }else{
+        toast.error(data.message);
+      }
+
+    } catch (error) {
+      console.error("Failed to fetch rating:", error);
     }
   };
 
   useEffect(() => {
     if (products && products.length > 0) {
+      fetchrating()
       checkPurchase();
       fetchProductData();
     }
   }, [id, products]);
 
   if (!productData) return <Loading />;
-
-
 
   const handleMouseMove = (e) => {
     if (!imgContainerRef.current) return;
@@ -90,44 +115,9 @@ const Product = () => {
     setMainImage(images[0] || null);
   };
 
-  const handleRatingSubmit = async (e) => {
-    const selectedRating = parseInt(e.target.value);
-    if (!selectedRating || !productData) return;
-
-    try {
-      setIsSubmitting(true);
-      const token = await getToken();
-
-      const { data } = await axios.post(
-        "/api/product/rating",
-        {
-          productId: productData.id,
-          rating: selectedRating,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (data.success) {
-        setUserRating(selectedRating);
-        toast.success(data.message);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error("Failed to submit rating");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+ 
 
 
-  const avgRating = productData.ratingcount
-    ? productData.rating / productData.ratingcount
-    : 0;
 
 
 
@@ -218,6 +208,7 @@ const Product = () => {
               </div>
             </div>
 
+
             {/* Size Selection */}
             <div>
               <h3 className=" text-lg mb-1 text-black font-semibold ">Size</h3>
@@ -235,6 +226,12 @@ const Product = () => {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Type of tshirt */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+
+              <h3 className="text-base sm:text-lg text-gray-800">{productData?.color[0]}</h3>
             </div>
 
             {/* Stock */}
@@ -268,9 +265,9 @@ const Product = () => {
 
               <div className="flex gap-0.5 items-center">
                 {[1, 2, 3, 4, 5].map((star) => {
-                  if (avgRating >= star) {
+                  if (avgrating >= star) {
                     return <FaStar key={star} className="text-yellow-500 text-xl" />;
-                  } else if (avgRating >= star - 0.5) {
+                  } else if (avgrating >= star - 0.5) {
                     return <FaStarHalfAlt key={star} className="text-yellow-500 text-xl" />;
                   } else {
                     return <FaRegStar key={star} className="text-gray-300 text-xl" />;
@@ -278,7 +275,7 @@ const Product = () => {
                 })}
               </div>
               <span className="ml-2 text-sm text-gray-600">
-                ({avgRating.toFixed(1)} / 5 from {productData.ratingcount} ratings)
+                ({avgrating.toFixed(1)} / 5 from {ratingcount} ratings)
               </span>
             </div>
 
@@ -290,9 +287,10 @@ const Product = () => {
                   width: "400px",
                   height: "400px",
                   backgroundImage: `url(${mainImage})`,
-                  backgroundSize: "330%",
+                  backgroundSize: "350%",
                   backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
                   backgroundRepeat: "no-repeat",
+
 
                 }}
               />
@@ -301,7 +299,7 @@ const Product = () => {
             <hr className="my-4" />
 
             {/* Cart Actions */}
-            {productData.stock > 0 && (
+            {productData?.stock > 0 && (
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() =>
@@ -316,39 +314,25 @@ const Product = () => {
                     addToCart(productData.id, selectedSize, selectedColor);
                     router.push("/cart");
                   }}
-                  className="bg-gray-800 cursor-pointer hover:bg-gray-900 text-white font-bold py-3 px-6 rounded w-full sm:w-[240px]"
+                  className="bg-gray-900 lg:bg-gray-800 cursor-pointer hover:bg-gray-950 text-white font-bold py-3 px-6 rounded w-full sm:w-[240px]"
                 >
                   Buy Now
                 </button>
               </div>
             )}
 
-            {/* Rating Input */}
-            {hasPurchased && <div className="mt-4">
-              <label htmlFor="rating" className="text-sm font-semibold block mb-1">
-                Rate this product:
-              </label>
-              <select
-                id="rating"
-                className="border rounded px-2 py-1 text-sm"
-                onChange={handleRatingSubmit}
-                value={""}
-                disabled={isSubmitting}
-              >
-                <option value="">Select</option>
-                {[1, 2, 3, 4, 5].map((num) => (
-                  <option key={num} value={num}>
-                    {num}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* rating and comment */}
+            {
+              (hasPurchased) && <CommentOnProduct productId={id} />
             }
 
           </div>
         </div>
       </div>
-      <RelatedProducts products={products}/>
+
+
+      <RelatedProducts products={products} />
+
       <Footer />
     </>
   );

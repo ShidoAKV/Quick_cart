@@ -21,6 +21,7 @@ export const AppContextProvider = (props) => {
     const [userData, setUserData] = useState(null);
     const [isSeller, setIsSeller] = useState(false);
     const [cartItems, setCartItems] = useState({});
+    const [topcomment,setTopcomment]=useState(null);
 
 
     const fetchProductData = async () => {
@@ -117,7 +118,6 @@ export const AppContextProvider = (props) => {
     };
 
 
-
     const generateCartKey = (productId, size, color) => `${productId}|${size}|${color}`;
 
     const addToCart = async (productId, size, color) => {
@@ -198,6 +198,25 @@ export const AppContextProvider = (props) => {
         }, 0);
     };
 
+   const fetchcomment = async () => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(`/api/product/comment/topcomments`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if(data.success){
+          setTopcomment(data.topComment);
+      }else{
+        toast.error(data.message);
+      }
+
+    } catch (error) {
+      toast.error( error.message);
+    }
+  };
+
 
 
 
@@ -209,7 +228,10 @@ export const AppContextProvider = (props) => {
 
 
     useEffect(() => {
+       if(user){
         fetchProductData();
+        fetchcomment();
+       }
     }, [user]);
 
     // useEffect(() => {
@@ -231,7 +253,7 @@ export const AppContextProvider = (props) => {
         updateCartQuantity,
         getCartCount,
         getCartAmount,
-        user, getToken, authToken
+        user, getToken, authToken,topcomment,fetchcomment
     };
 
     return (

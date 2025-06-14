@@ -17,6 +17,7 @@ const Refundform = () => {
     name: '',
     email: '',
     file: null,
+    reason:'',
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -49,6 +50,7 @@ const Refundform = () => {
       body.append('name', formData.name);
       body.append('email', formData.email);
       body.append('file', formData.file);
+      body.appent('reason',formData.reason);
       toast.loading('processing...')
       const { data } = await axios.post(`/api/order/refund/${orderId}`, body, {
         headers: {
@@ -69,7 +71,7 @@ const Refundform = () => {
   };
 
   return (
-    <div className="min-h-screen px-4 py-12 bg-gray-900 flex flex-col items-center justify-center">
+    <div className="min-h-screen px-4 py-8 bg-gray-900 flex flex-col items-center justify-center">
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow">
         <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">Refund Claim Process</h2>
         <p className="text-sm text-gray-600 mb-6 text-center">
@@ -90,9 +92,9 @@ const Refundform = () => {
                     name={checkbox.name}
                     checked={checks[checkbox.name]}
                     onChange={handleCheckChange}
-                    className="accent-black"
+                    className="accent-black "
                   />
-                  <span>{checkbox.label}</span>
+                  <span className='font-semibold text-black'>{checkbox.label}</span>
                 </label>
               ))}
             </div>
@@ -124,6 +126,19 @@ const Refundform = () => {
                 </div>
 
                 <div>
+                  <label className="block font-medium text-gray-700">Reason</label>
+                  <input
+                    type="text"
+                    name="reason"
+                    required
+                    value={formData.reason}
+                    onChange={handleInputChange}
+                    className="mt-1 w-full border px-3 py-2 rounded-md shadow-sm focus:ring focus:ring-black/30"
+                  />
+                </div>
+
+
+                <div>
                   <label className="block font-medium text-gray-900 mb-2">
                     Upload T-shirt Photo
                   </label>
@@ -138,6 +153,7 @@ const Refundform = () => {
                       className="w-full text-sm text-gray-700 file:hidden focus:outline-none bg-transparent"
                     />
                   </div>
+
                 </div>
 
                 <button

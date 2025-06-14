@@ -124,8 +124,20 @@ const AddProduct = () => {
           + Add Color
         </button>
 
-        {colorImageMap.map((entry, idx) => (
-          <div key={idx} className="border p-3 mt-3 rounded">
+        {colorImageMap?.map((entry, idx) => (
+          <div key={idx} className="border p-3 mt-3 rounded relative">
+            <button
+              type="button"
+              onClick={() => {
+                const updated = colorImageMap.filter((_, i) => i !== idx);
+                setColorImageMap(updated);
+              }}
+              className="absolute cursor-pointer top-1 right-1 text-red-600 font-bold text-lg"
+              title="Remove this entry"
+            >
+              ×
+            </button>
+
             <input
               type="text"
               placeholder="Color name"
@@ -163,6 +175,7 @@ const AddProduct = () => {
             </div>
           </div>
         ))}
+
 
         {/* Basic Fields */}
         <div className="flex flex-col gap-1 max-w-md">
@@ -279,7 +292,7 @@ const AddProduct = () => {
               <option value="3XXL">3XXL</option>
             </select>
             <div className="flex flex-wrap gap-2 mt-1">
-              {size.map((s, idx) => (
+              {size?.map((s, idx) => (
                 <span key={idx} className="bg-gray-200 px-2 py-1 rounded text-sm flex items-center gap-1">
                   {s}
                   <button type="button" onClick={() => setSize(size.filter(item => item !== s))} className="text-red-500 font-bold">
@@ -292,7 +305,7 @@ const AddProduct = () => {
 
           {/* Color Selector */}
           <div className="flex flex-col gap-1 w-40">
-            <label className="text-base font-medium">Color</label>
+            <label className="text-base font-medium">Type</label>
             <select
               className="outline-none py-2 px-3 rounded border border-gray-500/40"
               onChange={(e) => {
@@ -304,32 +317,15 @@ const AddProduct = () => {
               value=""
             >
               <option value="">Select</option>
-              <option value="Black">Black</option>
-              <option value="White">White</option>
-              <option value="Blue">Blue</option>
-              <option value="Red">Red</option>
-              <option value="Green">Green</option>
+              <option value="Plain">Plain</option>
+              <option value="Oversized">Oversized</option>
+              <option value="Printed">Printed</option>
             </select>
 
-            <div className="flex gap-2 mt-1">
-              <input
-                type="text"
-                placeholder="Custom color"
-                className="outline-none py-2 px-2 rounded border border-gray-500/40 flex-1"
-                value={customColor}
-                onChange={(e) => setCustomColor(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={handleAddCustomColor}
-                className="bg-gray-500 text-white px-2 rounded"
-              >
-                Add
-              </button>
-            </div>
+
 
             <div className="flex flex-wrap gap-2 mt-1">
-              {color.map((c, idx) => (
+              {color?.map((c, idx) => (
                 <span key={idx} className="bg-gray-200 px-2 py-1 rounded text-sm flex items-center gap-1">
                   {c}
                   <button type="button" onClick={() => setColor(color.filter(item => item !== c))} className="text-red-500 font-bold">
