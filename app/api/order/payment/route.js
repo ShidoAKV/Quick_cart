@@ -32,8 +32,7 @@ export async function POST(request) {
    
     
     const razorpayOrder = await razorpayInstance.orders.create(options);
-     console.log(razorpayOrder);
-   
+    
     if (!razorpayOrder || !razorpayOrder.id) {
       return NextResponse.json({ success: false, message: "razorpayId missing" });
     }

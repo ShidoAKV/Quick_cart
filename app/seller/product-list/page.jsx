@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { assets } from "@/assets/assets";
+import { UploadCloud } from "lucide-react";
 import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
 import Footer from "@/components/seller/Footer";
@@ -62,7 +62,7 @@ const ProductList = () => {
     }
   };
 
-  
+
   const addColorImage = () => {
     const colorList = colorInput.split(',').map(c => c.trim().toLowerCase()).filter(Boolean);
     const validImages = imageInputs.filter(file => file !== null);
@@ -109,8 +109,8 @@ const ProductList = () => {
         payload.append("color", JSON.stringify(colorArray));
       }
 
-      if(colorImageMap){
-         const rawColorMap = {};
+      if (colorImageMap) {
+        const rawColorMap = {};
         Object.entries(colorImageMap).forEach(([color, files]) => {
           const filenames = [];
           files.forEach(file => {
@@ -126,9 +126,9 @@ const ProductList = () => {
           rawColorMap[color] = filenames;
         });
         payload.append("colorImageMap", JSON.stringify(rawColorMap));
-     }
+      }
 
-     
+
 
       const { data } = await axios.post(`/api/product/edit/${id}`, payload, {
         headers: { Authorization: `Bearer ${authToken.current}` },
@@ -243,113 +243,123 @@ const ProductList = () => {
           </div>
 
           {editingProduct && (
-            <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg w-full max-w-md">
+            <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-[#1e1e1e] text-white p-6 rounded-xl w-full max-w-md shadow-lg">
                 <h3 className="text-lg font-semibold mb-4">Edit Product</h3>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <label className="block text-sm mb-2">Offer Price (₹):</label>
-                  <input
-                    type="number"
-                    {...register("offerPrice")}
-                    className="w-full mb-4 p-2 border rounded"
-                  />
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  <div>
+                    <label className="block text-sm mb-1">Offer Price (₹):</label>
+                    <input
+                      type="number"
+                      {...register("offerPrice")}
+                      className="w-full p-2 bg-[#2b2b2b] border border-gray-600 rounded text-white placeholder-gray-400"
+                    />
+                  </div>
 
-                  <label className="block text-sm mb-2">Colors (comma-separated):</label>
-                  <input
-                    type="text"
-                    {...register("color")}
-                    className="w-full mb-4 p-2 border rounded"
-                  />
+                  <div>
+                    <label className="block text-sm mb-1">Colors (comma-separated):</label>
+                    <input
+                      type="text"
+                      {...register("color")}
+                      className="w-full p-2 bg-[#2b2b2b] border border-gray-600 rounded text-white placeholder-gray-400"
+                    />
+                  </div>
 
-                  <label className="block text-sm mb-2">Stock:</label>
-                  <input
-                    type="number"
-                    {...register("stock")}
-                    className="w-full mb-4 p-2 border rounded"
-                  />
+                  <div>
+                    <label className="block text-sm mb-1">Stock:</label>
+                    <input
+                      type="number"
+                      {...register("stock")}
+                      className="w-full p-2 bg-[#2b2b2b] border border-gray-600 rounded text-white placeholder-gray-400"
+                    />
+                  </div>
 
-                  {/* 4 separate image inputs per color */}
-                  <div className="mb-4">
-                    <label className="block text-sm mb-2">Add Color + Image(s):</label>
+                  {/* Color input with icon file selectors */}
+                  <div>
+                    <label className="block text-sm mb-1">Add Color + Image(s):</label>
                     <input
                       type="text"
                       value={colorInput}
                       onChange={(e) => setColorInput(e.target.value)}
-                      placeholder="e.g. red, blue, green"
-                      className="p-2 border rounded w-full mb-2"
+                      placeholder="e.g. red, blue"
+                      className="w-full p-2 bg-[#2b2b2b] border border-gray-600 rounded text-white placeholder-gray-400 mb-2"
                     />
 
-                    <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="grid grid-cols-4 gap-2">
                       {[0, 1, 2, 3].map((i) => (
-                        <input
+                        <label
                           key={i}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0] || null;
-                            setImageInputs((prev) => {
-                              const updated = [...prev];
-                              updated[i] = file;
-                              return updated;
-                            });
-                          }}
-                          className="p-2 border rounded"
-                        />
+                          className="flex items-center justify-center h-12 border border-gray-600 rounded cursor-pointer hover:bg-gray-700 transition"
+                        >
+                          <UploadCloud/>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              setImageInputs((prev) => {
+                                const updated = [...prev];
+                                updated[i] = file;
+                                return updated;
+                              });
+                            }}
+                            className="hidden"
+                          />
+                          
+                        </label>
                       ))}
                     </div>
 
                     <button
                       type="button"
                       onClick={addColorImage}
-                      className="text-sm bg-indigo-600 text-white px-4 py-1.5 rounded hover:bg-indigo-700"
+                      className="mt-3 bg-gray-800 hover:bg-gray-700 text-white px-4 py-1.5 rounded text-sm"
                     >
                       Add Color & Image(s)
                     </button>
                   </div>
 
-                  {/* Show preview of color-image map */}
-                  <div className="flex flex-wrap gap-2 mb-4 max-h-48 overflow-auto">
+                  {/* Preview */}
+                  <div className="flex flex-wrap gap-2 max-h-40 overflow-auto">
                     {Object.entries(colorImageMap).map(([color, images]) =>
-                      images
-                        ?.filter((img) => img != null)
-                        .map((img, idx) => {
-                          const fileName = typeof img === "string" ? img : img.name || "Unknown";
-                          return (
-                            <div key={`${color}-${idx}`} className="flex items-center gap-2 border p-1 rounded">
-                              <span
-                                className="w-5 h-5 rounded-full border"
-                                style={{ backgroundColor: color.toLowerCase() }}
-                                title={color}
+                      images?.filter(Boolean).map((img, idx) => {
+                        const fileName = typeof img === "string" ? img : img.name || "Unknown";
+                        return (
+                          <div key={`${color}-${idx}`} className="flex items-center gap-2 border border-gray-600 p-1 rounded">
+                            <span
+                              className="w-4 h-4 rounded-full border border-white"
+                              style={{ backgroundColor: color.toLowerCase() }}
+                              title={color}
+                            />
+                            {typeof img === "string" ? (
+                              <span className="text-xs truncate max-w-[100px]" title={fileName}>
+                                {fileName}
+                              </span>
+                            ) : (
+                              <img
+                                src={URL.createObjectURL(img)}
+                                alt="preview"
+                                className="w-8 h-8 object-cover rounded border border-gray-500"
                               />
-                              {typeof img === "string" ? (
-                                <span className="text-sm text-gray-700 truncate max-w-xs" title={fileName}>
-                                  {fileName}
-                                </span>
-                              ) : (
-                                <img
-                                  src={URL.createObjectURL(img)}
-                                  alt="preview"
-                                  className="w-10 h-10 object-cover rounded border"
-                                />
-                              )}
-                            </div>
-                          );
-                        })
+                            )}
+                          </div>
+                        );
+                      })
                     )}
                   </div>
 
-                  <div className="flex justify-end gap-3">
+                  <div className="flex justify-end gap-3 pt-2">
                     <button
                       type="button"
                       onClick={() => setEditingProduct(null)}
-                      className="bg-gray-300 text-black px-4 py-2 rounded"
+                      className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1.5 rounded"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded"
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1.5 rounded"
                     >
                       Save
                     </button>
@@ -358,6 +368,7 @@ const ProductList = () => {
               </div>
             </div>
           )}
+
         </div>
       )}
 

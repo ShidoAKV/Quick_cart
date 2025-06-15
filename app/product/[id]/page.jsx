@@ -87,9 +87,14 @@ const Product = () => {
 
   useEffect(() => {
     if (products && products.length > 0) {
-      fetchrating()
-      checkPurchase();
-      fetchProductData();
+      const init = async () => {
+      await Promise.all([
+        fetchrating(),
+        checkPurchase(),
+        fetchProductData()
+      ]);
+    };
+    init();
     }
   }, [id, products]);
 
@@ -129,7 +134,7 @@ const Product = () => {
           {/* Image Section */}
           <div className="block lg:hidden space-y-2">
             <h1 className="text-2xl font-bold tracking-wide">{productData.name}</h1>
-            <p className="text-gray-700 leading-relaxed font-normal mx-auto">{productData.description}</p>
+            <p className="text-gray-700 px-1 leading-relaxed font-normal mx-auto">{productData.description}</p>
           </div>
           <div className="w-full xl:w-full flex flex-col lg:flex-row gap-2 max-w-[1280px] mx-auto">
             {/* Thumbnails (smaller width) */}
@@ -189,14 +194,14 @@ const Product = () => {
               </p>
             </div>
             <div >
-              <h3 className="text-lg mb-1 font-semibold text-black">Color</h3>
-              <div className="flex gap-3 cursor-pointer overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+              <h3 className="text-lg mb-1 px-1 font-semibold text-black">Color</h3>
+              <div className="flex gap-3 px-1 cursor-pointer overflow-x-clip scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                 {productData.colorImageMap &&
                   Object.keys(productData.colorImageMap).map((color) => (
                     <button
                       key={color}
                       onClick={() => handleColorSelect(color)}
-                      className={`w-9 h-9 rounded-full border-2 ring-1 ring-offset-1 transition duration-150 ${selectedColor === color
+                      className={` w-9 h-9  rounded-full border-2 ring-1 ring-offset-1 transition duration-150 ${selectedColor === color
                         ? "border-black ring-black"
                         : "border-gray-300 ring-transparent"
                         }`}
@@ -211,8 +216,8 @@ const Product = () => {
 
             {/* Size Selection */}
             <div>
-              <h3 className=" text-lg mb-1 text-black font-semibold ">Size</h3>
-              <div className="flex gap-2 flex-wrap">
+              <h3 className=" text-lg px-1 mb-1 text-black font-semibold ">Size</h3>
+              <div className="flex gap-2 px-1 flex-wrap">
                 {productData.size?.map((size) => (
                   <button
                     key={size}
@@ -231,16 +236,16 @@ const Product = () => {
             {/* Type of tshirt */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-4">
 
-              <h3 className="text-base sm:text-lg text-gray-800">{productData?.color[0]}</h3>
+              <h3 className="text-base sm:text-lg px-1 text-gray-800">{productData?.color[0]}</h3>
             </div>
 
             {/* Stock */}
             {productData.stock > 0 ? (
-              <p className="text-green-700 text-md font-bold">
+              <p className="text-green-700 text-md px-1 font-bold">
                 {productData.stock} in stock
               </p>
             ) : (
-              <p className="bg-red-600 text-white text-md font-semibold px-3 py-1 rounded w-fit">
+              <p className="bg-red-600 text-white px-1 text-md font-semibold px-3 py-1 rounded w-fit">
                 Out of stock
               </p>
             )}
@@ -249,7 +254,7 @@ const Product = () => {
 
 
             {/* Price */}
-            <div className="mt-2">
+            <div className="mt-2 px-1">
               <p className="text-3xl font-bold text-green-900">
                 ₹{productData.offerPrice}
                 <span className="text-lg font-semibold text-gray-500 line-through ml-3">
@@ -263,7 +268,7 @@ const Product = () => {
 
             <div className="flex items-center gap-2">
 
-              <div className="flex gap-0.5 items-center">
+              <div className="flex gap-0.5 px-1 items-center">
                 {[1, 2, 3, 4, 5].map((star) => {
                   if (avgrating >= star) {
                     return <FaStar key={star} className="text-yellow-500 text-xl" />;
@@ -323,7 +328,7 @@ const Product = () => {
 
             {/* rating and comment */}
             {
-              (hasPurchased) && <CommentOnProduct productId={id} />
+              (hasPurchased)&& <CommentOnProduct productId={id} />
             }
 
           </div>

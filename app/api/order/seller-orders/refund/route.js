@@ -9,7 +9,7 @@ export async function POST(request) {
   try {
     const { userId } = getAuth(request);
     const isseller = await authSeller(userId);
-    const { PaymentId } = await request.json();
+    const { PaymentId,email} = await request.json();
 
     if (!isseller) {
       return NextResponse.json({ success: false, message: "Not authorized" });
@@ -40,7 +40,8 @@ export async function POST(request) {
       amount:payment.amount,
       receipt: `Refund-${PaymentId}`,
       notes: {
-        reason: "Seller-initiated refund"
+        reason: "Seller-initiated refund",
+        customer_email:email 
       }
     });
    

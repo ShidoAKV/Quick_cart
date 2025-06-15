@@ -33,12 +33,13 @@ export async function GET(request) {
       .reduce((acc, o) => acc + Number(o.amount), 0);
 
     const totalRefunds = orders
-      .filter((o) => o.cancelled && o.payment)
+      .filter((o) => o.claimedRefund && o.payment && o.refunded)
       .reduce((acc, o) => acc + Number(o.amount), 0);
 
     const pendingRefunds = orders
-      .filter((o) => o.cancelled && o.payment && !o.refunded)
+      .filter((o) => o.claimedRefund && o.payment && !o.refunded)
       .reduce((acc, o) => acc + Number(o.amount), 0);
+
 
     return NextResponse.json({
       success: true,

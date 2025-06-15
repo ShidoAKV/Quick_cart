@@ -25,7 +25,7 @@ const AllProducts = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [showMobileFilter, setShowMobileFilter] = useState(false);
 
-    const tshirtTypes = ['Plain', 'Oversized', 'Printed'];
+    const tshirtTypes = ['PLAIN', 'OVERSIZED', 'PRINTED'];
 
     const materials = useMemo(() => {
         const set = new Set();
@@ -93,7 +93,9 @@ const AllProducts = () => {
         let result = products;
 
         if (filters.type.length)
-            result = result.filter(p => filters.type.includes(p.name));
+            result = result.filter(p =>
+                p.color?.some(c => filters.type.includes(c))
+            );
         if (filters.material.length)
             result = result.filter(p => filters.material.includes(p.material));
         if (filters.color.length)
@@ -138,13 +140,14 @@ const AllProducts = () => {
         </>
     );
 
+
     return (
         <>
             <div className="px-4 md:px-10 lg:px-32 pt-8 pb-28">
                 <div className="mb-6 px-4 md:px-0 md:hidden">
                     <div className="flex justify-between items-center">
                         <h1 className="text-2xl font-semibold text-gray-800">All Products</h1>
-                        
+
                     </div>
                     <p className="text-sm text-gray-500 mt-1">Browse our latest collection tailored for you.</p>
                 </div>
@@ -190,7 +193,7 @@ const AllProducts = () => {
                 {/* Active Filters */}
                 <div className="flex flex-wrap gap-2 mb-4">
                     {Object.entries(filters).flatMap(([category, values]) =>
-                        values.map((value) => (
+                        values?.map((value) => (
                             <div
                                 key={`${category}-${value}`}
                                 className="flex items-center gap-2 bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full"

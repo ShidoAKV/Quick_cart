@@ -24,7 +24,7 @@ const Cart = () => {
         <div className="flex-1">
           <div className="flex items-center justify-between mb-8 border-b border-gray-500/30 pb-6">
             <p className="text-2xl md:text-3xl text-gray-500">
-              Your <span className="font-medium text-green-900">Cart</span>
+              Your <span className="font-medium text-gray-900">Cart</span>
             </p>
             <p className="text-lg md:text-xl text-gray-500/80">{getCartCount()} Items</p>
           </div>

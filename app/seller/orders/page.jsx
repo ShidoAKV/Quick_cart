@@ -7,13 +7,13 @@ import Footer from "@/components/seller/Footer";
 import Loading from "@/components/Loading";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { BadgeCheck, CheckCircle, RefreshCcw, Info,X} from "lucide-react";
 
 const Orders = () => {
   const { currency, getToken, user } = useAppContext();
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [cancellingId, setCancellingId] = useState(null);
   const [refundingId, setRefundingId] = useState(null);
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -71,14 +71,14 @@ const Orders = () => {
   //   }
   // };
 
-  const refundOrder = async (PaymentId) => {
+  const refundOrder = async (PaymentId, email) => {
     try {
       setRefundingId(PaymentId);
       const token = await getToken();
-      const { data } = await axios.post('/api/order/seller-orders/refund', { PaymentId }, {
+      const { data } = await axios.post('/api/order/seller-orders/refund', { PaymentId, email }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       if (data.success) {
         toast.success("Refund issued successfully");
         fetchSellerOrders();
@@ -107,30 +107,32 @@ const Orders = () => {
       toast.error(error.message)
     }
   }
-  const fetchrefundinformation=async(orderId)=>{
-     try {
-           const token = await getToken();
-            const { data } = await axios.get(`/api/order/refund`, {
-                headers: { Authorization: `Bearer ${token}` },
-                params:{orderId}
-            });
-            if(data.success){
-              setRefundData(data.refunddata);
-              setShowRefundModal(true);
-            }
-     } catch (error) {
-         toast.error(error.message)
-     }
+  const fetchrefundinformation = async (orderId) => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(`/api/order/refund`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { orderId },
+      });
+      if (data.success) {
+        setRefundData(data.refunddata);
+        setShowRefundModal(true);
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
-  
+
 
   useEffect(() => {
     if (user) {
       fetchSellerOrders();
+      fetchrefundinformation();
     }
   }, [user]);
-
-
+ 
+ 
+  
 
   return (
     <div className="flex-1 h-screen overflow-auto flex flex-col justify-between text-sm bg-gray-50">
@@ -167,7 +169,7 @@ const Orders = () => {
                       <p><strong>Time:</strong> {new Date(order.date).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}</p>
                       <p><strong>Status:</strong> {order.status}</p>
                     </div>
-                    <div className="font-semibold text-blue-700 whitespace-nowrap mt-2 md:mt-0">
+                    <div className="lg:text-lg font-semibold text-blue-700 whitespace-nowrap mt-2 md:mt-0">
                       ₹{order.amount.toFixed(2)}
                     </div>
                   </div>
@@ -191,7 +193,7 @@ const Orders = () => {
                           />
                           <div className="text-xs space-y-0.5">
                             <p><strong>{item.product.name}</strong></p>
-                            <p>Color: {item.color} | Qty: {item.quantity}</p>
+                            <p className="font-medium"><strong>{item.color}</strong> | <strong>{item.size}</strong> | Qty:<strong>{item.quantity}</strong></p>
                           </div>
                         </div>
                       );
@@ -213,78 +215,99 @@ const Orders = () => {
                       <p>Status: {order.payment ? "PAID" : "PENDING"}</p>
                     </div>
 
-                    <div>
-                      <p className="font-medium text-black mb-1">Refund</p>
-                      <p className={`uppercase font-medium ${order.claimedRefund ? 'text-yellow-700' : 'text-gray-500'}`}>
-                        {order.claimedRefund ? "REFUND CLAIMED" : "N/A"}
-                      </p>
+                    <div className="md:col-span-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border rounded-md p-4 shadow-sm bg-white">
+                      {/* Refund Status */}
+                      <div className="flex-1">
+                        <p className="font-medium text-black mb-1">Refund</p>
+                        <p className={`uppercase font-medium flex items-center gap-1 ${order.claimedRefund ? 'text-yellow-700' : 'text-gray-500'}`}>
+                          <Info className="w-4 h-4" />
+                          {order.claimedRefund ? "REFUND CLAIMED" : "N/A"}
+                        </p>
 
-                      {order.claimedRefund && (
-                        <select
-                          className="mt-1 text-xs border bg-white px-1.5 py-0.5 rounded"
-                          onChange={(e) => refundaction(e, order.id)}
-                          defaultValue=""
-                        >
-                          <option value="" disabled>Select Action</option>
-                          <option value="APPROVE">APPROVE</option>
-                          <option value="REJECT">REJECT</option>
-                        </select>
-                      )}
-                    </div>
-                    {showRefundModal && refundData && (
-                      <div className="fixed inset-0 backdrop-blur-lg bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white rounded-lg p-4 w-[90%] max-w-md space-y-3 relative">
-                          <button
-                            className="absolute top-2 right-2 text-gray-500 hover:text-black"
-                            onClick={() => setShowRefundModal(false)}
+                        {order.claimedRefund && (
+                          <select
+                            className="mt-2 text-xs border px-2 py-1 rounded"
+                            onChange={(e) => refundaction(e, order.id)}
+                            defaultValue=""
                           >
-                            ✖
-                          </button>
-
-                          <h2 className="text-lg font-semibold mb-2">Refund Details</h2>
-                          <p><strong>Name:</strong> {refundData.name}</p>
-                          <p><strong>Email:</strong> {refundData.email}</p>
-                          <p><strong>Reason:</strong> {refundData.reason}</p>
-                          {refundData.photoUrl && (
-                            <img
-                              src={refundData.photoUrl}
-                              alt="Refund Proof"
-                              className="w-full max-h-64 object-contain rounded border"
-                            />
-                          )}
-                        </div>
+                            <option value="" disabled>Select Action</option>
+                            <option value="APPROVE">APPROVE</option>
+                            <option value="REJECT">REJECT</option>
+                          </select>
+                        )}
                       </div>
-                    )}
 
+                      {/* Action Buttons */}
+                      <div className="flex flex-col gap-2 items-start md:items-end text-xs">
+                        {order.claimedRefund && (
+                          <button
+                            className="bg-gray-200 text-blue-700 px-3 py-1 rounded hover:bg-gray-300 flex items-center gap-1"
+                            onClick={() => fetchrefundinformation(order.id)}
+                          >
+                            <Info className="w-4 h-4" />
+                            View Details
+                          </button>
+                        )}
 
-                    <div className="flex flex-col gap-1 items-start md:items-center justify-center">
-                      {order.claimedRefund && (
-                        <button
-                          className="bg-gray-200 text-blue-700 px-2 py-0.5 rounded text-xs hover:bg-gray-300"
-                          onClick={() => {fetchrefundinformation(order.id)}}
-                        >
-                          View Document
-                        </button>
-                      )}
+                        {order.refundFeePaid && (
+                          <p className="bg-green-600 text-white px-3 py-1 rounded flex items-center gap-1">
+                            <CheckCircle className="w-4 h-4" />
+                             Payment Received
+                          </p>
+                        )}
 
-                      {order.claimedRefund && !order.refunded && (
-                        <button
-                          disabled={refundingId !== null}
-                          onClick={() => refundOrder(order.PaymentId)}
-                          className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs hover:bg-blue-700 disabled:opacity-50"
-                        >
-                          {refundingId !== null ? "Refunding..." : "Refund"}
-                        </button>
-                      )}
+                        {order.claimedRefund && !order.refunded && (
+                          <button
+                            onClick={() => refundOrder(order.PaymentId,refundData.email)}
+                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1"
+                          >
+                            <RefreshCcw className="w-4 h-4" />
+                            {refundingId !== null ? "Refunding..." : "Refund"}
+                          </button>
+                        )}
 
-                      {order.claimedRefund && order.refunded && (
-                        <span className="bg-green-500 text-white px-2 py-0.5 rounded text-xs">Refunded</span>
-                      )}
+                        {order.claimedRefund && order.refunded && (
+                          <span className="bg-green-500 text-white px-3 py-1 rounded flex items-center gap-1">
+                            <BadgeCheck className="w-4 h-4" />
+                            Refunded
+                          </span>
+                        )}
 
-                      {!order.claimedRefund && order.isCompleted && (
-                        <span className="italic text-gray-500 text-xs">Completed</span>
+                        {!order.claimedRefund && order.isCompleted && (
+                          <span className="italic text-gray-500">Completed</span>
+                        )}
+                      </div>
+
+                      {/* Refund Modal */}
+                      {showRefundModal && refundData && (
+                        <div className="fixed inset-0 backdrop-blur-sm bg-black/40 flex justify-center items-center z-50">
+                          <div className="bg-white rounded-lg p-5 w-[90%] max-w-md relative">
+                            <button
+                              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+                              onClick={() => setShowRefundModal(false)}
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+
+                            <h2 className="text-lg font-semibold mb-2 flex items-center gap-1">
+                              <Info className="w-5 h-5 text-blue-600" />
+                              Refund Details
+                            </h2>
+                            <p><strong>Name:</strong> {refundData.name}</p>
+                            <p><strong>Email:</strong> {refundData.email}</p>
+                            <p><strong>Reason:</strong> {refundData.reason}</p>
+                            {refundData.photoUrl && (
+                              <img
+                                src={refundData.photoUrl}
+                                alt="Refund Proof"
+                                className="w-full max-h-64 object-contain mt-2 rounded border"
+                              />
+                            )}
+                          </div>
+                        </div>
                       )}
                     </div>
+
                   </div>
                 </div>
               )

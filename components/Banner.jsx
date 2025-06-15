@@ -17,7 +17,7 @@ const Banner = () => {
       });
     }
   };
- 
+
 
   useEffect(() => {
     fetchcomment();
@@ -78,15 +78,13 @@ const Banner = () => {
                 </div>
               </div>
               <div>
-                 <p className="text-sm text-gray-300 py-2">{review.product.name}</p>
-                 <p className="text-sm text-gray-300 flex gap-2">{
-                 review.product.size.map(
-                  s=>
-                  <p key={s.id}
-                  className='bg-blue-600 text-white rounded-sm px-2'>{s}</p>
-                 )
-                  
-                  }</p>
+                <p className="text-sm text-gray-300 py-2">{review.product.name}</p>
+                <p className="text-sm text-gray-300 flex gap-2">
+                  {review?.product?.size?.map((s,index)=> (
+                    <span key={index} className="bg-blue-600 text-white rounded-sm px-1">{s}</span>
+                  ))}
+                </p>
+
               </div>
               <div className="flex items-center gap-1 mb-2 py-2">
                 {Array.from({ length: review.rating }).map((_, i) => (

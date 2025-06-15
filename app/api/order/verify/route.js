@@ -17,7 +17,6 @@ export async function POST(request) {
    
     const razorpayOrder = await razorpayInstance.orders.fetch(razorpay_order_id);
 
-    console.log(razorpayPaymentId,razorpay_order_id,razorpayOrder);
     
     if (!razorpayOrder) {
       return NextResponse.json({ success: false, message: 'Razorpay order not found' });
@@ -48,7 +47,7 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: 'Payment not successful yet' });
     }
   } catch (error) {
-    console.error('Payment verification error:', error);
+   
     return NextResponse.json({ success: false, message: error.message });
   }
 }

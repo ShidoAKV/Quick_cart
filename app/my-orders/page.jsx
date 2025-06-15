@@ -25,7 +25,7 @@ const MyOrders = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (data.success) {
-                setOrders(data.orders.reverse());
+                setOrders(data.orders);
             } else {
                 toast.error(data.message);
             }
@@ -120,7 +120,6 @@ const MyOrders = () => {
     const fetchRefundStatus = async (orderId) => {
         try {
             const token = await getToken();
-
             const { data } = await axios.get(`/api/order/refund`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { orderId }
@@ -137,11 +136,29 @@ const MyOrders = () => {
         }
     };
 
+    const fetchpaymentdetail = async (orderId) => {
+        try {
+            const token = await getToken();
+            const { data } = await axios.get(`/api/order/refund/payment/paymentdetails?orderId=${orderId}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+            if (data.success) {
+                toast.success(data.message)
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
     const claimRefundPayment = async (orderId) => {
         try {
             toast.loading("Processing refund payment...");
             const token = await getToken();
-            const { data } = await axios.post(`/api/refund/payment`, { orderId }, {
+            const { data } = await axios.post(`/api/order/refund/payment`, { orderId }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -149,7 +166,9 @@ const MyOrders = () => {
             if (data.success) {
                 toast.success("Refund payment successful");
                 setShowRefundModal(false);
+                fetchpaymentdetail(orderId);
                 fetchOrders();
+
             } else {
                 toast.error(data.message);
             }
@@ -159,13 +178,14 @@ const MyOrders = () => {
         }
     };
 
+
     useEffect(() => {
         if (user) {
             fetchOrders();
         }
     }, [user]);
 
-    
+
     return (
         <>
             <div className="px-2 md:px-8 py-4 min-h-screen bg-gray-50">
@@ -179,7 +199,7 @@ const MyOrders = () => {
                             <p className="text-center text-gray-600 text-base">No orders found.</p>
                         ) : (
                             orders?.map((order, index) => (
-                                <div key={index} className="bg-white shadow-md rounded-md border border-gray-200 px-4 py-4 sm:px-6">
+                                <div key={index} className="shadow-md shadow-gray-300 rounded-md border border-gray-200 px-4 py-4 sm:px-6">
                                     {/* Order Items */}
                                     <div className="flex flex-col sm:grid sm:grid-cols-5 gap-4 mb-2">
                                         {order?.items.map((item, idx) => (
@@ -219,16 +239,20 @@ const MyOrders = () => {
                                         {/* Refund Status */}
                                         <div className="col-span-2 sm:col-span-1 flex flex-col sm:items-end gap-2">
                                             {order.payment && !order.refunded && (
-                                                <div className="flex flex-wrap gap-2">
+                                                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                                     <button
-                                                        className=" cursor-pointer text-sm px-4 py-1.5 bg-blue-900 text-white rounded hover:bg-blue-950"
-                                                        onClick={() => window.open(`/refundpage/?id=${order.orderId}`)}
+                                                        className="text-sm px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-950 transition shadow-sm"
+                                                         onClick={() => window.open(`/refundpage/?id=${order.orderId}`)}
                                                     >
                                                         Claim Refund
                                                     </button>
+
                                                     <button
-                                                        className="text-sm cursor-pointer px-4 py-1.5 bg-gray-800 text-white rounded hover:bg-gray-900"
-                                                        onClick={() => fetchRefundStatus(order.id)}
+                                                        className="text-sm px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition shadow-sm"
+                                                        onClick={() => {
+                                                            fetchRefundStatus(order.id);
+                                                            fetchpaymentdetail(order.id);
+                                                        }}
                                                     >
                                                         Check Refund Status
                                                     </button>
@@ -241,6 +265,8 @@ const MyOrders = () => {
                                                 </div>
                                             )}
                                         </div>
+
+
 
                                         {/* Payment Action Buttons */}
                                         <div className="col-span-2 sm:col-span-1 flex flex-wrap gap-2 items-start sm:justify-end">
@@ -270,40 +296,12 @@ const MyOrders = () => {
                     </div>
                 )}
 
+
+
+
                 {/* Refund Modal */}
-                {showRefundModal && selectedRefund && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white rounded-lg p-6 w-[90%] max-w-md">
-                            <h2 className="text-lg font-semibold mb-4">Refund Details</h2>
-                            <p><strong>Status:</strong> {selectedRefund.status}</p>
-                            <p><strong>Reason:</strong> {selectedRefund.reason}</p>
-                            <p><strong>Requested On:</strong> {new Date(selectedRefund.createdAt).toLocaleDateString()}</p>
 
-                            {selectedRefund.status === "PENDING" && (
-                                <p className="mt-2 text-yellow-600">Waiting for seller approval.</p>
-                            )}
-
-                            {selectedRefund.status === "APPROVED" && (
-                                <button
-                                    className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                                    onClick={() => claimRefundPayment(selectedRefund.orderId)}
-                                >
-                                    Claim Refund Payment
-                                </button>
-                            )}
-
-                            <button
-                                className="mt-4 ml-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-                                onClick={() => setShowRefundModal(false)}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                )}
             </div>
-
-
 
             {showRefundModal && selectedRefund && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -315,7 +313,7 @@ const MyOrders = () => {
                         {selectedRefund.status === "PENDING" && (
                             <p className="mt-2 text-yellow-600">Waiting for seller approval.</p>
                         )}
-                        {selectedRefund.status === "APPROVED" && (
+                        {selectedRefund.status === "APPROVE" && (
                             <button
                                 className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                                 onClick={() => claimRefundPayment(selectedRefund.orderId)}

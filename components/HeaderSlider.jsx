@@ -47,7 +47,7 @@ const HeaderSlider = () => {
   };
 
   return (
-    <div className="relative w-full h-[550px] md:h-[50px] lg:h-[630px] overflow-hidden mt-5 rounded-sm">
+    <div className="relative w-full h-[550px] md:h-[650px] lg:h-[660px] overflow-hidden mt-5 rounded-sm">
       <div
         className="flex transition-transform duration-700 ease-in-out"
         style={{
@@ -65,7 +65,7 @@ const HeaderSlider = () => {
                 src={slide.imgSrc}
                 alt="Background"
                 fill
-                className="object-cover sm:blur-lg md:blur-none brightness-95"
+                className="object-cover sm:blur-lg md:blur-none brightness-100"
                 priority
               />
               <div className="absolute inset-0 bg-black/10"></div>

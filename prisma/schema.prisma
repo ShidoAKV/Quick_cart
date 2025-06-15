@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id              String    @id @default(cuid())
   name            String?
@@ -59,6 +58,7 @@ model Order {
   PaymentId     String?     @unique
   refundId      String?     @unique
   refundStatus  String      @default("Pending")
+  refundFeePaid Boolean     @default(false)
   date          DateTime    @default(now())
   claimedRefund Boolean     @default(false)
   address       Address     @relation(fields: [addressId], references: [id])
@@ -102,6 +102,7 @@ model Refund {
   updatedAt DateTime     @updatedAt
   email     String?
   name      String?
+  paymentLinkId    String? 
   order     Order        @relation(fields: [orderId], references: [id])
   user      User         @relation(fields: [userId], references: [id])
 }
@@ -109,7 +110,7 @@ model Refund {
 model Comment {
   id        String   @id @default(cuid())
   text      String
-  rating    Int      // e.g., 1 to 5
+  rating    Int      
   createdAt DateTime @default(now())
   
   userId    String
