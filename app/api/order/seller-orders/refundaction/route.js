@@ -14,12 +14,10 @@ export async function POST(request) {
 
     const { action, id } = await request.json();
    
-    if (!action || !id) {
+    if (!action || !id)   {
       return NextResponse.json({ success: false, message: "Missing action or orderid" });
     }
 
-   
-    
     const refundRecord = await prisma.refund.findFirst({
       where: {
         orderId:id
@@ -30,6 +28,18 @@ export async function POST(request) {
     if (!refundRecord) {
       return NextResponse.json({ success: false, message: "Refund record not found" });
     }
+
+    const order = await prisma.order.findFirst({
+      where: {
+        id
+       },
+    });
+    
+
+    if(order.refunded){
+      return NextResponse.json({ success:false, message: `refund already issued` });
+    }
+ 
 
     await prisma.refund.update({
       where: {id:refundRecord.id },
