@@ -17,7 +17,7 @@ export async function GET(req) {
         if (!orderId) {
             return NextResponse.json({ success: false, message: "Missing orderId" });
         }
-         
+        
         const refunddata = await prisma.refund.findFirst({
             where: {
                 orderId,
@@ -28,7 +28,8 @@ export async function GET(req) {
         if (!refunddata) {
             return NextResponse.json({ success: false, message: "Refund not claimed" });
         }
-
+      
+        
         return NextResponse.json({ success: true, refunddata });
     } catch (error) {
         return NextResponse.json({ success: false, message: error.message });

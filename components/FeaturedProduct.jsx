@@ -10,6 +10,7 @@ const products = [
     id: 1,
     image: assets.plain,
     title: "Oversized T-shirt",
+    type:"OVERSIZED",
     tagline: "Ultimate Comfort",
     description: "Comfortable streetwear-style tees for everyday style.",
   },
@@ -17,6 +18,7 @@ const products = [
     id: 2,
     image: assets.printed,
     title: "Pattern T-shirt",
+    type:"PATTERN",
     tagline: "Bold Designs",
     description: "Trendy prints and bold patterns to stand out in a crowd.",
   },
@@ -24,6 +26,7 @@ const products = [
     id: 3,
     image: assets.oversized,
     title: "Plain T-shirt",
+    type:"PLAIN",
     tagline: "Clean & Classic",
     description: "Minimalist essentials, crafted with premium cotton.",
   },
@@ -43,7 +46,7 @@ const FeaturedProduct = () => {
 
       {/* Product Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-14 px-1 md:px-12">
-        {products?.map(({ id, image, title, tagline, description }) => (
+        {products?.map(({ id, image, title,type, tagline, description }) => (
           <div
             key={id}
             className="bg-white border border-gray-200 rounded-sm overflow-hidden shadow-md group hover:shadow-lg transition duration-300"
@@ -63,7 +66,7 @@ const FeaturedProduct = () => {
               <h3 className="text-xl font-semibold text-black">{title}</h3>
               <p className="text-gray-700 text-sm">{description}</p>
               <button className="mt-3 inline-flex items-center gap-2 cursor-pointer bg-gray-900 hover:bg-black text-white text-sm px-4 py-2 rounded-sm transition"
-               onClick={()=>router.push('/all-products')}
+               onClick={()=>router.push(`/all-products?type=${type}`)}
               >
                 Buy Now
                 <Image

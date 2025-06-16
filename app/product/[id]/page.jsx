@@ -8,6 +8,7 @@ import { useAppContext } from "@/context/AppContext";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { LoaderCircle } from "lucide-react";
 import RelatedProducts from "@/components/RelatableProduct";
 import CommentOnProduct from "@/components/CommentonProduct";
 
@@ -20,11 +21,13 @@ const Product = () => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [avgrating, setAvgrating] = useState(0)
-  const [ratingcount,setRatingcount] = useState(0);
+  const [ratingcount, setRatingcount] = useState(0);
   const imgContainerRef = useRef(null);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [isZoomVisible, setIsZoomVisible] = useState(false);
   const [hasPurchased, setHasPurchased] = useState(false);
+  const [showComment, setShowComment] = useState(false);
+
 
 
   const checkPurchase = async () => {
@@ -62,7 +65,7 @@ const Product = () => {
 
   const fetchrating = async () => {
     if (!id) {
-     toast.error("Product ID is missing");
+      toast.error("Product ID is missing");
       return;
     }
 
@@ -73,10 +76,10 @@ const Product = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if(data.success){
+      if (data.success) {
         setAvgrating(data.avgRating);
         setRatingcount(data.ratingCount)
-      }else{
+      } else {
         toast.error(data.message);
       }
 
@@ -88,15 +91,22 @@ const Product = () => {
   useEffect(() => {
     if (products && products.length > 0) {
       const init = async () => {
-      await Promise.all([
-        fetchrating(),
-        checkPurchase(),
-        fetchProductData()
-      ]);
-    };
-    init();
+        await Promise.all([
+          fetchrating(),
+          checkPurchase(),
+          fetchProductData()
+        ]);
+      };
+      init();
     }
   }, [id, products]);
+
+  useEffect(() => {
+    if (hasPurchased) {
+      const timer = setTimeout(() => setShowComment(true), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [hasPurchased]);
 
   if (!productData) return <Loading />;
 
@@ -120,7 +130,7 @@ const Product = () => {
     setMainImage(images[0] || null);
   };
 
- 
+
 
 
 
@@ -245,7 +255,7 @@ const Product = () => {
                 {productData.stock} in stock
               </p>
             ) : (
-              <p className="bg-red-600 text-white px-1 text-md font-semibold px-3 py-1 rounded w-fit">
+              <p className="bg-red-600 text-white  text-md font-semibold px-3 py-1 rounded w-fit">
                 Out of stock
               </p>
             )}
@@ -327,9 +337,16 @@ const Product = () => {
             )}
 
             {/* rating and comment */}
-            {
-              (hasPurchased)&& <CommentOnProduct productId={id} />
-            }
+            {hasPurchased && (
+              showComment ? (
+                <CommentOnProduct productId={id} />
+              ) : (
+                <div className="flex items-center gap-2 text-gray-500 animate-pulse">
+                  <LoaderCircle className="w-5 h-5 animate-spin" />
+                  <span>Loading comment section...</span>
+                </div>
+              )
+            )}
 
           </div>
         </div>

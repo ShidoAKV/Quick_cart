@@ -197,8 +197,8 @@ const ProductList = () => {
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell truncate">{product.category}</td>
                     <td className="px-4 py-3 text-gray-700 font-medium">₹{product.offerPrice}</td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <div className="flex gap-2">
+                    <td className="px-4 py-3 hidden sm:table-cell overflow-x-scroll">
+                      <div className="flex gap-2 ">
                         {product?.colorImageMap &&
                           Object.keys(product.colorImageMap).map((color) => (
                             <span

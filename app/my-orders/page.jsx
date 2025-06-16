@@ -307,7 +307,8 @@ const MyOrders = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white rounded-lg p-6 w-[90%] max-w-md">
                         <h2 className="text-lg font-semibold mb-4">Refund Details</h2>
-                        <p><strong>Status:</strong> {selectedRefund.status}</p>
+                        { (selectedRefund.status!=='APPROVE')&&<p><strong >Status:</strong  > {selectedRefund.status}</p>}
+                        { (selectedRefund.status==='APPROVE')&&<p className="text-green-500"><strong className="text-gray-700">Status:</strong  > {selectedRefund.status}</p>}
                         <p><strong>Reason:</strong> {selectedRefund.reason}</p>
                         <p><strong>Requested On:</strong> {new Date(selectedRefund.createdAt).toLocaleDateString()}</p>
                         {selectedRefund.status === "PENDING" && (
