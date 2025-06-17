@@ -128,13 +128,14 @@ const ProductList = () => {
         payload.append("colorImageMap", JSON.stringify(rawColorMap));
       }
 
-
+      toast.loading('updating...');
 
       const { data } = await axios.post(`/api/product/edit/${id}`, payload, {
         headers: { Authorization: `Bearer ${authToken.current}` },
       });
 
       if (data.success) {
+        
         toast.success("Product updated");
         setEditingProduct(null);
         router.push('/seller/product-list');
@@ -144,6 +145,7 @@ const ProductList = () => {
     } catch (err) {
       toast.error("Update failed: " + err.message);
     }
+    toast.dismiss();
   };
 
   useEffect(() => {
