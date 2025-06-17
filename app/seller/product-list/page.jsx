@@ -134,6 +134,8 @@ const ProductList = () => {
         headers: { Authorization: `Bearer ${authToken.current}` },
       });
 
+      toast.dismiss();
+
       if (data.success) {
         
         toast.success("Product updated");
@@ -143,9 +145,10 @@ const ProductList = () => {
         toast.error(data.message);
       }
     } catch (err) {
+      toast.dismiss();
       toast.error("Update failed: " + err.message);
     }
-    toast.dismiss();
+    
   };
 
   useEffect(() => {
