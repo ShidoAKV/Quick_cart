@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 
 const ProductCard = ({ product }) => {
   const { currency, router } = useAppContext();
+  console.log(product);
+  
 
   return (
     <div

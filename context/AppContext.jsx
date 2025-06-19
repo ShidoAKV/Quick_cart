@@ -21,7 +21,7 @@ export const AppContextProvider = (props) => {
     const [userData, setUserData] = useState(null);
     const [isSeller, setIsSeller] = useState(false);
     const [cartItems, setCartItems] = useState({});
-    const [topcomment,setTopcomment]=useState(null);
+    const [topcomment, setTopcomment] = useState(null);
 
 
     const fetchProductData = async () => {
@@ -29,7 +29,7 @@ export const AppContextProvider = (props) => {
             const { data } = await axios.get('/api/product/list');
 
             if (data.success) {
-                setProducts(data.products)
+                setProducts(data?.products)
             } else {
                 toast.error(data.message);
             }
@@ -73,7 +73,7 @@ export const AppContextProvider = (props) => {
 
             if (data.success) {
                 toast.success('user created successfully');
-               if (user?.publicMetadata.role === 'seller') {
+                if (user?.publicMetadata.role === 'seller') {
                     setIsSeller(true);
                 } else {
                     setIsSeller(false);
@@ -99,7 +99,7 @@ export const AppContextProvider = (props) => {
             if (data.success) {
                 setUserData(data.user);
                 setCartItems(data.user.cartItems);
-                
+
                 if (user?.publicMetadata.role === 'seller') {
                     setIsSeller(true);
                 } else {
@@ -198,24 +198,24 @@ export const AppContextProvider = (props) => {
         }, 0);
     };
 
-   const fetchcomment = async () => {
-    try {
-      const token = await getToken();
-      const { data } = await axios.get(`/api/product/comment/topcomments`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if(data.success){
-          setTopcomment(data.topComment);
-      }else{
-        toast.error(data.message);
-      }
+    const fetchcomment = async () => {
+        try {
+            const token = await getToken();
+            const { data } = await axios.get(`/api/product/comment/topcomments`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (data.success) {
+                setTopcomment(data.topComment);
+            } else {
+                toast.error(data.message);
+            }
 
-    } catch (error) {
-      toast.error( error.message);
-    }
-  };
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
 
 
 
@@ -228,11 +228,10 @@ export const AppContextProvider = (props) => {
 
 
     useEffect(() => {
-       if(user){
         fetchProductData();
         fetchcomment();
-       }
-    }, [user]);
+
+    }, []);
 
     // useEffect(() => {
     //     if (user) fetchUserData();
@@ -253,7 +252,7 @@ export const AppContextProvider = (props) => {
         updateCartQuantity,
         getCartCount,
         getCartAmount,
-        user, getToken, authToken,topcomment,fetchcomment
+        user, getToken, authToken, topcomment, fetchcomment
     };
 
     return (
