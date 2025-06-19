@@ -70,12 +70,7 @@ const Product = () => {
     }
 
     try {
-      const token = await getToken();
-      const { data } = await axios.get(`/api/product/comment/list/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const { data } = await axios.get(`/api/product/comment/list/${id}`);
       if (data.success) {
         setAvgrating(data.avgRating);
         setRatingcount(data.ratingCount)
@@ -92,7 +87,6 @@ const Product = () => {
     if (products && products.length > 0) {
       const init = async () => {
         await Promise.all([
-          fetchrating(),
           checkPurchase(),
           fetchProductData()
         ]);
@@ -100,6 +94,13 @@ const Product = () => {
       init();
     }
   }, [id, products]);
+ 
+  useEffect(() => {
+    if(id){
+      fetchrating()
+    }
+  }, [id])
+  
 
   useEffect(() => {
     if (hasPurchased) {
@@ -273,8 +274,7 @@ const Product = () => {
               </p>
             </div>
 
-            {/* Description */}
-
+            {/* Rating */}
 
             <div className="flex items-center gap-2">
 

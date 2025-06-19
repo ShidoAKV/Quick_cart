@@ -6,6 +6,7 @@ import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 
 const Navbar = () => {
   const { isSeller, router, user, getCartCount } = useAppContext();
@@ -16,6 +17,16 @@ const Navbar = () => {
   useEffect(() => {
     setCartCount(getCartCount());
   });
+  
+  const navVariants = {
+  initial: { opacity: 0, y: -10 },
+  animate: { opacity: 1, y: 0 },
+};
+
+const linkHover = {
+  whileHover: { scale: 1.05 },
+  transition: { type: "spring", stiffness: 300 },
+};
 
   const linkStyle = (path) =>
     `hover:text-black transition border-b-2 pb-1 ${

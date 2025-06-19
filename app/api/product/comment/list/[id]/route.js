@@ -4,12 +4,6 @@ import { getAuth } from "@clerk/nextjs/server";
 
 export async function GET(request, { params }) {
   try {
-    const { userId } = getAuth(request);
-
-    if (!userId) {
-      return NextResponse.json({ success: false, message: "Not Authorized" });
-    }
-
     const { id } = await params;
 
     if (!id) {
@@ -19,7 +13,6 @@ export async function GET(request, { params }) {
       });
     }
    
-
     const comments = await prisma.comment.findMany({
       where: {
         productId: id,
