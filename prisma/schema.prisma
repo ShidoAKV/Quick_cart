@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(cuid())
+  name            String?
+  email           String    @unique
+  imageUrl        String    @default("https://th.bing.com/th/id/OIP.CuH_kp6AL_Z3CIZAfzPbmQHaGe?w=3683&h=3223&rs=1&pid=ImgDetMain")
+  cartItems       Json      @default("{}")
+  ratedProductIds String[]  @default([])
+  addresses       Address[]
+  orders          Order[]
+  products        Product[]
+  refunds         Refund[]
+  comments        Comment[]
+}
+
+model Product {
+  id            String      @id @default(cuid())
+  userId        String
+  name          String
+  description   String
+  price         Float
+  brand         String      @default("Pilley")
+  offerPrice    Float
+  image         String[]
+  category      String
+  size          String[]
+  color         String[]
+  material      String
+  date          DateTime    @default(now())
+  rating        Float       @default(0.0)
+  stock         Int         @default(0)
+  colorImageMap Json?
+  ratingcount   Int         @default(0)
+  orders        OrderItem[]
+  user          User        @relation(fields: [userId], references: [id])
+  comments     Comment[]
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderId       String      @unique @default(cuid())
+  userId        String
+  amount        Float
+  addressId     String
+  status        String      @default("order placed")
+  isCompleted   Boolean     @default(false)
+  cancelled     Boolean     @default(false)
+  payment       Boolean     @default(false)
+  refunded      Boolean     @default(false)
+  PaymentId     String?     @unique
+  refundId      String?     @unique
+  refundStatus  String      @default("Pending")
+  refundFeePaid Boolean     @default(false)
+  date          DateTime    @default(now())
+  claimedRefund Boolean     @default(false)
+  address       Address     @relation(fields: [addressId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+  refunds       Refund[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  size      String
+  color     String
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Address {
+  id          String  @id @default(cuid())
+  userId      String
+  fullName    String
+  phoneNumber String
+  pincode     Int
+  area        String
+  city        String
+  state       String
+  user        User    @relation(fields: [userId], references: [id])
+  orders      Order[]
+}
+
+model Refund {
+  id        String       @id @default(cuid())
+  userId    String       
+  orderId   String
+  reason    String?
+  photoUrl  String?
+  status    String       @default("PENDING")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  email     String?
+  name      String?
+  paymentLinkId    String? 
+  order     Order        @relation(fields: [orderId], references: [id])
+  user      User         @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  rating    Int      
+  createdAt DateTime @default(now())
+  
+  userId    String
+  productId String
+
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+
