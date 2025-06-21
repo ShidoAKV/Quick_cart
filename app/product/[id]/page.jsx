@@ -27,7 +27,7 @@ const Product = () => {
   const [isZoomVisible, setIsZoomVisible] = useState(false);
   const [hasPurchased, setHasPurchased] = useState(false);
   const [showComment, setShowComment] = useState(false);
-
+  
 
 
   const checkPurchase = async () => {
@@ -94,13 +94,13 @@ const Product = () => {
       init();
     }
   }, [id, products]);
- 
+
   useEffect(() => {
-    if(id){
+    if (id) {
       fetchrating()
     }
   }, [id])
-  
+
 
   useEffect(() => {
     if (hasPurchased) {
@@ -131,12 +131,6 @@ const Product = () => {
     setMainImage(images[0] || null);
   };
 
-
-
-
-
-
-
   return (
     <>
 
@@ -163,6 +157,8 @@ const Product = () => {
                       <Image
                         src={image}
                         alt={`Thumbnail ${index + 1}`}
+                        loading="lazy"
+                        unoptimized={false}
                         width={300}
                         height={400}
                         className="object-cover"
@@ -186,13 +182,12 @@ const Product = () => {
                   src={mainImage}
                   alt={productData.name}
                   className="w-[500px]  pt-14  h-[580px]  lg:pt-0  lg:w-[700px] lg:mt-60 lg:h-[950px] object-cover"
+                  priority
                   width={900}
                   height={600}
                 />
               ) : (
-                <div className="flex items-center justify-center w-full h-full text-gray-400">
-                  No Image
-                </div>
+               <div className="w-[500px] h-[580px] lg:w-[700px] lg:h-[950px] bg-gray-200 animate-pulse rounded" />
               )}
             </div>
           </div>

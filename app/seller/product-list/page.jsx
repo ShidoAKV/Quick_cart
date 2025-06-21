@@ -128,19 +128,22 @@ const ProductList = () => {
         payload.append("colorImageMap", JSON.stringify(rawColorMap));
       }
 
-
+        toast.loading('Editing...')
 
       const { data } = await axios.post(`/api/product/edit/${id}`, payload, {
         headers: { Authorization: `Bearer ${authToken.current}` },
       });
 
       if (data.success) {
+         toast.dismiss()
         toast.success("Product updated");
         setEditingProduct(null);
         router.push('/seller/product-list');
       } else {
+         toast.dismiss()
         toast.error(data.message);
       }
+     
     } catch (err) {
       toast.error("Update failed: " + err.message);
     }

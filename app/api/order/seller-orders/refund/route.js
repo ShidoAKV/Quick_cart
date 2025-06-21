@@ -10,6 +10,7 @@ export async function POST(request) {
     const { userId } = getAuth(request);
     const isseller = await authSeller(userId);
     const { PaymentId,email} = await request.json();
+    
 
     if (!isseller) {
       return NextResponse.json({ success: false, message: "Not authorized" });

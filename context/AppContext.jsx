@@ -230,7 +230,6 @@ export const AppContextProvider = (props) => {
     useEffect(() => {
         fetchProductData();
         fetchcomment();
-
     }, []);
 
     // useEffect(() => {

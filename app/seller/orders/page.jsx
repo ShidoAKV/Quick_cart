@@ -25,6 +25,7 @@ const Orders = () => {
   const [showRefundModal, setShowRefundModal] = useState(false);
 
 
+ 
   const fetchSellerOrders = async () => {
     try {
       setLoading(true);
@@ -34,7 +35,7 @@ const Orders = () => {
       });
 
       if (data.success) {
-        setOrders(data.orders.reverse());
+        setOrders(data.orders);
         setStats({
           totalOrders: data.totalOrders,
           totalAmount: data.totalAmount,
@@ -73,6 +74,7 @@ const Orders = () => {
 
   const refundOrder = async (PaymentId, email) => {
     try {
+      
       setRefundingId(PaymentId);
       const token = await getToken();
       const { data } = await axios.post('/api/order/seller-orders/refund', { PaymentId, email }, {
@@ -109,6 +111,7 @@ const Orders = () => {
   }
   const fetchrefundinformation = async (orderId) => {
     try {
+      
       const token = await getToken();
       const { data } = await axios.get(`/api/order/refund`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -122,16 +125,13 @@ const Orders = () => {
       toast.error(error.message)
     }
   }
-
-
+ 
   useEffect(() => {
     if (user) {
       fetchSellerOrders();
       fetchrefundinformation();
     }
   }, [user]);
-  console.log(refundData);
-  
  
  
   
