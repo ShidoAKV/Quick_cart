@@ -11,6 +11,7 @@ import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { LoaderCircle } from "lucide-react";
 import RelatedProducts from "@/components/RelatableProduct";
 import CommentOnProduct from "@/components/CommentonProduct";
+import { FileQuestion } from 'lucide-react';
 
 const Product = () => {
   const { id } = useParams();
@@ -27,7 +28,8 @@ const Product = () => {
   const [isZoomVisible, setIsZoomVisible] = useState(false);
   const [hasPurchased, setHasPurchased] = useState(false);
   const [showComment, setShowComment] = useState(false);
-  
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
 
 
   const checkPurchase = async () => {
@@ -138,7 +140,7 @@ const Product = () => {
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 w-full">
           {/* Image Section */}
           <div className="block lg:hidden space-y-2">
-            <h1 className="text-2xl font-bold tracking-wide">{productData.name}</h1>
+            <h1 className="text-2xl font-extrabold tracking-wide">{productData.name}</h1>
             <p className="text-gray-700 px-1 leading-relaxed font-normal mx-auto">{productData.description}</p>
           </div>
           <div className="w-full xl:w-full flex flex-col lg:flex-row gap-2 max-w-[1280px] mx-auto">
@@ -175,19 +177,19 @@ const Product = () => {
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsZoomVisible(true)}
               onMouseLeave={() => setIsZoomVisible(false)}
-              className="relative rounded-sm overflow-hidden border border-gray-300 flex-grow h-[450px] lg:h-[700px]  flex items-center justify-center"
+              className="relative rounded-sm overflow-hidden border border-gray-300 flex-grow  h-[500px] lg:h-[700px]  flex items-center justify-center"
             >
               {mainImage ? (
                 <Image
                   src={mainImage}
                   alt={productData.name}
-                  className="w-[500px]  pt-14  h-[580px]  lg:pt-0  lg:w-[700px] lg:mt-60 lg:h-[950px] object-cover"
+                  className="w-[500px]   pt-12  h-[580px]  lg:pt-0  lg:w-[700px] lg:mt-60 lg:h-[950px] object-cover"
                   priority
                   width={900}
                   height={600}
                 />
               ) : (
-               <div className="w-[500px] h-[580px] lg:w-[700px] lg:h-[950px] bg-gray-200 animate-pulse rounded" />
+                <FileQuestion size={48} className="text-gray-400 mx-auto" />
               )}
             </div>
           </div>

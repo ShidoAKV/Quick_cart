@@ -217,7 +217,7 @@ const ProductList = () => {
                     <td className="px-4 py-3 hidden md:table-cell text-gray-800">{product.stock}</td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       <button
-                        onClick={() => router.push(`/product/${product.id}`)}
+                        onClick={() =>window.open(`/product/${product.id}`)}
                         className="text-sm bg-green-800 text-white px-3 py-1.5 rounded hover:bg-green-900"
                       >
                         Visit
@@ -261,7 +261,7 @@ const ProductList = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm mb-1">Colors (comma-separated):</label>
+                    <label className="block text-sm mb-1">Type</label>
                     <input
                       type="text"
                       {...register("color")}

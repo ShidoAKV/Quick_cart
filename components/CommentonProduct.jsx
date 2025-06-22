@@ -66,7 +66,7 @@ const CommentOnProduct = ({ productId }) => {
                     <>
                         {/* Overlay */}
                         <motion.div
-                            className="fixed inset-0 bg-opacity-50 z-50 backdrop-blur-sm"
+                            className="fixed inset-0 h-screen bg-opacity-50 z-50 backdrop-blur-sm"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
