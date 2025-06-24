@@ -81,7 +81,6 @@ const MyOrders = () => {
 
             toast.dismiss();
             if (data.success) {
-                toast.success("Payment initiated");
                 initPay(data.order);
             } else {
                 toast.error(data.message);
@@ -164,7 +163,7 @@ const MyOrders = () => {
 
             toast.dismiss();
             if (data.success) {
-                toast.success("Refund payment successful");
+                toast.success(data.message);
                 setShowRefundModal(false);
                 fetchpaymentdetail(orderId);
                 fetchOrders();

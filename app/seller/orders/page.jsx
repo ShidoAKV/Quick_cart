@@ -7,7 +7,7 @@ import Footer from "@/components/seller/Footer";
 import Loading from "@/components/Loading";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { BadgeCheck, CheckCircle, RefreshCcw, Info,X} from "lucide-react";
+import { BadgeCheck, CheckCircle, RefreshCcw, Info, X } from "lucide-react";
 
 const Orders = () => {
   const { currency, getToken, user } = useAppContext();
@@ -25,7 +25,7 @@ const Orders = () => {
   const [showRefundModal, setShowRefundModal] = useState(false);
 
 
- 
+
   const fetchSellerOrders = async () => {
     try {
       setLoading(true);
@@ -74,7 +74,7 @@ const Orders = () => {
 
   const refundOrder = async (PaymentId, email) => {
     try {
-      
+
       setRefundingId(PaymentId);
       const token = await getToken();
       const { data } = await axios.post('/api/order/seller-orders/refund', { PaymentId, email }, {
@@ -111,7 +111,7 @@ const Orders = () => {
   }
   const fetchrefundinformation = async (orderId) => {
     try {
-      
+
       const token = await getToken();
       const { data } = await axios.get(`/api/order/refund`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -125,16 +125,16 @@ const Orders = () => {
       toast.error(error.message)
     }
   }
- 
+
   useEffect(() => {
     if (user) {
       fetchSellerOrders();
       fetchrefundinformation();
     }
   }, [user]);
- 
- 
-  
+
+
+
 
   return (
     <div className="flex-1 h-screen overflow-auto flex flex-col justify-between text-sm bg-gray-50">
@@ -251,23 +251,16 @@ const Orders = () => {
                           </button>
                         )}
 
-                        {order.refundFeePaid && (
-                          <p className="bg-green-600 text-white px-3 py-1 rounded flex items-center gap-1">
-                            <CheckCircle className="w-4 h-4" />
-                             Payment Received
-                          </p>
-                        )}
 
                         {order.claimedRefund && !order.refunded && (
                           <button
-                            onClick={() => refundOrder(order.PaymentId,refundData.email)}
+                            onClick={() => refundOrder(order.PaymentId, refundData.email)}
                             className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1"
                           >
                             <RefreshCcw className="w-4 h-4" />
                             {refundingId !== null ? "Refunding..." : "Refund"}
                           </button>
                         )}
-
                         {order.claimedRefund && order.refunded && (
                           <span className="bg-green-500 text-white px-3 py-1 rounded flex items-center gap-1">
                             <BadgeCheck className="w-4 h-4" />
@@ -283,7 +276,7 @@ const Orders = () => {
                       {/* Refund Modal */}
                       {showRefundModal && refundData && (
                         <div className="fixed inset-0 backdrop-blur-sm bg-black/40 flex justify-center items-center z-50">
-                          <div className="bg-white rounded-lg p-5 w-[90%] max-w-md relative">
+                          <div className="bg-white rounded-lg p-5 w-[90%] max-w-md relative shadow-lg">
                             <button
                               className="absolute top-2 right-2 text-gray-500 hover:text-black"
                               onClick={() => setShowRefundModal(false)}
@@ -291,23 +284,57 @@ const Orders = () => {
                               <X className="w-5 h-5" />
                             </button>
 
-                            <h2 className="text-lg font-semibold mb-2 flex items-center gap-1">
+                            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
                               <Info className="w-5 h-5 text-blue-600" />
                               Refund Details
                             </h2>
-                            <p><strong>Name:</strong> {refundData.name}</p>
-                            <p><strong>Email:</strong> {refundData.email}</p>
-                            <p><strong>Reason:</strong> {refundData.reason}</p>
+
+                            {/* User Info */}
+                            <div className="mb-3">
+                              <h3 className="font-semibold text-gray-700 mb-1">User Information</h3>
+                              <p><strong>Name:</strong> {refundData.name}</p>
+                              <p><strong>Email:</strong> {refundData.email}</p>
+                            </div>
+
+                            {/* Refund Reason */}
+                            <div className="mb-3">
+                              <h3 className="font-semibold text-gray-700 mb-1">Refund Reason</h3>
+                              <p>{refundData.reason}</p>
+                            </div>
+
+                            {/* Proof Photo */}
                             {refundData.photoUrl && (
-                              <img
-                                src={refundData.photoUrl}
-                                alt="Refund Proof"
-                                className="w-full max-h-64 object-contain mt-2 rounded border"
-                              />
+                              <div className="mb-3">
+                                <h3 className="font-semibold text-gray-700 mb-1">Proof of Refund Request</h3>
+                                <img
+                                  src={refundData.photoUrl}
+                                  alt="Refund Proof"
+                                  className="w-full max-h-64 object-contain mt-2 rounded border"
+                                />
+                              </div>
                             )}
+
+                            {/* Payment Status */}
+                            <div className="space-y-2">
+                              <h3 className="font-semibold text-gray-700">Payment Status</h3>
+                              {order.refundFeePaid ? (
+                                <p className="bg-green-600 text-white px-3 py-1 rounded flex items-center gap-1">
+                                  <CheckCircle className="w-4 h-4" />
+                                  Payment Received
+                                </p>
+                              ) : (
+                                <p className="bg-red-600 text-white px-3 py-1 rounded flex items-center gap-1">
+                                  <X className="w-4 h-4" />
+                                  Payment Not Received
+                                </p>
+                              )}
+
+
+                            </div>
                           </div>
                         </div>
                       )}
+
                     </div>
 
                   </div>

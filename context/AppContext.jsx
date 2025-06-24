@@ -58,19 +58,20 @@ export const AppContextProvider = (props) => {
 
     const createUser = async (token) => {
         try {
+            
             const payload = {
                 id: user.id,
                 name: user.firstName + ' ' + user.lastName,
                 email: user.emailAddresses[0].emailAddress,
                 imageUrl: user.imageUrl,
             };
-
             const { data } = await axios.post('/api/user/add', payload, {
                 headers: {
                     Authorization: `Bearer${token}`,
                 },
             });
-
+        
+           
             if (data.success) {
                 toast.success('user created successfully');
                 if (user?.publicMetadata.role === 'seller') {
@@ -91,11 +92,11 @@ export const AppContextProvider = (props) => {
             if (!user) return;
 
             const token = await getToken();
-            authToken.current = token;
-
+           
             const { data } = await axios.get('/api/user/data', {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${token}`,email:user?.emailAddresses[0].emailAddress},
             });
+              
             if (data.success) {
                 setUserData(data.user);
                 setCartItems(data.user.cartItems);
@@ -105,14 +106,11 @@ export const AppContextProvider = (props) => {
                 } else {
                     setIsSeller(false);
                 }
-
             }
         } catch (error) {
-            if (error.response && error.response.status === 404) {
+            if(error.response.status===404){
                 const token = await getToken();
                 await createUser(token);
-            } else {
-                toast.error(error.message)
             }
         }
     };
