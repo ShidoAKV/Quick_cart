@@ -24,6 +24,9 @@ export async function GET(request) {
           },
         },
       },
+      orderBy: {
+        date: "desc",
+      }
     });
 
     const totalOrders = orders.length;

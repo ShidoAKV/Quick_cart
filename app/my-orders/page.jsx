@@ -127,8 +127,9 @@ const MyOrders = () => {
             if (data.success) {
                 setSelectedRefund(data.refunddata);
                 setShowRefundModal(true);
+                fetchpaymentdetail(orderId)
             } else {
-                toast.error(data.message);
+                 toast.error(data.message);
             }
         } catch (error) {
             toast.error("Refund status error: " + error.message);
@@ -143,10 +144,11 @@ const MyOrders = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 }
             );
+           
             if (data.success) {
                 toast.success(data.message)
             } else {
-                toast.error(data.message)
+                toast.error('Pay refund fees ')
             }
         } catch (error) {
             toast.error(error.message)
@@ -165,9 +167,7 @@ const MyOrders = () => {
             if (data.success) {
                 toast.success(data.message);
                 setShowRefundModal(false);
-                fetchpaymentdetail(orderId);
                 fetchOrders();
-
             } else {
                 toast.error(data.message);
             }
@@ -176,7 +176,7 @@ const MyOrders = () => {
             toast.error("Refund payment error: " + error.message);
         }
     };
-
+    
 
     useEffect(() => {
         if (user) {
@@ -250,7 +250,6 @@ const MyOrders = () => {
                                                         className="text-sm px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition shadow-sm"
                                                         onClick={() => {
                                                             fetchRefundStatus(order.id);
-                                                            fetchpaymentdetail(order.id);
                                                         }}
                                                     >
                                                         Check Refund Status
@@ -313,7 +312,7 @@ const MyOrders = () => {
                         {selectedRefund.status === "PENDING" && (
                             <p className="mt-2 text-yellow-600">Waiting for seller approval.</p>
                         )}
-                        {selectedRefund.status === "APPROVE" && (
+                        {(selectedRefund.status === "APPROVE") && (
                             <button
                                 className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                                 onClick={() => claimRefundPayment(selectedRefund.orderId)}

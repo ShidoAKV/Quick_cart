@@ -23,13 +23,13 @@ export async function POST(req) {
             select: {
                 name: true,
                 email: true,
+                paymentLinkId:true
             },
         });
 
-        if(refunddetails.paymentLinkId){
+        if(refunddetails?.paymentLinkId){
             return  NextResponse.json({ success: false, message: 'Already Paid' });
         }
-
 
         const paymentLink = await razorpayInstance.paymentLink.create({
             amount: 10000, // ₹100 in paise
@@ -42,7 +42,8 @@ export async function POST(req) {
             },
             notify: {
                 sms: true,
-                email: true
+                email: true,
+                whatsapp: true, 
             },
             notes: {
                 orderId: orderId,
@@ -62,8 +63,6 @@ export async function POST(req) {
                 paymentLinkId: paymentLink.id,
             },
         });
-
-
 
         return NextResponse.json({ success: true, message: 'payment link sended to email' });
     } catch (error) {

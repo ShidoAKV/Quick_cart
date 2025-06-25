@@ -25,26 +25,23 @@ export async function GET(req) {
             },
         });
 
-        if (!refund?.paymentLinkId) {
-            return NextResponse.json({ success: false, message: "No payment link found for refund" });
+        if (refund?.paymentLinkId) {
+            const paymentLink = await razorpayInstance.paymentLink.fetch(refund?.paymentLinkId);
+
+            if (paymentLink.status === "paid") {
+
+                await prisma.order.update({
+                    where: { id: orderId },
+                    data: { refundFeePaid: true },
+                });
+
+                return NextResponse.json({ success: true, message: "Refund fee  paid" });
+            }
         }
 
-        const paymentLink = await razorpayInstance.paymentLink.fetch(refund.paymentLinkId);
+          return NextResponse.json({ success:false, message: `Payment not completed yet. Current status: ${paymentLink.status}`}); 
 
-        if (paymentLink.status === "paid") {
-           
-            await prisma.order.update({
-                where: {id:orderId},
-                data: { refundFeePaid: true },
-            });
-
-
-            return NextResponse.json({ success: true, message: "Refund fee marked as paid" });
-        }
-
-        return NextResponse.json({ success: false, message: "Payment not completed yet" });
     } catch (error) {
-        console.error("Refund payment check error:", error);
         return NextResponse.json({ success: false, message: error.message || "Something went wrong" });
     }
 }

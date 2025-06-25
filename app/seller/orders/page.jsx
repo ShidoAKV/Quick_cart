@@ -35,6 +35,7 @@ const Orders = () => {
       });
 
       if (data.success) {
+        
         setOrders(data.orders);
         setStats({
           totalOrders: data.totalOrders,
@@ -109,6 +110,7 @@ const Orders = () => {
       toast.error(error.message)
     }
   }
+
   const fetchrefundinformation = async (orderId) => {
     try {
 
@@ -134,7 +136,7 @@ const Orders = () => {
   }, [user]);
 
 
-
+ 
 
   return (
     <div className="flex-1 h-screen overflow-auto flex flex-col justify-between text-sm bg-gray-50">
@@ -313,14 +315,15 @@ const Orders = () => {
                                 />
                               </div>
                             )}
-
+                            
                             {/* Payment Status */}
                             <div className="space-y-2">
                               <h3 className="font-semibold text-gray-700">Payment Status</h3>
-                              {order.refundFeePaid ? (
+                              {(refundData.paymentLinkId)? (
                                 <p className="bg-green-600 text-white px-3 py-1 rounded flex items-center gap-1">
                                   <CheckCircle className="w-4 h-4" />
-                                  Payment Received
+                                  
+                                  Payment Received 
                                 </p>
                               ) : (
                                 <p className="bg-red-600 text-white px-3 py-1 rounded flex items-center gap-1">
