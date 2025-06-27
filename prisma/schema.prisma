@@ -40,8 +40,8 @@ model Product {
   colorImageMap Json?
   ratingcount   Int         @default(0)
   orders        OrderItem[]
-  user          User        @relation(fields: [userId], references: [id])
-  comments     Comment[]
+  user          User        @relation(fields: [userId], references: [id],onDelete: Restrict )
+  comments      Comment[]
 }
 
 model Order {
@@ -61,8 +61,8 @@ model Order {
   refundFeePaid Boolean     @default(false)
   date          DateTime    @default(now())
   claimedRefund Boolean     @default(false)
-  address       Address     @relation(fields: [addressId], references: [id])
-  user          User        @relation(fields: [userId], references: [id])
+  address       Address     @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items         OrderItem[]
   refunds       Refund[]
 }
@@ -74,8 +74,8 @@ model OrderItem {
   quantity  Int
   size      String
   color     String
-  order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Address {
@@ -87,37 +87,35 @@ model Address {
   area        String
   city        String
   state       String
-  user        User    @relation(fields: [userId], references: [id])
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders      Order[]
 }
 
 model Refund {
-  id        String       @id @default(cuid())
-  userId    String       
-  orderId   String
-  reason    String?
-  photoUrl  String?
-  status    String       @default("PENDING")
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  email     String?
-  name      String?
-  paymentLinkId    String? 
-  order     Order        @relation(fields: [orderId], references: [id])
-  user      User         @relation(fields: [userId], references: [id])
+  id            String   @id @default(cuid())
+  userId        String
+  orderId       String
+  reason        String?
+  photoUrl      String?
+  status        String   @default("PENDING")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  email         String?
+  name          String?
+  paymentLinkId String?
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Comment {
   id        String   @id @default(cuid())
   text      String
-  rating    Int      
+  rating    Int
   createdAt DateTime @default(now())
-  
+
   userId    String
   productId String
 
-  user      User     @relation(fields: [userId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
-
-

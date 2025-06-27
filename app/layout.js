@@ -22,9 +22,9 @@ export default function RootLayout({ children }) {
         <body className={`${outfit.className} antialiased text-gray-700`}  >
           <Toaster />
           <AppContextProvider>
-             <Navbar/>
-             <Suspense fallback={<Loadingcomponent/>} >{children}</Suspense>
-             
+            <Navbar />
+            <Suspense fallback={<Loadingcomponent/>} >{children}</Suspense>
+    
             <Script
               src="https://checkout.razorpay.com/v1/checkout.js"
               strategy="afterInteractive"

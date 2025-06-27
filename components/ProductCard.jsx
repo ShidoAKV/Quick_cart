@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 const ProductCard = ({ product }) => {
   const { currency, router } = useAppContext();
- 
+
 
   return (
     <div
@@ -16,26 +16,29 @@ const ProductCard = ({ product }) => {
       className="group  shadow-sm flex flex-col rounded-sm overflow-hidden hover:shadow-md transition cursor-pointer w-full max-w-full sm:max-w-[300px]"
     >
       {/* Product Image */}
-      <div className="relative w-full   h-48 sm:h-60  ">
+      <div className="relative w-full h-[200px] sm:h-[240px] lg:h-[340px]">
         <Image
           src={product?.image[0]}
           alt={product?.name}
-          fill 
-          className="object-contain p-3"
+          fill
+          className="object-cover object-top-left "
         />
       </div>
 
+
       {/* Product Info */}
-      <div className="flex flex-col gap-1 p-3 sm:p-4 text-gray-800">
-        <p className="text-sm sm:text-base font-medium truncate">{product.name}</p>
-        <p className="text-xs sm:text-sm text-gray-500 truncate">{product.description}</p>
+      <div className="flex flex-col gap-1 p-3 sm:p-4 text-gray-680">
+
+        <p className="text-lg lg:text-xl font-bold  truncate">{product.name}</p>
+
+        <p className="text-sm sm:text-sm text-gray-500 truncate">{product.description}</p>
 
         {product.stock > 0 ? (
-          <p className="text-xs sm:text-sm text-green-800 font-medium">
+          <p className="text-sm sm:text-sm text-green-800 font-medium">
             {product.stock} in stock
           </p>
         ) : (
-          <p className="text-xs sm:text-sm text-red-600 font-medium">Out of stock</p>
+          <p className="text-sm sm:text-sm text-red-600 font-medium">Out of stock</p>
         )}
 
         <div className="flex items-center justify-between pt-2">
@@ -45,7 +48,7 @@ const ProductCard = ({ product }) => {
           <button
             onClick={(e) => {
               e.stopPropagation()
-              router.push('/product/'+ product.id);
+              router.push('/product/' + product.id);
             }}
             className="cursor-pointer text-xs sm:text-sm border border-green-900 text-green-900 hover:bg-green-900 hover:text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded transition"
           >

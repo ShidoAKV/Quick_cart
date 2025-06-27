@@ -11,9 +11,12 @@ import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { LoaderCircle } from "lucide-react";
 import RelatedProducts from "@/components/RelatableProduct";
 import CommentOnProduct from "@/components/CommentonProduct";
-import { FileQuestion } from 'lucide-react';
+import { FileQuestion, ArrowLeft } from 'lucide-react';
+import ChartSize from "@/components/charsize";
+
 
 const Product = () => {
+
   const { id } = useParams();
   const { products, router, addToCart, getToken } = useAppContext();
 
@@ -29,6 +32,7 @@ const Product = () => {
   const [hasPurchased, setHasPurchased] = useState(false);
   const [showComment, setShowComment] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
 
 
 
@@ -136,16 +140,17 @@ const Product = () => {
   return (
     <>
 
-      <div className="px-4 sm:px-6 md:px-16 lg:px-32 pt-12 space-y-10 font-sans text-gray-900 text-sm relative">
+      <div className="px-4 sm:px-6 md:px-16 lg:px-32 pt-8 space-y-10 font-sans text-gray-900 text-sm relative">
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 w-full">
           {/* Image Section */}
           <div className="block lg:hidden space-y-2">
             <h1 className="text-2xl font-extrabold tracking-wide">{productData.name}</h1>
             <p className="text-gray-700 px-1 leading-relaxed font-normal mx-auto">{productData.description}</p>
           </div>
-          <div className="w-full xl:w-full flex flex-col lg:flex-row gap-2 max-w-[1280px] mx-auto">
+          {/* main image */}
+          <div className="w-full max-w-[1280px] mx-auto flex flex-col lg:flex-row gap-2">
             {/* Thumbnails (smaller width) */}
-            <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto lg:w-[60px] order-2 lg:order-none">
+            <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto lg:w-[60px] flex-shrink-0 order-2 lg:order-none">
               {selectedColor &&
                 productData?.colorImageMap?.[selectedColor]?.map((image, index) => (
                   <div
@@ -170,20 +175,19 @@ const Product = () => {
                 ))}
             </div>
 
-            {/* Main Image: Full width with reduced gap */}
-
+            {/* Main Image */}
             <div
               ref={imgContainerRef}
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsZoomVisible(true)}
               onMouseLeave={() => setIsZoomVisible(false)}
-              className="relative rounded-sm overflow-hidden border border-gray-300 flex-grow  h-[500px] lg:h-[700px]  flex items-center justify-center"
+              className="relative rounded-sm overflow-hidden border border-gray-300 flex-grow  h-[480px] lg:h-[720px] lg:mx-8   flex items-center justify-center"
             >
               {mainImage ? (
                 <Image
                   src={mainImage}
                   alt={productData.name}
-                  className="w-[500px]   pt-12  h-[580px]  lg:pt-0  lg:w-[700px] lg:mt-60 lg:h-[950px] object-cover"
+                  className="h-full w-full "
                   priority
                   width={900}
                   height={600}
@@ -192,7 +196,18 @@ const Product = () => {
                 <FileQuestion size={48} className="text-gray-400 mx-auto" />
               )}
             </div>
+
+
           </div>
+          <div
+            onClick={() => router.push("/all-products")}
+            title="Back to Products"
+            className="fixed top-4 lg:top-80 left-4 z-40 bg-gray-800 backdrop-blur-md border border-gray-300 hover:border-black shadow-sm p-2 sm:p-2.5 rounded-full cursor-pointer  transition-all"
+          >
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-all" />
+          </div>
+
+
 
           <div className="w-full lg:w-[40%] flex flex-col space-y-6 font-medium text-gray-800">
             <div className="hidden lg:block space-y-2">
@@ -201,6 +216,7 @@ const Product = () => {
                 {productData.description}
               </p>
             </div>
+
             <div >
               <h3 className="text-lg mb-1 px-1 font-semibold text-black">Color</h3>
               <div className="flex gap-3 px-1 cursor-pointer overflow-x-clip scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
@@ -220,11 +236,13 @@ const Product = () => {
                   ))}
               </div>
             </div>
-
-
+           
             {/* Size Selection */}
             <div>
-              <h3 className=" text-lg px-1 mb-1 text-black font-semibold ">Size</h3>
+              <div className="flex items-center  justify-between">
+                <h3 className=" text-lg px-1 mb-1 text-black font-semibold ">Size</h3>
+                <span className="pr-6   "><ChartSize /></span>
+              </div>
               <div className="flex gap-2 px-1 flex-wrap">
                 {productData.size?.map((size) => (
                   <button
@@ -302,7 +320,6 @@ const Product = () => {
                   backgroundSize: "350%",
                   backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
                   backgroundRepeat: "no-repeat",
-
 
                 }}
               />

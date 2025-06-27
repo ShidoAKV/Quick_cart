@@ -20,6 +20,7 @@ const OrderSummary = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [userAddresses, setUserAddresses] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
 
   const payloadRef = useRef(null);
@@ -49,10 +50,15 @@ const OrderSummary = () => {
   };
 
   const createOrder = async () => {
-    try {
-      if (!selectedAddress) {
+
+     if (!selectedAddress){
         return toast.error("Please select an address");
       }
+      if(isPlacingOrder){
+        return toast.error("previous order is processing...");
+      }
+      
+    try {
 
       let cartItemArray = Object.entries(cartItems).map(([key, quantity]) => {
         const [product, size, color] = key.split("|");
@@ -62,7 +68,7 @@ const OrderSummary = () => {
       if (cartItemArray.length === 0) {
         return toast.error("Cart is empty");
       }
-
+       setIsPlacingOrder(true);
       toast.loading('creating order')
       const token = await getToken();
 
@@ -82,6 +88,7 @@ const OrderSummary = () => {
       });
 
       if (data.success) {
+        setIsPlacingOrder(true);
         toast.dismiss();
         toast.success(data.message);
         router.push("/order-placed");
@@ -192,7 +199,7 @@ const OrderSummary = () => {
       </div>
 
       <button onClick={createOrder} className="w-full bg-gray-900/90 rounded-sm text-white py-3 mt-5 hover:bg-gray-900">
-        Place Order
+        {isPlacingOrder ? "Placing Order..." : "Place Order"}
       </button>
     </div>
   );

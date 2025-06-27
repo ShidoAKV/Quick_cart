@@ -5,47 +5,49 @@ import prisma from '@/config/db';
 
 export async function POST(request, { params }) {
   try {
-
     const { userId } = getAuth(request);
     const isSeller = await authSeller(userId);
+
     if (!isSeller) {
       return NextResponse.json({ success: false, message: 'Not authorised' });
     }
-    const { productId } =await params;
-    await prisma.orderItem.deleteMany({ where: { productId } });
 
-    
-     const users = await prisma.user.findMany();
+    const { productId } = await params;
+    if (!productId) {
+      return NextResponse.json({ success: false, message: 'productId is required' });
+    }
 
-    for (const user of users) {
-      const cart = user.cartItems || {};
-      const updatedCart = {};
 
-      let hasChanges = false;
+    const orderItems = await prisma.orderItem.findMany({
+      where: { productId },
+      select: { orderId: true },
+    });
 
-      for (const key in cart) {
-        const item = cart[key];
-        if (item.productId !== productId) {
-          updatedCart[key] = item;
-        } else {
-          hasChanges = true;
-        }
-      }
+    const affectedOrderIds = [...new Set(orderItems.map(item => item.orderId))];
 
-      if (hasChanges) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { cartItems: updatedCart },
+
+    await prisma.product.delete({
+      where: { id: productId },
+    });
+
+
+    for (const orderId of affectedOrderIds) {
+      const remainingItems = await prisma.orderItem.count({
+        where: { orderId },
+      });
+
+      if (remainingItems === 0) {
+        await prisma.order.delete({
+          where: { id: orderId },
         });
       }
     }
 
-    await prisma.product.delete({ where: { id: productId } });
-
     return NextResponse.json({
       success: true,
-      message: 'Product deleted successfully',
+      message: 'Product and affected orders deleted successfully',
     });
+
   } catch (error) {
     return NextResponse.json({ success: false, message: error.message });
   }

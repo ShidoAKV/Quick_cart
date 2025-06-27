@@ -24,8 +24,6 @@ const Orders = () => {
   const [refundData, setRefundData] = useState(null);
   const [showRefundModal, setShowRefundModal] = useState(false);
 
-
-
   const fetchSellerOrders = async () => {
     try {
       setLoading(true);

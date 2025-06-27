@@ -152,13 +152,13 @@ const AllProducts = () => {
                     <p className="text-sm text-gray-500 mt-1">Browse our latest collection tailored for you.</p>
                 </div>
 
-                <div className="hidden lg:flex max-w-2xl mx-auto flex-wrap gap-4 border border-gray-300 p-4 rounded-md bg-white mb-6">
+                <div className="hidden md:flex max-w-2xl mx-auto flex-wrap gap-4 border border-gray-300 p-4 rounded-md bg-white mb-6">
                     <div className="flex items-center gap-2">
                         <CiFilter className="w-6 h-6" />
                         <h2 className="text-xl tracking-wide">Filters</h2>
                     </div>
                     {Object.keys(allOptions).map((category) => (
-                        <div key={category} className="relative">
+                        <div key={category} className="relative ">
                             <button
                                 onClick={() =>
                                     setActiveDropdown(activeDropdown === category ? null : category)
@@ -169,17 +169,17 @@ const AllProducts = () => {
                                 <ChevronDown size={14} />
                             </button>
                             {activeDropdown === category && (
-                                <div className="absolute top-10 left-0 z-30 bg-white border border-gray-300 shadow-md rounded-md w-52 p-2">
+                                <div className="absolute top-10  left-0 z-30 bg-white border border-gray-300 shadow-md rounded-md w-52 p-2">
                                     {(allOptions[category] || []).map((opt) => (
                                         <label
                                             key={opt.value || opt}
-                                            className="block text-sm px-2 py-1 hover:bg-gray-100 cursor-pointer"
+                                            className="block text-sm px-2 py-1 hover:bg-gray-100 cursor-pointer  "
                                         >
                                             <input
                                                 type="checkbox"
                                                 checked={filters[category].includes(opt.value || opt)}
                                                 onChange={() => toggleOption(category, opt.value || opt)}
-                                                className="mr-2"
+                                                className="mr-2 "
                                             />
                                             {opt.label || opt}
                                         </label>
@@ -217,7 +217,7 @@ const AllProducts = () => {
                 </div>
             </div>
 
-            <div className="lg:hidden fixed bottom-4 left-0 right-0 z-50 px-4">
+            <div className="md:hidden fixed bottom-4 left-0 right-0 z-50 px-4">
                 <button
                     onClick={() => setShowMobileFilter(true)}
                     className="w-full bg-gray-900 text-white py-3 rounded-full text-center text-lg shadow-lg"

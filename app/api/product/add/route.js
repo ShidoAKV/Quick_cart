@@ -97,7 +97,6 @@ export async function POST(request) {
       }
     );
 
-     console.log(newProduct);
      
     return NextResponse.json({
       success: true,

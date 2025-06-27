@@ -265,6 +265,7 @@ const ProductList = () => {
                     <input
                       type="text"
                       {...register("color")}
+                      placeholder="e.g. PRINTED,OVERSIZED"
                       className="w-full p-2 bg-[#2b2b2b] border border-gray-600 rounded text-white placeholder-gray-400"
                     />
                   </div>
@@ -285,7 +286,7 @@ const ProductList = () => {
                       type="text"
                       value={colorInput}
                       onChange={(e) => setColorInput(e.target.value)}
-                      placeholder="e.g. red, blue"
+                      placeholder="e.g. RED,BLUE,GREEN"
                       className="w-full p-2 bg-[#2b2b2b] border border-gray-600 rounded text-white placeholder-gray-400 mb-2"
                     />
 

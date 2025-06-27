@@ -13,8 +13,8 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: "Invalid data" });
     }
 
-    const newOrder =  await withTimeout(
-     prisma.order.create({
+
+    const newOrder =  await prisma.order.create({
       data: {
         userId: userId,
         addressId: address,
@@ -27,7 +27,7 @@ export async function POST(request) {
             productId: item.product,
             size: item.size,
             color: item.color,
-            quantity: item.quantity.quantity
+            quantity: item?.quantity?.quantity
           }))
         },
       },
@@ -35,7 +35,7 @@ export async function POST(request) {
         items: true,
         address: true,
       },
-    }),10000);
+    });
 
     return NextResponse.json({ success: true, message: "Order placed successfully", order: newOrder });
   } catch (error) {
