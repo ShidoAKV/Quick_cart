@@ -202,7 +202,7 @@ const Product = () => {
           <div
             onClick={() => router.push("/all-products")}
             title="Back to Products"
-            className="fixed top-4 lg:top-80 left-4 z-40 bg-gray-800 backdrop-blur-md border border-gray-300 hover:border-black shadow-sm p-2 sm:p-2.5 rounded-full cursor-pointer  transition-all"
+            className="fixed  lg:top-80 left-4 z-40 bg-gray-800 backdrop-blur-md border border-gray-300 hover:border-black shadow-sm p-2 sm:p-2.5 rounded-full cursor-pointer  transition-all"
           >
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-all" />
           </div>
