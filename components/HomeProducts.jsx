@@ -21,7 +21,7 @@ const HomeProducts = () => {
             className="group shadow-sm flex flex-col rounded-sm overflow-hidden hover:shadow-md transition cursor-pointer w-full max-w-full sm:max-w-[300px]"
           >
             {/* Product Image */}
-            <div className="relative w-full h-[360px] sm:h-[240px] lg:h-[340px]">
+            <div className="relative w-full h-[380px] sm:h-[240px] lg:h-[340px]">
               <Image
                 src={product?.image[0]}
                 alt={product?.name}
