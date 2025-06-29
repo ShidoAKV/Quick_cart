@@ -3,12 +3,14 @@ import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
+import { useParams } from "next/navigation";
 
-const RelatedProducts = ({ products }) => {
+const RelatedProducts = ({ products}) => {
     const containerRef = useRef(null);
     const [scrollIndex, setScrollIndex] = useState(0);
     const { router, currency } = useAppContext();
     const scrollAmount = 250;
+    const { id } = useParams();
 
 
     const handleScroll = (direction) => {
@@ -36,8 +38,10 @@ const RelatedProducts = ({ products }) => {
     }, []);
 
 
-    const visibleProducts = products.slice(0, 4); // You can change the number if needed
-
+    const visibleProducts = products.slice(0,10); // You can change the number if needed
+  
+   
+    
     return (
         <div className="mt-24 px-4 md:px-16 lg:px-32">
             <h2 className="text-2xl font-bold mb-6 text-gray-900 tracking-wide relative w-fit after:block after:h-1 after:bg-gray-500 after:w-20 after:mt-1 uppercase">
@@ -69,9 +73,12 @@ const RelatedProducts = ({ products }) => {
                         const firstImage = product.colorImageMap?.[firstColor]?.[0] || "";
 
                         return (
-                            <div
+                            (product.id!==id)&&<div
                                 key={index}
                                 className="min-w-[240px] max-w-[240px] bg-white shadow-lg mb-5 hover:shadow-md transition cursor-pointer  rounded overflow-hidden"
+                                onClick={()=> {
+                                    router.push('/product/' + product.id)
+                                }}
                             >
                                 {firstImage ? (
                                     <Image
@@ -79,6 +86,7 @@ const RelatedProducts = ({ products }) => {
                                         alt={product.name}
                                         width={240}
                                         height={240}
+                                        
                                         className="object-contain p-3 w-full h-48"
                                     />
                                 ) : (
@@ -103,10 +111,6 @@ const RelatedProducts = ({ products }) => {
                                             {currency}{product.offerPrice}
                                         </p>
                                         <button
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                router.push('/product/' + product.id);
-                                            }}
                                             className="cursor-pointer text-xs sm:text-sm border border-green-900 text-green-900 hover:bg-green-900 hover:text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded transition"
                                         >
                                             Buy Now

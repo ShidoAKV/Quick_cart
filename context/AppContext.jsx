@@ -22,6 +22,7 @@ export const AppContextProvider = (props) => {
     const [isSeller, setIsSeller] = useState(false);
     const [cartItems, setCartItems] = useState({});
     const [topcomment, setTopcomment] = useState(null);
+    const [sizechart, setsizechart] = useState([]);
 
 
     const fetchProductData = async () => {
@@ -58,7 +59,7 @@ export const AppContextProvider = (props) => {
 
     const createUser = async (token) => {
         try {
-            
+
             const payload = {
                 id: user.id,
                 name: user.firstName + ' ' + user.lastName,
@@ -70,8 +71,8 @@ export const AppContextProvider = (props) => {
                     Authorization: `Bearer${token}`,
                 },
             });
-        
-           
+
+
             if (data.success) {
                 toast.success('user created successfully');
                 if (user?.publicMetadata.role === 'seller') {
@@ -92,11 +93,11 @@ export const AppContextProvider = (props) => {
             if (!user) return;
 
             const token = await getToken();
-           
+
             const { data } = await axios.get('/api/user/data', {
-                headers: { Authorization: `Bearer ${token}`,email:user?.emailAddresses[0].emailAddress},
+                headers: { Authorization: `Bearer ${token}`, email: user?.emailAddresses[0].emailAddress },
             });
-              
+
             if (data.success) {
                 setUserData(data.user);
                 setCartItems(data.user.cartItems);
@@ -108,7 +109,7 @@ export const AppContextProvider = (props) => {
                 }
             }
         } catch (error) {
-            if(error.response.status===404){
+            if (error.response.status === 404) {
                 const token = await getToken();
                 await createUser(token);
             }
@@ -215,6 +216,18 @@ export const AppContextProvider = (props) => {
         }
     };
 
+    const fetchSizeChart = async () => {
+        try {
+            const { data } = await axios.get('/api/product/sizechart/get');
+           
+            if (data.success) {
+              setsizechart(data.data);  
+            }
+        } catch (error) {
+              
+        }
+    };
+
 
 
 
@@ -228,6 +241,7 @@ export const AppContextProvider = (props) => {
     useEffect(() => {
         fetchProductData();
         fetchcomment();
+        fetchSizeChart();
     }, []);
 
     // useEffect(() => {
@@ -249,7 +263,7 @@ export const AppContextProvider = (props) => {
         updateCartQuantity,
         getCartCount,
         getCartAmount,
-        user, getToken, authToken, topcomment, fetchcomment
+        user, getToken, authToken, topcomment, fetchcomment,sizechart,setsizechart
     };
 
     return (

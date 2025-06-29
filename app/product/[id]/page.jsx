@@ -18,7 +18,7 @@ import ChartSize from "@/components/charsize";
 const Product = () => {
 
   const { id } = useParams();
-  const { products, router, addToCart, getToken } = useAppContext();
+  const { products, router, addToCart, getToken,sizechart} = useAppContext();
 
   const [productData, setProductData] = useState(null);
   const [mainImage, setMainImage] = useState(null);
@@ -32,8 +32,7 @@ const Product = () => {
   const [hasPurchased, setHasPurchased] = useState(false);
   const [showComment, setShowComment] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-
-
+ 
 
 
   const checkPurchase = async () => {
@@ -89,6 +88,8 @@ const Product = () => {
     }
   };
 
+
+
   useEffect(() => {
     if (products && products.length > 0) {
       const init = async () => {
@@ -136,7 +137,8 @@ const Product = () => {
     const images = productData?.colorImageMap?.[color] || [];
     setMainImage(images[0] || null);
   };
-
+ 
+ 
   return (
     <>
 
@@ -202,7 +204,7 @@ const Product = () => {
           <div
             onClick={() => router.push("/all-products")}
             title="Back to Products"
-            className="fixed  lg:top-80 left-4 z-40 bg-gray-800 backdrop-blur-md border border-gray-300 hover:border-black shadow-sm p-2 sm:p-2.5 rounded-full cursor-pointer  transition-all"
+            className="fixed lg:top-80 left-4 z-40 bg-gray-800 backdrop-blur-md border border-gray-300 hover:border-black shadow-sm p-2 sm:p-2.5 rounded-full cursor-pointer  transition-all"
           >
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-all" />
           </div>
@@ -236,12 +238,12 @@ const Product = () => {
                   ))}
               </div>
             </div>
-           
+
             {/* Size Selection */}
             <div>
               <div className="flex items-center  justify-between">
                 <h3 className=" text-lg px-1 mb-1 text-black font-semibold ">Size</h3>
-                <span className="pr-6   "><ChartSize /></span>
+                <span className="pr-6   "><ChartSize  sizechartdata={sizechart} /></span>
               </div>
               <div className="flex gap-2 px-1 flex-wrap">
                 {productData.size?.map((size) => (

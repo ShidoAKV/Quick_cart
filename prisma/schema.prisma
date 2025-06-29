@@ -119,3 +119,14 @@ model Comment {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
+model TshirtSize {
+  id     Int    @id @default(autoincrement())
+  type   String
+  size   String 
+  chest  String
+  len    String
+  sh     String
+  slv    String
+}
+
