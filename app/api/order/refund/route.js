@@ -29,7 +29,7 @@ export async function GET(req) {
             return NextResponse.json({ success: false, message: "Refund not claimed" });
         }
         
-        return NextResponse.json({ success: true, refunddata });
+        return NextResponse.json({ success: true, refunddata});
     } catch (error) {
         return NextResponse.json({ success: false, message: error.message });
     }

@@ -9,9 +9,11 @@ const OrderPlaced = () => {
   const { router } = useAppContext()
 
   useEffect(() => {
-    setTimeout(() => {
-      router.push('/my-orders')
-    }, 5000)
+    const timer = setTimeout(() => {
+      router.push('/my-orders');
+    }, 3000);
+
+    return () => clearTimeout(timer); 
   }, [])
 
   return (

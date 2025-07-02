@@ -13,7 +13,7 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: "Invalid data" });
     }
 
-
+    
     const newOrder =  await prisma.order.create({
       data: {
         userId: userId,

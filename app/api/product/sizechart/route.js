@@ -28,7 +28,6 @@ export async function POST(request) {
       );
     }
 
-  
     const created = await prisma.tshirtSize.create({
       data: { type, size, chest, len, sh, slv },
     });
