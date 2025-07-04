@@ -49,7 +49,7 @@ export async function POST(req) {
                 orderId: orderId,
                 purpose: "Refund fee"
             },
-            callback_url: "https://yourdomain.com/refund-callback",
+            callback_url: "https://www.pilley.in/my-orders",
             callback_method: "get"
         });
 

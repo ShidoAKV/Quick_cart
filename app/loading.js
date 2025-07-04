@@ -1,9 +1,14 @@
-import React from 'react'
-import Loading from '@/components/Loading'
+import Loading from '@/components/Loading';
+
 const Loadingcomponent = () => {
   return (
-    <Loading/>
-  )
-}
+    <main
+      role="status"
+      aria-live="polite"
+    >
+      <Loading />
+    </main>
+  );
+};
 
-export default Loadingcomponent
+export default Loadingcomponent;

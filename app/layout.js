@@ -5,8 +5,8 @@ import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
 import { Suspense } from "react";
-import Loadingcomponent from "./loading";
 import Navbar from "@/components/Navbar";
+import Loadingcomponent from "./loading";
 
 const outfit = Roboto({ subsets: ['latin'], weight: ["300", "400", "500"] })
 

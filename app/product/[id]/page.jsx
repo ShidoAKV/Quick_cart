@@ -368,9 +368,7 @@ const Product = () => {
         </div>
       </div>
 
-
       <RelatedProducts products={products} />
-
       <Footer />
     </>
   );

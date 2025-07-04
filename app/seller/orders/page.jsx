@@ -23,6 +23,8 @@ const Orders = () => {
   });
   const [refundData, setRefundData] = useState(null);
   const [showRefundModal, setShowRefundModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
 
   const fetchSellerOrders = async () => {
     try {
@@ -33,7 +35,7 @@ const Orders = () => {
       });
 
       if (data.success) {
-        
+
         setOrders(data.orders);
         setStats({
           totalOrders: data.totalOrders,
@@ -111,7 +113,6 @@ const Orders = () => {
 
   const fetchrefundinformation = async (orderId) => {
     try {
-
       const token = await getToken();
       const { data } = await axios.get(`/api/order/refund`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -119,9 +120,12 @@ const Orders = () => {
       });
       if (data.success) {
         setRefundData(data.refunddata);
+        const foundOrder = orders?.find(o => o.id === orderId);
+        setSelectedOrder(foundOrder);
         setShowRefundModal(true);
       }
     } catch (error) {
+      toast.dismiss();
       toast.error(error.message)
     }
   }
@@ -133,8 +137,7 @@ const Orders = () => {
     }
   }, [user]);
 
-
- 
+  
 
   return (
     <div className="flex-1 h-screen overflow-auto flex flex-col justify-between text-sm bg-gray-50">
@@ -313,15 +316,15 @@ const Orders = () => {
                                 />
                               </div>
                             )}
-                            
+
                             {/* Payment Status */}
                             <div className="space-y-2">
                               <h3 className="font-semibold text-gray-700">Payment Status</h3>
-                              {(refundData.paymentLinkId)? (
+                              {(selectedOrder?.refundFeePaid) ? (
                                 <p className="bg-green-600 text-white px-3 py-1 rounded flex items-center gap-1">
                                   <CheckCircle className="w-4 h-4" />
-                                  
-                                  Payment Received 
+
+                                  Payment Received
                                 </p>
                               ) : (
                                 <p className="bg-red-600 text-white px-3 py-1 rounded flex items-center gap-1">
