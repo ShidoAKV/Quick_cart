@@ -64,7 +64,7 @@ const ProductList = () => {
 
 
   const addColorImage = () => {
-    const colorList = colorInput.split(',').map(c => c.trim().toLowerCase()).filter(Boolean);
+    const colorList = colorInput.split(',').map(c => c.trim().toUpperCase()).filter(Boolean);
     const validImages = imageInputs.filter(file => file !== null);
 
     if (!colorList.length) {
@@ -128,26 +128,47 @@ const ProductList = () => {
         payload.append("colorImageMap", JSON.stringify(rawColorMap));
       }
 
-        toast.loading('Editing...')
+      toast.loading('Editing...')
 
       const { data } = await axios.post(`/api/product/edit/${id}`, payload, {
         headers: { Authorization: `Bearer ${authToken.current}` },
       });
 
       if (data.success) {
-         toast.dismiss()
+        toast.dismiss()
         toast.success("Product updated");
         setEditingProduct(null);
         router.push('/seller/product-list');
       } else {
-         toast.dismiss()
+        toast.dismiss()
         toast.error(data.message);
       }
-     
+
     } catch (err) {
       toast.error("Update failed: " + err.message);
     }
   };
+
+  const removecolor = async (color) => {
+    try {
+      const { id } = editingProduct;
+      const { data } = await axios.post(`/api/product/edit/color/${id}`,
+        { color },
+        { headers: { Authorization: `Bearer ${authToken.current}` } }
+      )
+      if (data.success) {
+        const updated = { ...colorImageMap };
+        delete updated[color];
+        setColorImageMap(updated);
+        toast.success(data.message);
+        router.push('/seller/product-list');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error);
+    }
+  }
 
   useEffect(() => {
     if (user) fetchSellerProduct();
@@ -217,7 +238,7 @@ const ProductList = () => {
                     <td className="px-4 py-3 hidden md:table-cell text-gray-800">{product.stock}</td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       <button
-                        onClick={() =>window.open(`/product/${product.id}`)}
+                        onClick={() => window.open(`/product/${product.id}`)}
                         className="text-sm bg-green-800 text-white px-3 py-1.5 rounded hover:bg-green-900"
                       >
                         Visit
@@ -296,7 +317,7 @@ const ProductList = () => {
                           key={i}
                           className="flex items-center justify-center h-12 border border-gray-600 rounded cursor-pointer hover:bg-gray-700 transition"
                         >
-                          <UploadCloud/>
+                          <UploadCloud />
                           <input
                             type="file"
                             accept="image/*"
@@ -310,7 +331,7 @@ const ProductList = () => {
                             }}
                             className="hidden"
                           />
-                          
+
                         </label>
                       ))}
                     </div>
@@ -353,6 +374,34 @@ const ProductList = () => {
                     )}
                   </div>
 
+
+                  <div>
+                    <label className="block text-sm mb-1">Remove Color(s):</label>
+                    <div className="flex flex-wrap gap-2 max-h-40 overflow-auto">
+                      {Object.keys(colorImageMap).map((color) => (
+                        <div key={color} className="flex items-center gap-2 border border-gray-600 p-1 rounded bg-gray-800 text-white">
+                          <span
+                            className="w-4 h-4 rounded-full border border-white"
+                            style={{ backgroundColor: color.toLowerCase() }}
+                            title={color}
+                          />
+                          <span className="text-xs truncate max-w-[100px]" title={color}>
+                            {color}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removecolor(color)}
+                            className="text-red-400 hover:text-red-600 text-xs"
+                            title="Remove"
+                          >
+                            ❌
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+
                   <div className="flex justify-end gap-3 pt-2">
                     <button
                       type="button"
@@ -368,6 +417,8 @@ const ProductList = () => {
                       Save
                     </button>
                   </div>
+
+
                 </form>
               </div>
             </div>

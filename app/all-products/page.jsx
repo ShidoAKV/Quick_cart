@@ -37,7 +37,7 @@ const AllProducts = () => {
         const set = new Set();
         products.forEach(p => {
             const keys = Object.keys(p.colorImageMap || {});
-            keys.forEach(k => set.add(k));
+            keys.forEach(k => set.add(k.trimEnd().toUpperCase()));
         });
         return [...set];
     }, [products]);
@@ -124,7 +124,7 @@ const AllProducts = () => {
             {Object.entries(allOptions).map(([key, options]) => (
                 <div key={key} className="mb-4">
                     <h3 className="font-semibold capitalize mb-1">{key}</h3>
-                    {options.map((opt) => (
+                    {options?.map((opt) => (
                         <label key={opt.value || opt} className="block text-sm mb-1 cursor-pointer">
                             <input
                                 type="checkbox"
@@ -139,8 +139,7 @@ const AllProducts = () => {
             ))}
         </>
     );
-
-
+  
     return (
         <>
             <div className="px-4 md:px-10 lg:px-32 pt-8 pb-28">
@@ -208,7 +207,7 @@ const AllProducts = () => {
                 {/* Product Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {filteredProducts.length > 0 ? (
-                        filteredProducts.map((product, index) => (
+                        filteredProducts?.map((product, index) => (
                             <ProductCard key={index} product={product} />
                         ))
                     ) : (

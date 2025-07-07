@@ -55,10 +55,6 @@ const HomeProducts = () => {
                   {product.offerPrice}
                 </p>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    router.push("/product/" + product.id);
-                  }}
                   className="cursor-pointer text-xs sm:text-sm border border-green-900 text-green-900 hover:bg-green-900 hover:text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded transition"
                 >
                   Buy Now

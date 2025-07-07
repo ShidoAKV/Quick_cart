@@ -103,16 +103,7 @@ const AddProduct = () => {
     });
   };
 
-  const handleAddCustomColor = () => {
-    const trimmed = customColor.trim();
-    if (trimmed && !color.includes(trimmed)) {
-      setColor([...color, trimmed]);
-      setCustomColor('');
-    } else {
-      toast.error("Color already added or empty");
-    }
-  };
-
+  
   return (
     <div className="flex-1 min-h-screen flex flex-col justify-between">
       <form onSubmit={handleSubmit} className="md:p-10 p-4 space-y-5 max-w-4xl">
@@ -132,7 +123,7 @@ const AddProduct = () => {
                 const updated = colorImageMap.filter((_, i) => i !== idx);
                 setColorImageMap(updated);
               }}
-              className="absolute cursor-pointer top-1 right-1 text-red-600 font-bold text-lg"
+              className="absolute cursor-pointer top-1 right-1 text-red-600 font-bold text-lg uppercase"
               title="Remove this entry"
             >
               ×
@@ -144,7 +135,7 @@ const AddProduct = () => {
               value={entry.color}
               onChange={(e) => {
                 const updated = [...colorImageMap];
-                updated[idx].color = e.target.value;
+                updated[idx].color = e.target.value.trim().toUpperCase();
                 setColorImageMap(updated);
               }}
               className="border p-2 rounded w-40 mb-2"
@@ -264,7 +255,7 @@ const AddProduct = () => {
               type="text"
               placeholder="Cotton, Polyester"
               className="outline-none py-2 px-3 rounded border border-gray-500/40"
-              onChange={(e) => setMaterial(e.target.value)}
+              onChange={(e) => setMaterial(e.target.value.trimEnd().toUpperCase())}
               value={material}
               required
             />
