@@ -21,7 +21,6 @@ export async function GET(req) {
         const refunddata = await prisma.refund.findFirst({
             where: {
                 orderId,
-                userId
             }
         });
     

@@ -39,8 +39,6 @@ const RelatedProducts = ({ products}) => {
 
 
     const visibleProducts = products.slice(0,10); // You can change the number if needed
-  
-   
     
     return (
         <div className="mt-24 px-4 md:px-16 lg:px-32">

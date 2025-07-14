@@ -6,7 +6,7 @@ import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { HelpCircle } from "lucide-react";
 
 const Navbar = () => {
   const { isSeller, router, user, getCartCount } = useAppContext();
@@ -91,6 +91,14 @@ const linkHover = {
                 onClick={() => router.push("/my-orders")}
               />
             </UserButton.MenuItems>
+
+             <UserButton.MenuItems>
+              <UserButton.Action
+                label="Help"
+                labelIcon={<HelpCircle/>}
+                onClick={() => router.push("/Help")}
+              />
+            </UserButton.MenuItems>
           </UserButton>
         ) : (
           <button
@@ -159,6 +167,15 @@ const linkHover = {
                 onClick={() => router.push("/my-orders")}
               />
             </UserButton.MenuItems>
+
+            <UserButton.MenuItems>
+              <UserButton.Action
+                label="Help"
+                labelIcon={<HelpCircle/>}
+                onClick={() => router.push("/Help")}
+              />
+            </UserButton.MenuItems>
+            
           </UserButton>
         ) : (
           <button

@@ -98,12 +98,15 @@ const Orders = () => {
   const refundaction = async (e, id) => {
 
     try {
+      toast.loading('processing...');
       const token = await getToken();
       const { data } = await axios.post('/api/order/seller-orders/refundaction', { action: e.target.value, id },
         { headers: { Authorization: `Bearer ${token}` } });
       if (data.success) {
+        toast.dismiss();
         toast.success(data.message);
       } else {
+        toast.dismiss();
         toast.error(data.message);
       }
     } catch (error) {

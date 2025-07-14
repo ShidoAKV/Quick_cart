@@ -129,7 +129,7 @@ const MyOrders = () => {
                 setShowRefundModal(true);
                 fetchpaymentdetail(orderId)
             } else {
-                 toast.error(data.message);
+                toast.error(data.message);
             }
         } catch (error) {
             toast.error("Refund status error: " + error.message);
@@ -144,11 +144,14 @@ const MyOrders = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 }
             );
-           
+
             if (data.success) {
                 toast.success(data.message)
             } else {
-                toast.error('Pay refund fees ')
+                toast('Pay your refund fees', {
+                    duration: 4000,
+                    icon: '⚠️',
+                });
             }
         } catch (error) {
             toast.error(error.message)
@@ -176,7 +179,7 @@ const MyOrders = () => {
             toast.error("Refund payment error: " + error.message);
         }
     };
-    
+
 
     useEffect(() => {
         if (user) {
@@ -241,7 +244,7 @@ const MyOrders = () => {
                                                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                                     <button
                                                         className="text-sm px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-950 transition shadow-sm"
-                                                         onClick={() => window.open(`/refundpage/?id=${order.orderId}`)}
+                                                        onClick={() => router.push(`/Help/?orderId=${order.orderId}`)}
                                                     >
                                                         Claim Refund
                                                     </button>
@@ -271,14 +274,14 @@ const MyOrders = () => {
                                             {!order.cancelled && !order.payment && (
                                                 <>
                                                     <button
-                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
+                                                        className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
                                                         onClick={() => handlePayment(order.orderId)}
                                                         disabled={processingOrderId === order.orderId}
                                                     >
                                                         Pay Now
                                                     </button>
                                                     <button
-                                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
+                                                        className="bg-red-600 hover:bg-red-700 cursor-pointer text-white px-4 py-2 text-sm rounded-md transition disabled:opacity-50"
                                                         onClick={() => handleCancelOrder(order.orderId)}
                                                         disabled={processingOrderId === order.orderId}
                                                     >
@@ -305,8 +308,8 @@ const MyOrders = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white rounded-lg p-6 w-[90%] max-w-md">
                         <h2 className="text-lg font-semibold mb-4">Refund Details</h2>
-                        { (selectedRefund.status!=='APPROVE')&&<p><strong >Status:</strong  > {selectedRefund.status}</p>}
-                        { (selectedRefund.status==='APPROVE')&&<p className="text-green-500"><strong className="text-gray-700">Status:</strong  > {selectedRefund.status}</p>}
+                        {(selectedRefund.status !== 'APPROVE') && <p><strong >Status:</strong  > {selectedRefund.status}</p>}
+                        {(selectedRefund.status === 'APPROVE') && <p className="text-green-500"><strong className="text-gray-700">Status:</strong  > {selectedRefund.status}</p>}
                         <p><strong>Reason:</strong> {selectedRefund.reason}</p>
                         <p><strong>Requested On:</strong> {new Date(selectedRefund.createdAt).toLocaleDateString()}</p>
                         {selectedRefund.status === "PENDING" && (

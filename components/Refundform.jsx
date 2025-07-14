@@ -1,11 +1,13 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { UploadCloud } from "lucide-react";
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import toast from 'react-hot-toast';
 import { AlertTriangle } from "lucide-react";
+import jwt from 'jsonwebtoken';
+
 
 const Refundform = () => {
   const [checks, setChecks] = useState({
@@ -25,7 +27,33 @@ const Refundform = () => {
   const [fileUploaded, setFileUploaded] = useState(false);
   const searchParams = useSearchParams();
   const orderId = searchParams.get('id');
+  const refundtoken=searchParams.get('token');
   const { getToken,router } = useAppContext();
+  const [isVerified, setIsVerified] = useState(false);
+  
+  useEffect(() => {
+    const verifyToken = async () => {
+      if (!refundtoken) return toast.error('wrong link');
+      const token=await getToken();
+      try {
+        const {data} = await axios.post('/api/help/verifyRefundToken',
+          {refundtoken},
+          {headers: { Authorization: `Bearer ${token}` }}
+        );
+        if(data.success){
+           toast.success('verified successfully')
+           setIsVerified(true);
+        }else{
+           toast.error(data.message)
+        }
+      } catch (err) {
+        toast.error(err.response.data.message);
+      }
+    };
+
+    verifyToken();
+  }, [refundtoken]);
+
 
   const handleCheckChange = (e) => {
     setChecks({ ...checks, [e.target.name]: e.target.checked });
@@ -46,6 +74,7 @@ const Refundform = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!orderId) return toast.error("Order ID is missing in the URL.");
+    if (!isVerified) return toast.error("Unauthorized or invalid token.");
 
     try {
       const token = await getToken();
